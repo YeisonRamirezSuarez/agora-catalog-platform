@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+  Imagen de vista previa (Open Graph) para un negocio sin portada ni logo: agora-catalog-front/public/og-default.jpg.
+  Para regenerarla (1200x630), desde esta carpeta:
+    chrome --headless=new --hide-scrollbars --window-size=1200,630 --virtual-time-budget=4000 --screenshot=og.png og-default.html
+  y pasar og.png a JPG (calidad ~86). WhatsApp recorta al centro en las vistas chicas: el contenido va centrado.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500&family=Playfair+Display:ital,wght@0,600;1,600&display=block">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(900px 520px at 50% 38%, rgba(224, 164, 58, .16), transparent 70%),
+      radial-gradient(700px 400px at 50% 120%, rgba(224, 164, 58, .10), transparent 70%),
+      #15120D;
+    color: #ECE4D6;
+    font-family: Onest, sans-serif;
+    display: grid;
+    place-items: center;
+  }
+  .marco {
+    position: absolute; inset: 28px;
+    border: 1px solid rgba(224, 164, 58, .35);
+    border-radius: 22px;
+  }
+  .marco::after {
+    content: ""; position: absolute; inset: 8px;
+    border: 1px solid rgba(236, 228, 214, .08);
+    border-radius: 16px;
+  }
+  main { display: grid; justify-items: center; text-align: center; position: relative; }
+  img { width: 560px; height: auto; display: block; }
+  .regla { display: flex; align-items: center; gap: 18px; margin: 34px 0 22px; color: #E0A43A; }
+  .regla span { width: 90px; height: 1px; background: currentColor; opacity: .7; }
+  .regla i { width: 7px; height: 7px; transform: rotate(45deg); background: currentColor; }
+  h1 { margin: 0; font: italic 600 46px/1.1 "Playfair Display", serif; letter-spacing: -.01em; }
+  p { margin: 14px 0 0; font-size: 24px; color: #D8CEBF; letter-spacing: .01em; }
+</style>
+</head>
+<body>
+  <div class="marco"></div>
+  <main>
+    <img src="logo-white.svg" alt="">
+    <div class="regla"><span></span><i></i><span></span></div>
+    <h1>Mira el catálogo</h1>
+    <p>Elige tus productos y haz tu pedido por WhatsApp</p>
+  </main>
+</body>
+</html>

@@ -83,6 +83,9 @@ class PaginaPublicaIntegrationTest {
                 .andExpect(header().string("Location", "/c/" + link + "/catalogo?q=queso"));
         mvc.perform(get("/public/paginas/" + hash))
                 .andExpect(status().isMovedPermanently());
+        // Sin portada ni logo: la imagen de Agorá Catalog.
+        mvc.perform(get("/public/paginas/" + link))
+                .andExpect(content().string(containsString("content=\"https://catalogo.test/og-default.jpg\"")));
     }
 
     @Test

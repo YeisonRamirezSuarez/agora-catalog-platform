@@ -34,6 +34,8 @@ public class PaginaPublicaService {
     private static final String MARCADOR = "<!--og-->";
     private static final String TITULO = "<title>Agorá Catalog</title>";
     private static final String DESCRIPCION = "Mira el catálogo y haz tu pedido por WhatsApp.";
+    /** Imagen de Agorá Catalog (public/ del front) para el negocio sin portada ni logo. */
+    private static final String IMAGEN_POR_DEFECTO = "/og-default.jpg";
 
     private final CatalogoPublicoRepository repository;
     private final StorageService storage;
@@ -84,18 +86,23 @@ public class PaginaPublicaService {
                 .append(meta("og:title", n.nombre()))
                 .append(meta("og:description", descripcion))
                 .append(meta("og:url", url));
-        if (imagen != null) {
-            og.append(meta("og:image", baseUrl + imagen)).append("<meta name=\"twitter:card\" content=\"summary_large_image\">\n");
+        og.append(meta("og:image", baseUrl + imagen));
+        if (imagen.equals(IMAGEN_POR_DEFECTO)) {
+            og.append(meta("og:image:width", "1200")).append(meta("og:image:height", "630"));
         }
+        og.append("<meta name=\"twitter:card\" content=\"summary_large_image\">\n");
         og.append("<meta name=\"description\" content=\"").append(esc(descripcion)).append("\">\n");
         return index.replace(TITULO, "<title>" + esc(n.nombre()) + "</title>")
                 .replace(MARCADOR, og.toString());
     }
 
-    /** La portada en versión liviana (se genera la primera vez); sin portada, el logo, que ya es chico. */
+    /**
+     * La portada en versión liviana (se genera la primera vez); sin portada, el logo, que ya es chico;
+     * sin ninguno de los dos, la imagen de Agorá Catalog.
+     */
     private String imagen(Negocio n) {
         Path portada = storage.ruta(n.portadaUrl());
-        if (portada == null || !Files.isRegularFile(portada)) return n.logoUrl();
+        if (portada == null || !Files.isRegularFile(portada)) return logoOPorDefecto(n);
         String url = StorageService.urlVistaPrevia(n.portadaUrl());
         Path destino = storage.ruta(url);
         if (Files.isRegularFile(destino)) return url;
@@ -106,8 +113,12 @@ public class PaginaPublicaService {
             return url;
         } catch (IOException | RuntimeException e) {
             log.warn("[OG] No se pudo generar la vista previa de {}: {}", portada, e.getMessage());
-            return n.logoUrl();
+            return logoOPorDefecto(n);
         }
+    }
+
+    private static String logoOPorDefecto(Negocio n) {
+        return n.logoUrl() != null ? n.logoUrl() : IMAGEN_POR_DEFECTO;
     }
 
     /** Se lee en cada visita: es pequeño y así un build nuevo del front se ve sin reiniciar la API. */
