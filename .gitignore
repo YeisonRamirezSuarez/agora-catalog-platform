@@ -21,6 +21,10 @@ target/
 *.log
 logs/
 
+# Resultados de las pruebas de pantalla (Playwright)
+test-results/
+playwright-report/
+
 # Editores
 .idea/
 .vscode/

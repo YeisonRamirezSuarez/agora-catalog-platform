@@ -44,6 +44,7 @@ Alias de importación: `@app/*` → `src/app/*`, `@env/*` → `src/environments/
 ```bash
 npm run build                 # build de producción
 npx ng test --watch=false     # Vitest
+npx playwright test           # pantallas en Chrome (necesita API + app en el 4300: e2e/README.md)
 npm start                     # http://localhost:4251, con proxy de /api a localhost:9092
 ```
 
