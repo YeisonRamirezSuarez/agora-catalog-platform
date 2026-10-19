@@ -10,6 +10,8 @@
 server:
   # Fijo a propósito (sin ${SERVER_ADDRESS}). Ojo: una variable de entorno SERVER_ADDRESS
   # igual le gana a este archivo en Spring, así que el .env de producción NO debe definirla.
+  # Única excepción: docker-compose.prod.yml, donde la API no publica puertos y la red de Docker
+  # hace de loopback (Caddy la alcanza por esa red).
   address: 127.0.0.1
 
 settings:

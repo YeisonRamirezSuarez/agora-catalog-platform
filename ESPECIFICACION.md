@@ -312,7 +312,7 @@ Diseño pedido por el cliente: portada fotográfica oscura con titular serif gra
   - imagen de más de 8000 px rechazada sin decodificarla.
 - Tests unitarios en Angular (Vitest) para servicios y el interceptor de auth.
 - CORS configurable con `CORS_ALLOWED_ORIGINS`.
-- Configuración por variables de entorno en `agora-catalog-back/.env` (lo carga solo `SecretsEnvironmentPostProcessor`): `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `STORAGE_PATH`, `FRONT_INDEX_PATH`, `PUBLIC_BASE_URL`, `CORS_ALLOWED_ORIGINS`, `TRUSTED_PROXY_COUNT`, `APP_TIME_ZONE` (`America/Bogota`). Sin secretos en el repo; `.env.example` documentado.
+- Configuración por variables de entorno en `agora-catalog-back/.env` (lo carga solo `SecretsEnvironmentPostProcessor`): `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `STORAGE_PATH`, `FRONT_INDEX_PATH`, `FRONTEND_URL` (URL pública: correos y Open Graph), `CORS_ALLOWED_ORIGINS`, `TRUSTED_PROXY_COUNT`, `APP_TIME_ZONE` (`America/Bogota`). Sin secretos en el repo; `.env.example` documentado.
 - `README.md` con cómo levantar todo en local.
 
 ## 11. Despliegue

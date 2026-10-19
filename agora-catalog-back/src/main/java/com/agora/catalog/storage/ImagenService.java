@@ -112,6 +112,18 @@ public class ImagenService {
         return jpg(salida);
     }
 
+    /**
+     * Versión liviana de una foto ya guardada (la portada de 3200 px) para la vista previa de
+     * WhatsApp, que no muestra imágenes pesadas. Es un archivo nuestro: no pasa por {@link #leer}.
+     */
+    public byte[] vistaPrevia(byte[] jpgGuardado) {
+        try {
+            return ajustar(ImageIO.read(new ByteArrayInputStream(jpgGuardado)), 1200);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     /** Lleva el lado mayor a {@code max} sin agrandar; siempre JPG. */
     private byte[] ajustar(BufferedImage img, int max) {
         try {

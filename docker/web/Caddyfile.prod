@@ -1,0 +1,35 @@
+# Producción (docker-compose.prod.yml): HTTPS automático con Let's Encrypt para {$DOMAIN}.
+# Caddy pide y renueva el certificado solo; necesita los puertos 80 y 443 abiertos y el dominio
+# apuntando a este servidor.
+{$DOMAIN} {
+	encode gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+
+	handle /api/* {
+		reverse_proxy api:9092
+	}
+
+	# Página del catálogo con las etiquetas Open Graph (ver Caddyfile de desarrollo).
+	# handle_path quita el /c antes del rewrite (dentro de un handle, Caddy corre rewrite antes que uri).
+	handle_path /c/* {
+		rewrite * /api/public/paginas{uri}
+		reverse_proxy api:9092
+	}
+
+	handle {
+		root * /srv
+		# Los archivos del build llevan hash en el nombre: nunca cambian. El resto (index.html y las
+		# rutas de Angular, que lo devuelven) se revalida para ver cada despliegue.
+		@hash path_regexp -[A-Z0-9]{8}\.(js|css)$
+		header @hash Cache-Control "public, max-age=31536000, immutable"
+		@sinHash not path_regexp -[A-Z0-9]{8}\.(js|css)$
+		header @sinHash Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}

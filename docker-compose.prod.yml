@@ -1,0 +1,89 @@
+# Producción en un VPS: PostgreSQL 16, API y Caddy con HTTPS automático (Let's Encrypt).
+#
+#   cp .env.prod.example .env          # completar DOMAIN, DB_PASSWORD, JWT_SECRET, AES_KEY, SUPERADMIN_*
+#   docker compose -f docker-compose.prod.yml up -d --build
+#   docker compose -f docker-compose.prod.yml logs -f api
+#
+# Solo Caddy publica puertos (80 y 443). La base y la API quedan dentro de la red de Docker.
+# Respaldos diarios: scripts/respaldo/respaldar.sh (ver README).
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agora_catalog
+      POSTGRES_USER: ${DB_USERNAME:-agora}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD en .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./agora-catalog-back
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # El perfil prod escucha solo en loopback; en Docker la red del compose hace ese papel (la API
+      # no publica puertos) y tiene que escuchar en todas para que Caddy la alcance.
+      SERVER_ADDRESS: 0.0.0.0
+      DB_URL: jdbc:postgresql://postgres:5432/agora_catalog?currentSchema=main
+      DB_USERNAME: ${DB_USERNAME:-agora}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET en .env}
+      AES_KEY: ${AES_KEY:?Falta AES_KEY en .env}
+      FRONTEND_URL: https://${DOMAIN:?Falta DOMAIN en .env}
+      CORS_ALLOWED_ORIGINS: https://${DOMAIN}
+      TRUSTED_PROXY_COUNT: 1
+      STORAGE_PATH: /app/uploads
+      FRONT_INDEX_PATH: /front/index.html
+      LOG_PATH: /app/logs
+      FLYWAY_SEED: "false"
+      SUPERADMIN_NAME: ${SUPERADMIN_NAME:-}
+      SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL:-}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-}
+    volumes:
+      - uploads:/app/uploads
+      - logs:/app/logs
+      - front-index:/front:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./docker/web/Caddyfile.prod:/etc/caddy/Caddyfile:ro
+      - front-index:/front
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - api
+
+# Nombres fijos: el script de respaldo los usa sin depender del nombre de la carpeta.
+volumes:
+  pgdata:
+    name: agora-catalog-prod-pgdata
+  uploads:
+    name: agora-catalog-prod-uploads
+  logs:
+    name: agora-catalog-prod-logs
+  front-index:
+    name: agora-catalog-prod-front-index
+  # Certificados de Let's Encrypt: sin este volumen Caddy los pide de nuevo en cada arranque.
+  caddy-data:
+    name: agora-catalog-prod-caddy-data
+  caddy-config:
+    name: agora-catalog-prod-caddy-config

@@ -56,8 +56,14 @@ config:
     refresh-days: 7
 
 settings:
-  # URL pública del front. Arma los enlaces de los correos (ingresar al panel).
+  # URL pública del front. Arma los enlaces de los correos (ingresar al panel) y los de la vista
+  # previa del catálogo en WhatsApp (og:url, og:image).
   frontend-url: ${FRONTEND_URL:http://localhost:4251}
+
+  # index.html del front compilado. /c/{slug}-{hash} lo devuelve con las etiquetas Open Graph del
+  # negocio (vista previa al compartir el link por WhatsApp). Vacío en desarrollo: ahí /c/ lo
+  # atiende `ng serve` y no hay vista previa.
+  front-index-path: ${FRONT_INDEX_PATH:}
 
   encryption:
     aes:

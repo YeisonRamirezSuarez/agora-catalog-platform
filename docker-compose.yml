@@ -51,8 +51,12 @@ services:
       # Caddy (servicio web) es el único proxy delante.
       TRUSTED_PROXY_COUNT: 1
       CORS_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-8080}
+      # index.html del front (lo deja el servicio web en el volumen compartido): /c/... lo devuelve
+      # con las etiquetas Open Graph.
+      FRONT_INDEX_PATH: /front/index.html
     volumes:
       - agora-catalog-uploads:/app/uploads
+      - agora-catalog-front-index:/front:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,9 +68,12 @@ services:
     container_name: agora-catalog-web
     ports:
       - "${WEB_PORT:-8080}:80"
+    volumes:
+      - agora-catalog-front-index:/front
     depends_on:
       - api
 
 volumes:
   agora-catalog-pgdata:
   agora-catalog-uploads:
+  agora-catalog-front-index:

@@ -47,13 +47,28 @@ public class StorageService {
         return URL_PREFIX + relativo;
     }
 
-    /** Borra el archivo de una URL propia. Nunca falla: una foto huérfana no debe deshacer un cambio. */
-    public void borrar(String url) {
-        if (url == null || !url.startsWith(URL_PREFIX)) return;
+    /** Archivo en disco de una URL propia; null si la URL no es de esta carpeta. */
+    public Path ruta(String url) {
+        if (url == null || !url.startsWith(URL_PREFIX)) return null;
         Path archivo = root.resolve(url.substring(URL_PREFIX.length())).normalize();
-        if (!archivo.startsWith(root)) return; // nada fuera de la carpeta
+        return archivo.startsWith(root) ? archivo : null; // nada fuera de la carpeta
+    }
+
+    /** URL de la versión liviana de una foto para la vista previa de WhatsApp (ver PaginaPublicaService). */
+    public static String urlVistaPrevia(String url) {
+        return url.replaceFirst("\\.jpg$", "-og.jpg");
+    }
+
+    /**
+     * Borra el archivo de una URL propia y su vista previa, si la tiene. Nunca falla: una foto
+     * huérfana no debe deshacer un cambio.
+     */
+    public void borrar(String url) {
+        Path archivo = ruta(url);
+        if (archivo == null) return;
         try {
             Files.deleteIfExists(archivo);
+            Files.deleteIfExists(ruta(urlVistaPrevia(url)));
         } catch (IOException e) {
             log.warn("[STORAGE] No se pudo borrar {}: {}", archivo, e.getMessage());
         }

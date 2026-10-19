@@ -77,14 +77,68 @@ Si el 8080 o el 5433 están ocupados: `WEB_PORT=8081 DB_PORT=5434 docker compose
 
 ### Publicar desde esta máquina
 
-`herramientas/servidor/serve_app.py` sirve el front compilado y reenvía `/api` al backend en un solo
-puerto, por HTTP y HTTPS (con certificado). Solo usa la biblioteca estándar de Python.
+`herramientas/servidor/serve_app.py` sirve el front compilado y reenvía `/api` y `/c/...` al backend en
+un solo puerto, por HTTP y HTTPS (con certificado). Solo usa la biblioteca estándar de Python.
 
 ```bash
 cd agora-catalog-front && npm run build
 cd ../agora-catalog-back && bash gradlew bootJar
-SPRING_PROFILES_ACTIVE=prod TRUSTED_PROXY_COUNT=1 java -jar build/libs/agora-catalog-back-0.1.0.jar   # escucha solo en 127.0.0.1:9092
+# Escucha solo en 127.0.0.1:9092. FRONTEND_URL es la dirección pública (enlaces de correos y vista previa).
+SPRING_PROFILES_ACTIVE=prod TRUSTED_PROXY_COUNT=1 FRONTEND_URL=https://mi-dominio:2020 \
+  CORS_ALLOWED_ORIGINS=https://mi-dominio:2020 \
+  FRONT_INDEX_PATH=../agora-catalog-front/dist/agora-catalog-front/browser/index.html \
+  java -jar build/libs/agora-catalog-back-0.1.0.jar
 python herramientas/servidor/serve_app.py agora-catalog-front/dist/agora-catalog-front/browser 2020 cert.crt cert.key
+```
+
+### Producción en un VPS (Docker + Caddy con HTTPS)
+
+Requisitos: un VPS con Docker, un dominio con su registro A apuntando al servidor y los puertos 80 y
+443 abiertos. Caddy saca y renueva el certificado de Let's Encrypt solo.
+
+```bash
+git clone https://github.com/YeisonRamirezSuarez/agora-catalog-platform.git /opt/agora-catalog-platform
+cd /opt/agora-catalog-platform
+cp .env.prod.example .env       # completar DOMAIN, DB_PASSWORD, JWT_SECRET, AES_KEY y SUPERADMIN_*
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml logs -f api
+```
+
+Para actualizar: `git pull && docker compose -f docker-compose.prod.yml up -d --build`. Solo Caddy
+publica puertos; la base y la API quedan dentro de la red de Docker. En producción no se cargan los
+datos de prueba.
+
+### Vista previa del link en WhatsApp
+
+El link de cada catálogo (`/c/{slug}-{hash}`) lo atiende el backend (`GET /api/public/paginas/...`):
+devuelve el `index.html` del front (`FRONT_INDEX_PATH`) con las etiquetas Open Graph del negocio
+(nombre, texto de la portada e imagen). La imagen es la portada en una versión liviana de 1200 px
+(WhatsApp no muestra imágenes pesadas) o, sin portada, el logo. Si el slug del link no es el actual,
+responde 301 al link correcto: los links viejos siguen sirviendo. En desarrollo (`npm start`) `/c/` lo
+atiende Angular y no hay vista previa.
+
+## Respaldos
+
+`scripts/respaldo/respaldar.sh` guarda la base (`pg_dump`) **y** la carpeta de fotos: una sin la otra
+no sirve. Se programa una vez al día con cron en el VPS:
+
+```bash
+crontab -e
+30 3 * * * cd /opt/agora-catalog-platform && sh scripts/respaldo/respaldar.sh >> /var/log/agora-respaldo.log 2>&1
+```
+
+Guarda 14 días en `/var/backups/agora-catalog` (`RESPALDO_DIR`, `RESPALDO_DIAS`). Para la copia fuera
+del VPS, configurar [rclone](https://rclone.org) (`rclone config`, por ejemplo con Cloudflare R2 o
+Google Drive) y poner el destino en `RESPALDO_REMOTO` del `.env`: sin ella, si se pierde el servidor
+se pierden también los respaldos.
+
+Restaurar (con la API detenida):
+
+```bash
+docker compose -f docker-compose.prod.yml stop api
+docker compose -f docker-compose.prod.yml exec -T postgres sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists' < bd-AAAA-MM-DD_HHMM.dump
+docker run --rm -i -v agora-catalog-prod-uploads:/datos alpine tar xzf - -C /datos < fotos-AAAA-MM-DD_HHMM.tar.gz
+docker compose -f docker-compose.prod.yml start api
 ```
 
 ## Usuarios

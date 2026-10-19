@@ -16,9 +16,11 @@ Monorepo con dos proyectos independientes que forman un solo producto:
 ├── agora-catalog-front/   Angular 21 standalone + Tailwind + Vitest            → CLAUDE.md propio
 ├── docker/web/            Caddy con el front compilado (modo Docker)
 ├── scripts/bd/            Utilidades de base de datos (chequeo de cambio de tipo)
+├── scripts/respaldo/      Respaldo diario de la base y las fotos (producción)
 ├── .claude/rules/         Reglas que se activan solas según el archivo que se edite
 ├── .githooks/pre-push     Protecciones de migraciones (instalado por el build de ambos lados)
 ├── docker-compose.yml     Base + API + front en Docker, o solo la base
+├── docker-compose.prod.yml  Producción en un VPS: base + API + Caddy con HTTPS
 └── .github/workflows/     CI: build + pruebas + migraciones desde cero
 ```
 
@@ -59,8 +61,8 @@ docker compose up -d postgres           # solo la base (5433)
 ```
 
 Las dos formas de correr (nativo y Docker) tienen que seguir funcionando: un cambio de puertos,
-variables o rutas se refleja en `.env.example`, `docker-compose.yml`, `docker/web/Caddyfile` y el
-README a la vez.
+variables o rutas se refleja en `.env.example`, `docker-compose.yml`, `docker-compose.prod.yml`,
+`docker/web/Caddyfile*`, `herramientas/servidor/serve_app.py` y el README a la vez.
 
 Que existan las suites no reemplaza la verificación real: levantar el servicio, abrir la pantalla y
 probarla en un celular (o a 390 px) además de en computador.

@@ -39,7 +39,43 @@ const POR_PAGINA = 20;
         </select>
       </div>
 
-      <div class="card mt-4 overflow-x-auto">
+      <!-- Celular: una tarjeta por producto, con lo mismo que la tabla. -->
+      <ul class="mt-4 grid gap-3 md:hidden">
+        @for (p of pagina()?.content ?? []; track p.id) {
+          <li class="card grid grid-cols-[56px_1fr] gap-3 p-3">
+            @if (p.imagenThumbUrl) {
+              <img [src]="p.imagenThumbUrl" alt="" class="size-14 rounded-lg object-cover" loading="lazy">
+            } @else {
+              <span class="grid size-14 place-items-center rounded-lg bg-wash text-xs text-faint" aria-label="Sin foto">—</span>
+            }
+            <div class="min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <a class="min-w-0 font-semibold text-ink no-underline" [routerLink]="['/admin/productos', p.id]">{{ p.nombre }}</a>
+                <input type="checkbox" class="switch shrink-0" role="switch" [checked]="p.disponible"
+                       [attr.aria-label]="p.nombre + ' disponible'" (change)="disponible(p, $event)">
+              </div>
+              <p class="truncate text-xs text-muted">
+                <span class="font-mono">{{ p.codigo }}</span> · {{ p.categoriaNombre }}@if (p.presentacion) { · {{ p.presentacion }}}
+              </p>
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <input class="input min-h-10 w-28 text-right tabular-nums" inputmode="numeric" [attr.aria-label]="'Precio de ' + p.nombre"
+                       [class.border-ink]="cambios().has(p.id)" [value]="miles(cambios().get(p.id) ?? p.precio)"
+                       (input)="cambiarPrecio(p, $any($event.target))">
+                @if (p.precioOferta !== null) {
+                  <span class="badge" [class]="p.ofertaVigente ? 'bg-[#FFD43B] text-[#3A2C00]' : 'bg-wash text-muted'">Oferta {{ cop(p.precioOferta) }}</span>
+                }
+                <a class="btn ml-auto min-h-10 px-3 text-sm" [routerLink]="['/admin/productos', p.id]" [attr.aria-label]="'Editar ' + p.nombre">Editar</a>
+              </div>
+            </div>
+          </li>
+        } @empty {
+          <li class="card py-10 text-center text-muted">
+            {{ cargando() ? 'Cargando…' : hayFiltros() ? 'Ningún producto con estos filtros.' : 'Todavía no tienes productos. Crea el primero.' }}
+          </li>
+        }
+      </ul>
+
+      <div class="card mt-4 hidden overflow-x-auto md:block">
         <table class="table min-w-[760px]">
           <thead><tr>
             <th><span class="sr-only">Foto</span></th><th>Código</th><th>Producto</th><th>Categoría</th>

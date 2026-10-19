@@ -6,6 +6,14 @@
 		reverse_proxy api:9092
 	}
 
+	# Página del catálogo: la arma la API con las etiquetas Open Graph (vista previa en WhatsApp).
+	# /c/salsamentaria-javier-x7k2m9ab/catalogo -> /api/public/paginas/salsamentaria-javier-x7k2m9ab/catalogo
+	# handle_path quita el /c antes del rewrite (dentro de un handle, Caddy corre rewrite antes que uri).
+	handle_path /c/* {
+		rewrite * /api/public/paginas{uri}
+		reverse_proxy api:9092
+	}
+
 	# Rutas de Angular (CSR): lo que no es un archivo cae en index.html.
 	handle {
 		root * /srv

@@ -6,6 +6,8 @@
 #
 # - /api/...      se reenvía al backend, con X-Forwarded-For = IP del visitante (el backend debe
 #                 correr con TRUSTED_PROXY_COUNT=1 para limitar peticiones por visitante).
+# - /c/...        página del catálogo: la arma la API (/api/public/paginas/...) con las etiquetas Open
+#                 Graph para la vista previa en WhatsApp. La API necesita FRONT_INDEX_PATH = index.html de esta carpeta.
 # - lo demás      archivos del front; una ruta que no es un archivo devuelve index.html (rutas de Angular).
 # Solo biblioteca estándar: corre con el Python de la máquina sin instalar nada.
 import functools
@@ -100,6 +102,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(data)
 
     def _is_api(self):
+        # /c/... pasa a ser /api/public/paginas/...: después de esto se trata como cualquier ruta de la API.
+        if self.path.startswith('/c/'):
+            self.path = '/api/public/paginas/' + self.path[3:]
         return self.path == '/api' or self.path.startswith('/api/')
 
     # ---------- Front ----------
