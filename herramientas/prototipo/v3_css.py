@@ -4,6 +4,14 @@ html:has(.top){scroll-padding-top:76px}
 html{touch-action:manipulation}
 /* !important a propósito: una sola regla cubre los 42 campos del catálogo y del panel, cada uno con su propio tamaño */
 @media (pointer:coarse){input:not([type=checkbox],[type=radio],[type=range]),select,textarea{font-size:16px!important}}
+/* Con el dedo, zona táctil de unos 44 px sin cambiar cómo se ven: un ::after invisible más grande que el botón. */
+@media (pointer:coarse){
+.qty button,.crumbs a,.see-all,.foot-nav a{position:relative}
+.heart::after,.qty button::after,.crumbs a::after,.see-all::after,.foot-nav a::after{content:"";position:absolute;inset:-4px}
+.qty button::after{inset:-3px -5px}
+.crumbs a::after,.see-all::after{inset:-13px -6px}
+.foot-nav a::after{inset:-5px 0}
+}
 .store{overflow-x:clip;--grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .18 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");min-height:100vh;background:var(--cream);color:var(--c-ink);caret-color:var(--brand)}
 .store ::selection,.cat-sheet ::selection{background:color-mix(in srgb,var(--accent) 45%,transparent)}
 .store :focus-visible,.cat-sheet :focus-visible{outline-color:var(--brand)}
