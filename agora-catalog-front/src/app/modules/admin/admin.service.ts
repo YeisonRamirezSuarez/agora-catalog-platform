@@ -9,6 +9,8 @@ export const ADMIN_LINKS: PanelLink[] = [
   {label: 'Inicio', path: '/admin'},
   {label: 'Productos', path: '/admin/productos'},
   {label: 'Categorías', path: '/admin/categorias'},
+  {label: 'Colecciones', path: '/admin/colecciones'},
+  {label: 'Configuración', path: '/admin/configuracion'},
 ];
 
 export type UnidadVenta = 'UNIDAD' | 'LIBRA' | 'KILO' | 'GRAMOS' | 'PAQUETE' | 'CAJA';
@@ -82,6 +84,68 @@ export interface ProductoForm {
   ofertaHasta: string | null;
   disponible: boolean;
   destacado: boolean;
+}
+
+export type Fachada = 'SALSAMENTARIA' | 'PANADERIA' | 'FRUTERIA' | 'CAFETERIA' | 'MINIMERCADO' | 'FERRETERIA';
+export type IconoSello = 'CALIDAD' | 'DOMICILIO' | 'WHATSAPP' | 'PRECIO' | 'TRADICION' | 'HORARIO';
+
+export interface Recorte {
+  x: number;
+  y: number;
+  ancho: number;
+  alto: number;
+}
+
+/** Configuración del negocio (GET/PUT /admin/empresa). */
+export interface Configuracion {
+  id: number;
+  nombre: string;
+  slug: string;
+  publicHash: string;
+  linkPublico: string;
+  nombreCorto: string | null;
+  lema: string | null;
+  logoUrl: string | null;
+  portadaUrl: string | null;
+  logoOriginalUrl: string | null;
+  logoRecorte: Recorte | null;
+  portadaOriginalUrl: string | null;
+  portadaRecorte: Recorte | null;
+  portadaAntetitulo: string | null;
+  portadaTitulo: string | null;
+  portadaTituloAcento: string | null;
+  portadaSubtitulo: string | null;
+  portadaNota: string | null;
+  portadaSelloTexto: string | null;
+  catalogoTitulo: string | null;
+  catalogoAcento: string | null;
+  catalogoSubtitulo: string | null;
+  coleccionesTitulo: string;
+  coleccionesTexto: string | null;
+  coleccionesNota: string | null;
+  visitaNota: string | null;
+  fachada: Fachada | null;
+  adornos: boolean;
+  direccion: string | null;
+  horario: string | null;
+  infoDomicilios: string | null;
+  mostrarPrecios: boolean;
+  pedidosWhatsapp: boolean;
+  mostrarAgotados: boolean;
+  colorPrimario: string;
+  colorSecundario: string;
+  whatsapps: {numero: string; nombre: string | null}[];
+  sellos: {icono: IconoSello; texto: string}[];
+}
+
+export interface Coleccion {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  imagenUrl: string | null;
+  visible: boolean;
+  orden: number;
+  productos: number[];
 }
 
 export interface FiltroProductos {
@@ -179,6 +243,86 @@ export class AdminService {
   quitarFoto(id: number): Observable<Producto> {
     return this.http.delete<Producto>(`/admin/productos/${id}/imagen`);
   }
+
+  /** Todos los productos (para elegir los de una colección), página por página. */
+  todosLosProductos(): Observable<Producto[]> {
+    return new Observable<Producto[]>(sub => {
+      const todos: Producto[] = [];
+      const pedir = (page: number) => this.productos({q: '', categoria: null, disponible: null, page}, 100).subscribe({
+        next: pg => {
+          todos.push(...pg.content);
+          if (page + 1 < pg.totalPages) pedir(page + 1); else { sub.next(todos); sub.complete(); }
+        },
+        error: e => sub.error(e)
+      });
+      pedir(0);
+    });
+  }
+
+  // ---------- Configuración ----------
+
+  configuracion(): Observable<Configuracion> {
+    return this.http.get<Configuracion>('/admin/empresa');
+  }
+
+  guardarConfiguracion(c: Configuracion): Observable<Configuracion> {
+    return this.http.put<Configuracion>('/admin/empresa', c);
+  }
+
+  /** Logo o portada: archivo nuevo (opcional) y el recorte en píxeles del original. */
+  guardarImagenEmpresa(tipo: 'logo' | 'portada', archivo: File | null, r: Recorte): Observable<Configuracion> {
+    const form = new FormData();
+    if (archivo) form.set('archivo', archivo);
+    form.set('x', String(r.x));
+    form.set('y', String(r.y));
+    form.set('ancho', String(r.ancho));
+    form.set('alto', String(r.alto));
+    return this.http.post<Configuracion>(`/admin/empresa/${tipo}`, form);
+  }
+
+  quitarImagenEmpresa(tipo: 'logo' | 'portada'): Observable<Configuracion> {
+    return this.http.delete<Configuracion>(`/admin/empresa/${tipo}`);
+  }
+
+  // ---------- Colecciones ----------
+
+  colecciones(): Observable<Coleccion[]> {
+    return this.http.get<Coleccion[]>('/admin/colecciones');
+  }
+
+  guardarColeccion(c: {id?: number; nombre: string; descripcion: string; visible: boolean; productos: number[]}): Observable<Coleccion> {
+    const body = {nombre: c.nombre, descripcion: c.descripcion, visible: c.visible, productos: c.productos};
+    return c.id ? this.http.put<Coleccion>(`/admin/colecciones/${c.id}`, body) : this.http.post<Coleccion>('/admin/colecciones', body);
+  }
+
+  eliminarColeccion(id: number): Observable<void> {
+    return this.http.delete<void>(`/admin/colecciones/${id}`);
+  }
+
+  ordenarColecciones(ids: number[]): Observable<Coleccion[]> {
+    return this.http.put<Coleccion[]>('/admin/colecciones/orden', {ids});
+  }
+
+  fotoColeccion(id: number, archivo: File): Observable<Coleccion> {
+    const form = new FormData();
+    form.set('archivo', archivo);
+    return this.http.post<Coleccion>(`/admin/colecciones/${id}/imagen`, form);
+  }
+
+  guardarSeccionColecciones(s: {titulo: string; texto: string; nota: string}): Observable<Configuracion> {
+    return this.http.put<Configuracion>('/admin/colecciones/seccion', s);
+  }
+}
+
+/** Contraste WCAG entre dos colores hex: el catálogo exige 4,5:1 (igual que el backend). */
+export function contraste(a: string, b: string): number {
+  const lum = (hex: string) => {
+    const n = parseInt(hex.slice(1), 16);
+    const c = (v: number) => { const s = v / 255; return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4); };
+    return 0.2126 * c((n >> 16) & 255) + 0.7152 * c((n >> 8) & 255) + 0.0722 * c(n & 255);
+  };
+  const [x, y] = [lum(a), lum(b)];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 }
 
 /** Pesos colombianos sin decimales: 12500 -> "$12.500". */
