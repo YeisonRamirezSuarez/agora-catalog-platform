@@ -119,8 +119,22 @@ atiende Angular y no hay vista previa.
 
 ## Respaldos
 
-`scripts/respaldo/respaldar.sh` guarda la base (`pg_dump`) **y** la carpeta de fotos: una sin la otra
-no sirve. Se programa una vez al día con cron en el VPS:
+Siempre la base (`pg_dump`) **y** la carpeta de fotos: una sin la otra no sirve.
+
+**Nativo en Windows** (lo que se publica desde esta máquina): `scripts\respaldo\respaldar.ps1` lee la base
+y `STORAGE_PATH` del `.env` del backend y deja `bd-<fecha>.dump` y `fotos-<fecha>.zip` en `RESPALDO_DIR`
+(14 días, `RESPALDO_DIAS`). `RESPALDO_REMOTO` copia además a una carpeta fuera del PC (disco externo o
+carpeta sincronizada con la nube).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\respaldo\respaldar.ps1              # ahora
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\respaldo\respaldar.ps1 -Programar   # tarea diaria 3:30 a. m.
+# Restaurar en una base vacía:
+pg_restore -h localhost -U postgres -d agora_catalog --clean --if-exists bd-AAAA-MM-DD_HHMMSS.dump
+# y descomprimir fotos-AAAA-MM-DD_HHMMSS.zip en la carpeta de STORAGE_PATH.
+```
+
+**Docker en un VPS**: `scripts/respaldo/respaldar.sh`, una vez al día con cron:
 
 ```bash
 crontab -e
