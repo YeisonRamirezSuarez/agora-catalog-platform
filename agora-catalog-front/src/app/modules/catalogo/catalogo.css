@@ -374,6 +374,13 @@ html{touch-action:manipulation}
 .cat-root .o-fields{display:grid;gap:8px}
 .cat-root .o-fields label{display:grid;gap:4px;color:var(--c-ink-2);font-size:13px;font-weight:600}
 .cat-root .o-aviso{margin:0;padding:9px 12px;border-radius:10px;background:var(--warn-soft);color:var(--warn-ink);font-size:13px;line-height:1.4}
+.cat-root .o-modo{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--sand)}
+.cat-root .o-modo label{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 8px;border-radius:9px;color:var(--c-ink-2);font-size:14px;font-weight:700;text-align:center;cursor:pointer}
+.cat-root .o-modo label svg{flex:none;width:18px;height:18px}
+.cat-root .o-modo input{position:absolute;opacity:0;pointer-events:none}
+.cat-root .o-modo label:has(input:checked){background:var(--paper);color:var(--c-ink);box-shadow:0 1px 3px rgba(33,28,22,.16)}
+.cat-root .o-modo label:has(input:focus-visible){outline:2px solid var(--c-ink);outline-offset:2px}
+.cat-root .o-linea{display:flex;justify-content:space-between;color:var(--c-ink-2);font-size:14px;font-variant-numeric:tabular-nums}
 .cat-root .o-form .btn-brand{min-height:52px;border-radius:14px;font-size:16px;font-weight:700}
 .cat-root .o-form .link{justify-self:center}
 .cat-root:has(.sheet-bg) #toast{top:calc(16px + env(safe-area-inset-top));bottom:auto}

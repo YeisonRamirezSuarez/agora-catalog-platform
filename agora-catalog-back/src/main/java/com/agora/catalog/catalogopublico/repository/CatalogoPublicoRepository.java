@@ -55,6 +55,8 @@ public class CatalogoPublicoRepository {
                         rs.getString("colecciones_texto"), rs.getString("colecciones_nota"),
                         rs.getString("visita_nota"), rs.getString("fachada"), rs.getBoolean("adornos"),
                         rs.getString("direccion"), rs.getString("horario"), rs.getString("info_domicilios"),
+                        rs.getBoolean("domicilio_activo"), rs.getBigDecimal("domicilio_costo"),
+                        rs.getBigDecimal("domicilio_minimo"), rs.getBigDecimal("domicilio_gratis_desde"),
                         rs.getBoolean("mostrar_precios"), rs.getBoolean("pedidos_whatsapp")),
                 rs.getBoolean("mostrar_agotados")), publicHash).stream().findFirst();
     }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /** Configuración del negocio que edita su administrador (GET/PUT /admin/empresa). */
@@ -70,6 +71,14 @@ public final class ConfiguracionDtos {
             @Size(max = 200, message = "La dirección puede tener hasta 200 caracteres") String direccion,
             @Size(max = 300, message = "El horario puede tener hasta 300 caracteres") String horario,
             @Size(max = 300, message = "La información de domicilios puede tener hasta 300 caracteres") String infoDomicilios,
+            @NotNull(message = "Indica si haces domicilios") Boolean domicilioActivo,
+            // Vacío: el costo se confirma por WhatsApp; 0: domicilio gratis.
+            @Min(value = 0, message = "El costo del domicilio no puede ser negativo")
+            @Max(value = 999_999_999, message = "El costo del domicilio es demasiado alto") Long domicilioCosto,
+            @Min(value = 1, message = "El pedido mínimo tiene que ser mayor que cero")
+            @Max(value = 999_999_999, message = "El pedido mínimo es demasiado alto") Long domicilioMinimo,
+            @Min(value = 1, message = "El valor para el domicilio gratis tiene que ser mayor que cero")
+            @Max(value = 999_999_999, message = "El valor para el domicilio gratis es demasiado alto") Long domicilioGratisDesde,
             @NotNull(message = "Indica si se muestran los precios") Boolean mostrarPrecios,
             @NotNull(message = "Indica si se reciben pedidos por WhatsApp") Boolean pedidosWhatsapp,
             @NotNull(message = "Indica si se muestran los agotados") Boolean mostrarAgotados,
@@ -97,6 +106,7 @@ public final class ConfiguracionDtos {
             String coleccionesTitulo, String coleccionesTexto, String coleccionesNota,
             String visitaNota, String fachada, boolean adornos,
             String direccion, String horario, String infoDomicilios,
+            boolean domicilioActivo, BigDecimal domicilioCosto, BigDecimal domicilioMinimo, BigDecimal domicilioGratisDesde,
             boolean mostrarPrecios, boolean pedidosWhatsapp, boolean mostrarAgotados,
             String colorPrimario, String colorSecundario,
             List<WhatsappDto> whatsapps, List<SelloDto> sellos, List<HorarioDto> horarioSemana

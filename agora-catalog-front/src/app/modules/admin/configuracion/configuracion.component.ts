@@ -85,7 +85,6 @@ interface Edicion {
               <p class="hint">Va grande en el encabezado y en «Nos vemos en…».</p></div>
             <div class="field"><label for="c-lema">Lema</label><input class="input" id="c-lema" name="lema" [(ngModel)]="c.lema" maxlength="32"></div>
             <div class="field sm:col-span-2"><label for="c-dir">Dirección</label><input class="input" id="c-dir" name="direccion" [(ngModel)]="c.direccion" maxlength="200"></div>
-            <div class="field sm:col-span-2"><label for="c-dom">Domicilios</label><textarea class="input py-2" id="c-dom" name="infoDomicilios" rows="2" [(ngModel)]="c.infoDomicilios" maxlength="300"></textarea></div>
           </section>
 
           <section class="card grid gap-3 p-5">
@@ -108,6 +107,21 @@ interface Edicion {
               }
             </div>
             <div class="field"><label for="c-hor">Aclaraciones (opcional)</label><textarea class="input py-2" id="c-hor" name="horario" rows="2" [(ngModel)]="c.horario" maxlength="300" placeholder="Festivos de 8:00 a. m. a 1:00 p. m."></textarea></div>
+          </section>
+
+          <section class="card grid gap-4 p-5 sm:grid-cols-3">
+            <h2 class="text-lg font-semibold sm:col-span-3">Domicilios</h2>
+            <label class="inline-flex items-center gap-3 sm:col-span-3"><input type="checkbox" class="switch" role="switch" name="domicilioActivo" [(ngModel)]="c.domicilioActivo"> Hago domicilios <span class="text-sm text-muted">(en «Mi pedido» el cliente elige domicilio o recoger en la tienda)</span></label>
+            @if (c.domicilioActivo) {
+              <div class="field"><label for="c-dcosto">Costo del domicilio</label>
+                <input class="input" id="c-dcosto" name="domicilioCosto" type="number" inputmode="numeric" min="0" step="50" [(ngModel)]="c.domicilioCosto">
+                <p class="hint">Vacío: lo confirmas por WhatsApp. 0: gratis.</p></div>
+              <div class="field"><label for="c-dmin">Pedido mínimo (opcional)</label>
+                <input class="input" id="c-dmin" name="domicilioMinimo" type="number" inputmode="numeric" min="0" step="500" [(ngModel)]="c.domicilioMinimo"></div>
+              <div class="field"><label for="c-dgratis">Gratis desde (opcional)</label>
+                <input class="input" id="c-dgratis" name="domicilioGratisDesde" type="number" inputmode="numeric" min="0" step="500" [(ngModel)]="c.domicilioGratisDesde"></div>
+            }
+            <div class="field sm:col-span-3"><label for="c-dom">Zonas y aclaraciones (opcional)</label><textarea class="input py-2" id="c-dom" name="infoDomicilios" rows="2" [(ngModel)]="c.infoDomicilios" maxlength="300" placeholder="Domicilios en el barrio y alrededores."></textarea></div>
           </section>
 
           <section class="card grid gap-3 p-5">

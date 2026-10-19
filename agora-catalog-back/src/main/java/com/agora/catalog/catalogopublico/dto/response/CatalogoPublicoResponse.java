@@ -47,6 +47,11 @@ public record CatalogoPublicoResponse(
             String direccion,
             String horario,
             String infoDomicilios,
+            boolean domicilioActivo,
+            // Costo null: el negocio lo confirma por WhatsApp; 0: gratis.
+            BigDecimal domicilioCosto,
+            BigDecimal domicilioMinimo,
+            BigDecimal domicilioGratisDesde,
             boolean mostrarPrecios,
             boolean pedidosWhatsapp
     ) {

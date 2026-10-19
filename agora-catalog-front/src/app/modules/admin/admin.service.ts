@@ -140,6 +140,11 @@ export interface Configuracion {
   direccion: string | null;
   horario: string | null;
   infoDomicilios: string | null;
+  domicilioActivo: boolean;
+  /** null: el costo se confirma por WhatsApp; 0: gratis. */
+  domicilioCosto: number | null;
+  domicilioMinimo: number | null;
+  domicilioGratisDesde: number | null;
   mostrarPrecios: boolean;
   pedidosWhatsapp: boolean;
   mostrarAgotados: boolean;

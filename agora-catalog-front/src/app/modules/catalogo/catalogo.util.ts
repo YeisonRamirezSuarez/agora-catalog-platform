@@ -1,4 +1,4 @@
-import {Filtros, Horario, Producto, UnidadVenta} from './catalogo.models';
+import {Filtros, Horario, Negocio, Producto, UnidadVenta} from './catalogo.models';
 
 export const UNIDADES: Record<UnidadVenta, string> = {
   UNIDAD: 'unidad', LIBRA: 'libra', KILO: 'kilo', GRAMOS: 'gramos', PAQUETE: 'paquete', CAJA: 'caja'
@@ -38,17 +38,41 @@ export interface LineaPedido {
   cantidad: number;
 }
 
-/** Mensaje de WhatsApp del pedido; sin precios visibles no lleva montos. */
-export function mensajePedido(lineasPedido: LineaPedido[], precios: boolean, nombre = '', entrega = ''): string {
+/**
+ * Mensaje de WhatsApp del pedido; sin precios visibles no lleva montos. {@code envio}: sin él, no hay
+ * línea de domicilio (recoge en la tienda o el negocio no configuró domicilio); null, el negocio
+ * confirma el costo; 0, gratis.
+ */
+export function mensajePedido(lineasPedido: LineaPedido[], precios: boolean,
+                              datos: {nombre?: string; entrega?: string; envio?: number | null} = {}): string {
   const total = lineasPedido.reduce((s, l) => s + efectivo(l.producto) * l.cantidad, 0);
+  const {nombre, entrega, envio} = datos, conEnvio = precios && envio !== undefined;
   return [
     'Hola, quiero hacer este pedido:',
     ...lineasPedido.map(({producto: p, cantidad: n}) =>
       `• ${n} × ${p.nombre}${p.presentacion ? ` (${p.presentacion})` : ''}${precios ? `: ${cop(efectivo(p) * n)}` : ''}`),
-    precios ? `Total: ${cop(total)}` : '',
+    conEnvio && envio !== null ? `Subtotal: ${cop(total)}` : '',
+    conEnvio ? `Domicilio: ${envio === null ? 'por confirmar' : envio ? cop(envio) : 'gratis'}` : '',
+    precios ? `Total: ${cop(total + (envio ?? 0))}` : '',
     nombre ? `Nombre: ${nombre}` : '',
     entrega ? `Entrega: ${entrega}` : ''
   ].filter(Boolean).join('\n');
+}
+
+/** Costo del domicilio para este subtotal: null si lo confirma el negocio, 0 si es gratis. */
+export function costoDomicilio(n: Negocio, subtotal: number): number | null {
+  return n.domicilioGratisDesde && subtotal >= n.domicilioGratisDesde ? 0 : n.domicilioCosto;
+}
+
+/** "Domicilio $3.000 · gratis desde $50.000 · pedido mínimo $20.000" para la sección de contacto. */
+export function resumenDomicilio(n: Negocio, precios: boolean): string {
+  if (!n.domicilioActivo || !precios) return '';
+  const t = [
+    n.domicilioCosto === null ? '' : n.domicilioCosto ? `domicilio ${cop(n.domicilioCosto)}` : 'domicilio gratis',
+    n.domicilioCosto && n.domicilioGratisDesde ? `gratis desde ${cop(n.domicilioGratisDesde)}` : '',
+    n.domicilioMinimo ? `pedido mínimo ${cop(n.domicilioMinimo)}` : ''
+  ].filter(Boolean).join(' · ');
+  return t && t[0].toUpperCase() + t.slice(1);
 }
 
 const DIAS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];

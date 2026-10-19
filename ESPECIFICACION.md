@@ -102,6 +102,7 @@ Implementación: columna `usuario.rol` y `@PreAuthorize("hasRole('ADMIN_EMPRESA'
 - `adornos` (default true): hojas de laurel y perejil recortadas junto a los títulos (solo computador).
 - En todos los textos que admiten saltos de línea, el dueño los pone con Enter; se guardan como `\n`.
 - `direccion`, `horario` (aclaraciones del horario, ej. festivos), `info_domicilios`
+- `domicilio_activo` (default false), `domicilio_costo` (null: se confirma por WhatsApp; 0: gratis), `domicilio_minimo`, `domicilio_gratis_desde`: pesos sin decimales.
 - `mostrar_precios` (default true)
 - `pedidos_whatsapp` (default true): el catálogo permite armar un pedido y enviarlo por WhatsApp. En false, cada producto muestra un botón "Preguntar" que abre WhatsApp con el nombre del producto.
 - `mostrar_agotados` (default true → se muestran con etiqueta "Agotado"; false → se ocultan)
@@ -257,7 +258,7 @@ Diseño pedido por el cliente: portada fotográfica oscura con titular serif gra
 
 **Pedido por WhatsApp** (`pedidos_whatsapp = true`)
 - Al agregar, el contador y el total del encabezado se actualizan con una animación corta y un aviso breve. No hay barra inferior: el carrito del encabezado abre el pedido en celular y computador.
-- "Mi pedido": hoja (celular) o panel lateral (computador) con cada línea, cantidad editable (el − con una unidad quita la línea), total, nombre y dirección opcionales, "Enviar pedido por WhatsApp" y "Vaciar pedido". Fuera de horario avisa que el negocio está cerrado y cuándo abre, sin impedir el envío.
+- "Mi pedido": hoja (celular) o panel lateral (computador) con cada línea, cantidad editable (el − con una unidad quita la línea), total, nombre y dirección opcionales, "Enviar pedido por WhatsApp" y "Vaciar pedido". Fuera de horario avisa que el negocio está cerrado y cuándo abre, sin impedir el envío. Con domicilio activo, el visitante elige "Domicilio" o "Recoger en la tienda": con domicilio se suma el envío (gratis desde `domicilio_gratis_desde`), la dirección es obligatoria y no se envía por debajo de `domicilio_minimo`.
 - El mensaje: `Hola, quiero hacer este pedido:` + una línea por producto (`• 2 × Queso campesino (Bloque): $24.000`) + `Total:` + nombre y entrega si se escribieron. Sin precios visibles, sin montos.
 - La lista vive en `localStorage` por negocio (`ec-pedido-{public_hash}`); los productos que dejaron de estar disponibles se quitan al cargar. Sin almacenamiento (modo privado), el pedido dura mientras la página esté abierta.
 - Con un solo número, los botones abren WhatsApp directo. Con varios, abren primero una hoja "¿A qué número le escribes?" con un botón por número (nombre opcional + número); el mensaje se conserva. Sin JavaScript, el enlace va al primer número.

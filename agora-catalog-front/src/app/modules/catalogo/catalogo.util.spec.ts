@@ -1,5 +1,7 @@
-import {Producto} from './catalogo.models';
-import {cop, estadoHorario, filtrosAQuery, leerFiltros, mensajePedido, norm, phone, resumenHorario} from './catalogo.util';
+import {Negocio, Producto} from './catalogo.models';
+import {
+  cop, costoDomicilio, estadoHorario, filtrosAQuery, leerFiltros, mensajePedido, norm, phone, resumenDomicilio, resumenHorario
+} from './catalogo.util';
 
 const queso = {
   id: 1, categoriaId: 3, nombre: 'Queso campesino', descripcion: null, presentacion: 'Bloque', unidadVenta: 'LIBRA',
@@ -17,10 +19,29 @@ describe('catalogo.util', () => {
   });
 
   it('arma el mensaje del pedido con o sin precios', () => {
-    expect(mensajePedido([{producto: queso, cantidad: 2}], true, 'Ana'))
+    expect(mensajePedido([{producto: queso, cantidad: 2}], true, {nombre: 'Ana'}))
       .toBe('Hola, quiero hacer este pedido:\n• 2 × Queso campesino (Bloque): $24.000\nTotal: $24.000\nNombre: Ana');
     expect(mensajePedido([{producto: queso, cantidad: 2}], false))
       .toBe('Hola, quiero hacer este pedido:\n• 2 × Queso campesino (Bloque)');
+  });
+
+  it('suma el domicilio al total del mensaje', () => {
+    const pedido = [{producto: queso, cantidad: 1}];
+    expect(mensajePedido(pedido, true, {envio: 3000, entrega: 'domicilio a Calle 1'})).toBe('Hola, quiero hacer este pedido:\n'
+      + '• 1 × Queso campesino (Bloque): $12.000\nSubtotal: $12.000\nDomicilio: $3.000\nTotal: $15.000\nEntrega: domicilio a Calle 1');
+    expect(mensajePedido(pedido, true, {envio: 0})).toContain('Domicilio: gratis\nTotal: $12.000');
+    expect(mensajePedido(pedido, true, {envio: null})).toContain('$12.000\nDomicilio: por confirmar\nTotal: $12.000');
+    expect(mensajePedido(pedido, false, {envio: 3000})).not.toContain('Domicilio');
+  });
+
+  it('el domicilio es gratis desde el valor que puso el negocio', () => {
+    const n = {domicilioActivo: true, domicilioCosto: 3000, domicilioMinimo: 20000, domicilioGratisDesde: 50000} as Negocio;
+    expect(costoDomicilio(n, 49999)).toBe(3000);
+    expect(costoDomicilio(n, 50000)).toBe(0);
+    expect(costoDomicilio({...n, domicilioCosto: null, domicilioGratisDesde: null}, 90000)).toBeNull();
+    expect(resumenDomicilio(n, true)).toBe('Domicilio $3.000 · gratis desde $50.000 · pedido mínimo $20.000');
+    expect(resumenDomicilio({...n, domicilioCosto: null}, true)).toBe('Pedido mínimo $20.000');
+    expect(resumenDomicilio(n, false)).toBe('');
   });
 
   it('dice si el negocio está abierto con su hora, no con la del visitante', () => {

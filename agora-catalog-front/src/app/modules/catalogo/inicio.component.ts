@@ -4,7 +4,7 @@ import {Router, RouterLink} from '@angular/router';
 
 import {IconoSello} from './catalogo.models';
 import {CatalogoStore} from './catalogo.store';
-import {lineas, MSG_GENERAL, phone, porRelevancia, resumenHorario, waHref} from './catalogo.util';
+import {lineas, MSG_GENERAL, phone, porRelevancia, resumenDomicilio, resumenHorario, waHref} from './catalogo.util';
 import {fachadaSvg, FLECHA_NOTA, OLA, selloSvg} from './fachadas';
 import {IconoComponent, NombreIcono} from './icono.component';
 import {FotoComponent, TarjetaComponent} from './piezas.component';
@@ -153,8 +153,11 @@ type Pestana = string; // 'todos' | 'ofertas' | 'mas' | 'c<id>'
               @if (n.horario) { <span>@for (l of frases(n.horario); track $index) { @if (!$first) {<br>}{{ l }} }</span> }
             </dd></div>
           }
-          @if (n.infoDomicilios) {
-            <div class="v-item"><dt>Domicilios</dt><dd><span>@for (l of frases(n.infoDomicilios); track $index) { @if (!$first) {<br>}{{ l }} }</span></dd></div>
+          @if (resumenDomicilio() || n.infoDomicilios) {
+            <div class="v-item"><dt>Domicilios</dt><dd>
+              @if (resumenDomicilio()) { <span>{{ resumenDomicilio() }}</span> }
+              @if (n.infoDomicilios) { <span>@for (l of frases(n.infoDomicilios); track $index) { @if (!$first) {<br>}{{ l }} }</span> }
+            </dd></div>
           }
         </dl>
       </div>
@@ -233,6 +236,7 @@ export class InicioComponent {
   });
 
   readonly resumenHorario = computed(() => resumenHorario(this.store.data()!.horario));
+  readonly resumenDomicilio = computed(() => resumenDomicilio(this.store.negocio(), this.store.precios()));
 
   readonly mapa = computed(() => {
     const n = this.store.negocio();

@@ -40,6 +40,11 @@ export interface Negocio {
   direccion: string | null;
   horario: string | null;
   infoDomicilios: string | null;
+  domicilioActivo: boolean;
+  /** null: el negocio confirma el costo por WhatsApp; 0: gratis. */
+  domicilioCosto: number | null;
+  domicilioMinimo: number | null;
+  domicilioGratisDesde: number | null;
   mostrarPrecios: boolean;
   pedidosWhatsapp: boolean;
 }

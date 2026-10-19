@@ -295,6 +295,13 @@ html{touch-action:manipulation}
 .o-fields{display:grid;gap:8px}
 .o-fields label{display:grid;gap:4px;color:var(--c-ink-2);font-size:13px;font-weight:600}
 .o-aviso{margin:0;padding:9px 12px;border-radius:10px;background:var(--warn-soft);color:var(--warn-ink);font-size:13px;line-height:1.4}
+.o-modo{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--sand)}
+.o-modo label{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 8px;border-radius:9px;color:var(--c-ink-2);font-size:14px;font-weight:700;text-align:center;cursor:pointer}
+.o-modo label svg{flex:none;width:18px;height:18px}
+.o-modo input{position:absolute;opacity:0;pointer-events:none}
+.o-modo label:has(input:checked){background:var(--paper);color:var(--c-ink);box-shadow:0 1px 3px rgba(33,28,22,.16)}
+.o-modo label:has(input:focus-visible){outline:2px solid var(--c-ink);outline-offset:2px}
+.o-linea{display:flex;justify-content:space-between;color:var(--c-ink-2);font-size:14px;font-variant-numeric:tabular-nums}
 .o-form .btn-brand{min-height:52px;border-radius:14px;font-size:16px;font-weight:700}
 .o-form .link{justify-self:center}
 body:has(.sheet-bg) #toast{top:calc(16px + env(safe-area-inset-top));bottom:auto} /* con una hoja abierta el aviso no tapa sus botones */

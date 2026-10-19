@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test';
 
-import {CATALOGO, entrarAlPanel, FOTO, irEnElPanel, sinDesbordeHorizontal} from './ayudas';
+import {CATALOGO, entrarAlPanel, FOTO, irEnElPanel, sinDesbordeHorizontal, sinWhatsapp} from './ayudas';
 
 /** El panel del negocio con el administrador de prueba de la semilla. */
 test.describe('panel del negocio', () => {
@@ -62,6 +62,40 @@ test.describe('panel del negocio', () => {
     await page.goto(CATALOGO + '/contacto');
     await expect(page.locator('.v-estado')).toHaveText('Abierto · cierra 11:59 p. m.');
     await expect(page.getByText('Lunes a domingo: 12:00 a. m. – 11:59 p. m.')).toBeVisible();
+  });
+
+  test('domicilio: costo en el total, pedido mínimo y recoger en la tienda', async ({page}, info) => {
+    test.skip(info.project.name !== 'computador', 'una vez basta: cambia la configuración del negocio');
+    const domicilio = async (activo: boolean) => {
+      await page.goto('/admin/configuracion');
+      await page.getByRole('switch', {name: /Hago domicilios/}).setChecked(activo);
+      if (activo) {
+        await page.getByLabel('Costo del domicilio').fill('3000');
+        await page.getByLabel('Pedido mínimo (opcional)').fill('1000000');
+      }
+      await page.getByRole('button', {name: 'Guardar cambios'}).click();
+      await expect(page.getByText('Cambios guardados')).toBeVisible();
+    };
+    await domicilio(true);
+    try {
+      await sinWhatsapp(page);
+      await page.goto(CATALOGO + '/catalogo');
+      await page.locator('.add').first().click();
+      await page.locator('.cart-btn').click();
+      const hoja = page.getByRole('dialog', {name: 'Mi pedido'});
+      const enviar = hoja.getByRole('button', {name: 'Enviar pedido por WhatsApp'});
+      await expect(hoja.locator('.o-linea').filter({hasText: 'Domicilio'})).toContainText('$3.000');
+      await expect(hoja.getByText(/El pedido mínimo para domicilio es \$1\.000\.000/)).toBeVisible();
+      await expect(enviar).toBeDisabled();
+
+      await hoja.getByText('Recoger en la tienda').click();
+      await expect(hoja.locator('.o-linea')).toHaveCount(0);
+      await enviar.click();
+      const href = await page.getByRole('dialog', {name: 'Elegir número de WhatsApp'}).locator('.wa-list a').first().getAttribute('href');
+      expect(decodeURIComponent(href!)).toContain('Entrega: recojo en la tienda');
+    } finally {
+      await domicilio(false);
+    }
   });
 
   test('logo: el editor de recorte cabe en una pantalla baja y guarda', async ({page, isMobile}) => {

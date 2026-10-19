@@ -1,8 +1,8 @@
-import {afterRenderEffect, Component, computed, effect, ElementRef, inject, viewChild} from '@angular/core';
+import {afterRenderEffect, Component, computed, effect, ElementRef, inject, signal, viewChild} from '@angular/core';
 import {RouterLink} from '@angular/router';
 
 import {CatalogoStore} from './catalogo.store';
-import {cop, efectivo, mensajePedido, msgProducto, phone, plural, waHref} from './catalogo.util';
+import {cop, costoDomicilio, efectivo, mensajePedido, msgProducto, phone, plural, waHref} from './catalogo.util';
 import {FiltrosComponent} from './catalogo-page.component';
 import {IconoComponent} from './icono.component';
 import {menuCatalogo} from './marco.component';
@@ -94,10 +94,26 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
               </div>
               @if (store.unidades()) {
                 <div class="order-foot">
+                  @if (store.negocio().domicilioActivo) {
+                    <div class="o-modo" role="radiogroup" aria-label="¿Cómo recibes tu pedido?">
+                      <label><input type="radio" name="modo" value="domicilio" [checked]="modo() === 'domicilio'" (change)="modo.set('domicilio')"><svg catIcono="moto"></svg>Domicilio</label>
+                      <label><input type="radio" name="modo" value="recoger" [checked]="modo() === 'recoger'" (change)="modo.set('recoger')"><svg catIcono="store"></svg>Recoger en la tienda</label>
+                    </div>
+                  }
                   <div id="o-sum">
                     @if (store.precios()) {
-                      <div class="total"><span>Total</span><b>{{ cop(store.total()) }}</b></div>
-                      <p class="hint">{{ store.negocio().nombre }} te confirma el total y el domicilio por WhatsApp.</p>
+                      @if (envio() !== undefined) {
+                        @if (envio() !== null) { <div class="o-linea"><span>Subtotal</span><span>{{ cop(store.total()) }}</span></div> }
+                        <div class="o-linea"><span>Domicilio</span><span>{{ envio() === null ? 'Por confirmar' : envio() ? cop(envio()!) : 'Gratis' }}</span></div>
+                      }
+                      <div class="total"><span>Total</span><b>{{ cop(store.total() + (envio() ?? 0)) }}</b></div>
+                      @if (falta()) {
+                        <p class="o-aviso">El pedido mínimo para domicilio es {{ cop(store.negocio().domicilioMinimo!) }}: te faltan {{ cop(falta()) }}. También puedes recogerlo en la tienda.</p>
+                      } @else if (gratisFalta()) {
+                        <p class="hint">Te faltan {{ cop(gratisFalta()) }} para el domicilio gratis.</p>
+                      } @else {
+                        <p class="hint">{{ store.negocio().nombre }} te confirma {{ store.negocio().domicilioActivo ? 'el pedido' : 'el total y el domicilio' }} por WhatsApp.</p>
+                      }
                     } @else {
                       <p class="hint">{{ store.negocio().nombre }} te confirma precios y domicilio por WhatsApp.</p>
                     }
@@ -105,13 +121,17 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
                       @if (!e.abierto) { <p class="o-aviso">Ahora está cerrado: puedes enviar tu pedido y te responden cuando abran ({{ e.texto }}).</p> }
                     }
                   </div>
-                  <form class="o-form" id="o-form" novalidate (submit)="enviar($event, nombre.value, entrega.value)">
+                  <form class="o-form" id="o-form" novalidate (submit)="enviar($event)">
                     <div class="o-fields">
-                      <label>Tu nombre (opcional)<input #nombre class="input" name="nombre" autocomplete="name"></label>
-                      <label>Dirección, o «paso a recoger» (opcional)<input #entrega class="input" name="entrega" autocomplete="street-address"></label>
+                      <label>Tu nombre (opcional)<input class="input" name="nombre" autocomplete="name"></label>
+                      @if (!store.negocio().domicilioActivo) {
+                        <label>Dirección, o «paso a recoger» (opcional)<input class="input" name="entrega" autocomplete="street-address"></label>
+                      } @else if (modo() === 'domicilio') {
+                        <label>Dirección para el domicilio<input #direccion class="input" name="entrega" autocomplete="street-address" required></label>
+                      }
                     </div>
                     @if (store.hayWhatsapp()) {
-                      <button class="btn btn-brand"><svg catIcono="wa"></svg>Enviar pedido por WhatsApp</button>
+                      <button class="btn btn-brand" [disabled]="falta() > 0"><svg catIcono="wa"></svg>Enviar pedido por WhatsApp</button>
                     } @else {
                       <p class="hint">{{ store.negocio().nombre }} todavía no tiene WhatsApp en su catálogo.</p>
                     }
@@ -178,6 +198,23 @@ export class HojasComponent {
   readonly msgProducto = msgProducto;
   readonly menu = computed(() => menuCatalogo(this.store));
   private readonly cerrarBtn = viewChild<ElementRef<HTMLButtonElement>>('cerrarBtn');
+  private readonly direccion = viewChild<ElementRef<HTMLInputElement>>('direccion');
+
+  /** Con domicilio configurado, el cliente elige cómo recibe el pedido. */
+  readonly modo = signal<'domicilio' | 'recoger'>('domicilio');
+  readonly domicilio = computed(() => this.store.negocio().domicilioActivo && this.modo() === 'domicilio');
+  /** undefined: sin línea de domicilio; null: lo confirma el negocio; 0: gratis. */
+  readonly envio = computed(() => this.domicilio() ? costoDomicilio(this.store.negocio(), this.store.total()) : undefined);
+  /** Lo que falta para el pedido mínimo del domicilio (sin precios visibles no se puede saber). */
+  readonly falta = computed(() => {
+    const min = this.store.negocio().domicilioMinimo, total = this.store.total();
+    return this.domicilio() && this.store.precios() && min && total < min ? min - total : 0;
+  });
+  readonly gratisFalta = computed(() => {
+    const n = this.store.negocio(), total = this.store.total();
+    return this.domicilio() && n.domicilioCosto && n.domicilioGratisDesde && total < n.domicilioGratisDesde
+      ? n.domicilioGratisDesde - total : 0;
+  });
   private anterior: HTMLElement | null = null;
 
   readonly producto = computed(() => {
@@ -223,10 +260,20 @@ export class HojasComponent {
     }
   }
 
-  enviar(e: Event, nombre: string, entrega: string): void {
+  enviar(e: Event): void {
     e.preventDefault();
-    if (!this.store.unidades() || !this.store.hayWhatsapp()) return;
-    const msg = mensajePedido(this.store.lineas(), this.store.precios(), nombre.trim(), entrega.trim());
+    if (!this.store.unidades() || !this.store.hayWhatsapp() || this.falta()) return;
+    const datos = new FormData(e.target as HTMLFormElement);
+    const nombre = String(datos.get('nombre') ?? '').trim(), entrega = String(datos.get('entrega') ?? '').trim();
+    if (this.domicilio() && !entrega) {
+      this.direccion()?.nativeElement.focus();
+      this.store.avisar('Escribe la dirección para el domicilio');
+      return;
+    }
+    const msg = mensajePedido(this.store.lineas(), this.store.precios(), {
+      nombre, envio: this.envio(),
+      entrega: !this.store.negocio().domicilioActivo ? entrega : this.domicilio() ? `domicilio a ${entrega}` : 'recojo en la tienda'
+    });
     if (this.store.whatsapps().length > 1) {
       this.store.hoja.set({tipo: 'whatsapp', mensaje: msg, pedido: true});
       return;

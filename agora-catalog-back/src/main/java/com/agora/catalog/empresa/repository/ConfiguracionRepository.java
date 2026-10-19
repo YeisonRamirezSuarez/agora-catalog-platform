@@ -53,6 +53,8 @@ public class ConfiguracionRepository {
                 rs.getString("colecciones_titulo"), rs.getString("colecciones_texto"), rs.getString("colecciones_nota"),
                 rs.getString("visita_nota"), rs.getString("fachada"), rs.getBoolean("adornos"),
                 rs.getString("direccion"), rs.getString("horario"), rs.getString("info_domicilios"),
+                rs.getBoolean("domicilio_activo"), rs.getBigDecimal("domicilio_costo"),
+                rs.getBigDecimal("domicilio_minimo"), rs.getBigDecimal("domicilio_gratis_desde"),
                 rs.getBoolean("mostrar_precios"), rs.getBoolean("pedidos_whatsapp"), rs.getBoolean("mostrar_agotados"),
                 rs.getString("color_primario"), rs.getString("color_secundario"), whatsapps, sellos, horario), empresaId)
                 .stream().findFirst();
@@ -65,6 +67,7 @@ public class ConfiguracionRepository {
                        portada_antetitulo = ?, portada_titulo = ?, portada_titulo_acento = ?, portada_subtitulo = ?,
                        portada_nota = ?, portada_sello_texto = ?, catalogo_titulo = ?, catalogo_acento = ?, catalogo_subtitulo = ?,
                        visita_nota = ?, fachada = ?, adornos = ?, direccion = ?, horario = ?, info_domicilios = ?,
+                       domicilio_activo = ?, domicilio_costo = ?, domicilio_minimo = ?, domicilio_gratis_desde = ?,
                        mostrar_precios = ?, pedidos_whatsapp = ?, mostrar_agotados = ?, color_primario = ?, color_secundario = ?,
                        updated_at = now()
                  WHERE id = ?
@@ -72,6 +75,7 @@ public class ConfiguracionRepository {
                 t(r.portadaAntetitulo()), t(r.portadaTitulo()), t(r.portadaTituloAcento()), t(r.portadaSubtitulo()),
                 t(r.portadaNota()), t(r.portadaSelloTexto()), t(r.catalogoTitulo()), t(r.catalogoAcento()), t(r.catalogoSubtitulo()),
                 t(r.visitaNota()), t(r.fachada()), r.adornos(), t(r.direccion()), t(r.horario()), t(r.infoDomicilios()),
+                r.domicilioActivo(), r.domicilioCosto(), r.domicilioMinimo(), r.domicilioGratisDesde(),
                 r.mostrarPrecios(), r.pedidosWhatsapp(), r.mostrarAgotados(),
                 r.colorPrimario().toUpperCase(), r.colorSecundario().toUpperCase(), empresaId);
         jdbc.update("DELETE FROM main.empresa_whatsapp WHERE empresa_id = ?", empresaId);

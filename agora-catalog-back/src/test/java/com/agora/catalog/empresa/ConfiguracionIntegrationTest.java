@@ -75,7 +75,23 @@ class ConfiguracionIntegrationTest {
                 .andExpect(jsonPath("$.horario", hasSize(2)))
                 .andExpect(jsonPath("$.horario[1].dia").value(7))
                 .andExpect(jsonPath("$.horario[1].cierra").value("13:00"))
-                .andExpect(jsonPath("$.zonaHoraria").value("America/Bogota"));
+                .andExpect(jsonPath("$.zonaHoraria").value("America/Bogota"))
+                .andExpect(jsonPath("$.negocio.domicilioActivo").value(true))
+                .andExpect(jsonPath("$.negocio.domicilioCosto").value(3000))
+                .andExpect(jsonPath("$.negocio.domicilioMinimo").value(20000))
+                .andExpect(jsonPath("$.negocio.domicilioGratisDesde").isEmpty());
+    }
+
+    @Test
+    void elDomicilioNoAceptaValoresNegativosNiMinimoEnCero() throws Exception {
+        String base = config("#24331F", "#DDB06C", "[]");
+        guardar(base.replace("\"domicilioCosto\":3000", "\"domicilioCosto\":-1"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value(containsString("costo del domicilio")));
+        guardar(base.replace("\"domicilioMinimo\":20000", "\"domicilioMinimo\":0"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value(containsString("pedido mínimo")));
+        // Sin costo: se confirma por WhatsApp.
+        guardar(base.replace("\"domicilioCosto\":3000", "\"domicilioCosto\":null"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.domicilioCosto").isEmpty());
     }
 
     @Test
@@ -143,7 +159,8 @@ class ConfiguracionIntegrationTest {
                  "portadaAntetitulo":null,"portadaTitulo":"Se ve rico.","portadaTituloAcento":"Sabe a\\nun buen plan.",
                  "portadaSubtitulo":null,"portadaNota":null,"portadaSelloTexto":null,"catalogoTitulo":null,"catalogoAcento":null,
                  "catalogoSubtitulo":null,"visitaNota":null,"fachada":"PANADERIA","adornos":true,"direccion":"Calle 1",
-                 "horario":null,"infoDomicilios":null,"mostrarPrecios":true,"pedidosWhatsapp":true,"mostrarAgotados":true,
+                 "horario":null,"infoDomicilios":null,
+                 "domicilioActivo":true,"domicilioCosto":3000,"domicilioMinimo":20000,"domicilioGratisDesde":null,"mostrarPrecios":true,"pedidosWhatsapp":true,"mostrarAgotados":true,
                  "colorPrimario":"%2$s","colorSecundario":"%3$s","whatsapps":%4$s,
                  "sellos":[{"icono":"DOMICILIO","texto":"Domicilios en el barrio"}],
                  "horarioSemana":[{"dia":1,"abre":"07:00","cierra":"19:00"},{"dia":7,"abre":"08:00","cierra":"13:00"}]}
