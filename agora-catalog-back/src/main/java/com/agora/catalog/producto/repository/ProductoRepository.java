@@ -49,6 +49,12 @@ public class ProductoRepository {
         return jdbc.query(SELECT + " WHERE p.empresa_id = ? AND p.id = ?", MAPPER, empresaId, id).stream().findFirst();
     }
 
+    /** Todos los productos de la empresa, en el orden del catálogo (exportar e importar). */
+    public List<Fila> findAll(long empresaId) {
+        return jdbc.query(SELECT + " WHERE p.empresa_id = ? ORDER BY c.orden, p.orden, lower(p.nombre), p.id",
+                MAPPER, empresaId);
+    }
+
     public List<Fila> page(long empresaId, Filtro f, int page, int size) {
         List<Object> args = new ArrayList<>();
         String where = where(empresaId, f, args);

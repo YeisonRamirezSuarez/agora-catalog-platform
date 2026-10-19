@@ -10,6 +10,7 @@ export const ADMIN_LINKS: PanelLink[] = [
   {label: 'Productos', path: '/admin/productos'},
   {label: 'Categorías', path: '/admin/categorias'},
   {label: 'Colecciones', path: '/admin/colecciones'},
+  {label: 'Importar', path: '/admin/importar'},
   {label: 'Configuración', path: '/admin/configuracion'},
 ];
 
@@ -146,6 +147,22 @@ export interface Coleccion {
   visible: boolean;
   orden: number;
   productos: number[];
+}
+
+/** Resultado de revisar o aplicar un Excel (`fila` es la del Excel; la 1 es la de títulos). */
+export interface ReporteImportacion {
+  filas: number;
+  nuevos: number;
+  actualizados: number;
+  categoriasNuevas: string[];
+  errores: {fila: number; mensaje: string}[];
+  aplicado: boolean;
+}
+
+export interface ReporteImagenes {
+  asignadas: string[];
+  sinProducto: string[];
+  conError: {archivo: string; mensaje: string}[];
 }
 
 export interface FiltroProductos {
@@ -307,6 +324,25 @@ export class AdminService {
     const form = new FormData();
     form.set('archivo', archivo);
     return this.http.post<Coleccion>(`/admin/colecciones/${id}/imagen`, form);
+  }
+
+  // ---------- Importación ----------
+
+  /** Plantilla o exportación: va con el token, por eso se baja como blob y no con un link. */
+  descargarExcel(cual: 'plantilla' | 'exportar'): Observable<Blob> {
+    return this.http.get(`/admin/importacion/${cual}`, {responseType: 'blob'});
+  }
+
+  importarExcel(paso: 'previsualizar' | 'confirmar', archivo: File): Observable<ReporteImportacion> {
+    const form = new FormData();
+    form.set('archivo', archivo);
+    return this.http.post<ReporteImportacion>(`/admin/importacion/${paso}`, form);
+  }
+
+  fotosZip(archivo: File): Observable<ReporteImagenes> {
+    const form = new FormData();
+    form.set('archivo', archivo);
+    return this.http.post<ReporteImagenes>('/admin/importacion/imagenes', form);
   }
 
   guardarSeccionColecciones(s: {titulo: string; texto: string; nota: string}): Observable<Configuracion> {

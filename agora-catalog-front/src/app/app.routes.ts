@@ -58,6 +58,10 @@ export const routes: Routes = [
         loadComponent: () => import('@app/modules/admin/colecciones/colecciones.component').then(c => c.ColeccionesComponent)
       },
       {
+        path: 'importar', title: 'Importar · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/importar/importar.component').then(c => c.ImportarComponent)
+      },
+      {
         path: 'configuracion', title: 'Configuración · Agorá Catalog',
         loadComponent: () => import('@app/modules/admin/configuracion/configuracion.component').then(c => c.ConfiguracionComponent)
       },

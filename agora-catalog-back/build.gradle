@@ -34,6 +34,8 @@ dependencies {
 	// Fotos: redimensionar a JPG (Thumbnailator) y leer WebP, que el JDK no trae (TwelveMonkeys).
 	implementation 'net.coobird:thumbnailator:0.4.20'
 	runtimeOnly 'com.twelvemonkeys.imageio:imageio-webp:3.12.0'
+	// Importar y exportar productos en Excel (.xlsx). Solo poi-ooxml: el .xls viejo no se ofrece.
+	implementation 'org.apache.poi:poi-ooxml:5.4.1'
 
 	compileOnly 'org.projectlombok:lombok'
 
