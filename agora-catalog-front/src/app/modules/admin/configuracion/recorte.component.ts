@@ -17,10 +17,11 @@ export interface Rect {
   host: {style: 'display:contents', '(document:keydown)': 'tecla($event)'},
   template: `
     <div class="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" (click)="$event.target === $event.currentTarget ? cancelar.emit() : null">
-      <div class="card grid w-full max-w-2xl gap-4 p-5" role="dialog" aria-modal="true" [attr.aria-label]="titulo()">
+      <div class="card grid max-h-full w-full max-w-2xl gap-4 overflow-y-auto p-5" role="dialog" aria-modal="true" [attr.aria-label]="titulo()">
         <h2 class="text-xl font-semibold">{{ titulo() }}</h2>
-        <div #marco class="relative w-full touch-none select-none overflow-hidden rounded-xl bg-white outline outline-1 outline-line"
+        <div #marco class="relative w-full justify-self-center touch-none select-none overflow-hidden rounded-xl bg-white outline outline-1 outline-line"
              [style.aspect-ratio]="proporcion()" [class.rounded-3xl]="puedeSalirse()"
+             [style.max-width]="'calc((100dvh - 290px) * ' + proporcion() + ')'"
              (pointerdown)="empezar($event)" (pointermove)="mover($event)" (pointerup)="soltar()" (pointercancel)="soltar()"
              (wheel)="rueda($event)" tabindex="0" aria-label="Arrastra para encuadrar; flechas para mover, + y − para acercar">
           <img [src]="src()" alt="" draggable="false" (load)="cargada($event)"

@@ -57,16 +57,16 @@ interface Edicion {
                 <span class="absolute inset-0 bg-gradient-to-r from-[#15120D]/95 via-[#15120D]/60 to-[#15120D]/10"></span>
                 @if (!c.portadaUrl) { <span class="absolute right-3 top-3 rounded-md bg-white/15 px-2 py-1 text-xs font-semibold text-white">Sin foto: toca para elegir</span> }
               </button>
-              <div class="pointer-events-none absolute bottom-4 left-4 grid max-w-[70%] gap-2 text-white">
-                <p class="font-display text-lg font-semibold leading-tight sm:text-2xl">
+              <div class="pointer-events-none absolute bottom-4 left-4 grid max-w-[70%] gap-1.5 text-white sm:gap-2">
+                <p class="font-display text-base font-semibold leading-[1.1] sm:text-2xl sm:leading-tight">
                   @for (l of lineas(c.portadaTitulo || c.nombre); track $index) { @if (!$first) {<br>}{{ l }} }
                   @if (c.portadaTituloAcento) {
                     <em class="block" [style.color]="c.colorSecundario">@for (l of lineas(c.portadaTituloAcento); track $index) { @if (!$first) {<br>}{{ l }} }</em>
                   }
                 </p>
-                <span class="w-fit rounded px-2 py-1 text-[11px] font-bold" [style.background]="c.colorSecundario" style="color:#231A0E">Explorar el catálogo</span>
+                <span class="w-fit rounded px-2 py-0.5 text-[10px] font-bold sm:py-1 sm:text-[11px]" [style.background]="c.colorSecundario" style="color:#231A0E">Explorar el catálogo</span>
               </div>
-              <button type="button" class="absolute left-3 top-3 size-12 overflow-hidden rounded-full bg-white p-0.5 shadow" (click)="editar('logo')" aria-label="Cambiar el logo">
+              <button type="button" class="absolute left-3 top-3 size-10 overflow-hidden rounded-full sm:size-12 bg-white p-0.5 shadow" (click)="editar('logo')" aria-label="Cambiar el logo">
                 @if (c.logoUrl) { <img [src]="c.logoUrl" alt="" class="size-full rounded-full object-cover"> }
                 @else { <span class="grid size-full place-items-center rounded-full text-xs font-bold" [style.background]="c.colorPrimario" style="color:#fff">Logo</span> }
               </button>
