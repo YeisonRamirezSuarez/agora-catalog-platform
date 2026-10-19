@@ -18,7 +18,7 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
   host: {style: 'display:contents', '(document:keydown.escape)': 'cerrar()'},
   template: `
     @if (store.hoja(); as h) {
-      <div class="sheet-bg" (click)="$event.target === $event.currentTarget && cerrar()">
+      <div class="sheet-bg" (click)="$event.target === $event.currentTarget ? cerrar() : null">
         <div [class]="'sheet cat-sheet' + (h.tipo === 'pedido' ? ' drawer' : '')" role="dialog" aria-modal="true" [attr.aria-label]="titulo()">
           <button #cerrarBtn type="button" class="round sheet-close" aria-label="Cerrar" (click)="cerrar()"><svg catIcono="x"></svg></button>
 

@@ -43,7 +43,7 @@ const sinTildes = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-�
         <h2 class="text-lg font-semibold sm:col-span-3">Textos de la sección</h2>
         <div class="field"><label for="s-tit">Título</label><input class="input" id="s-tit" name="titulo" [(ngModel)]="seccion.titulo" maxlength="40"></div>
         <div class="field"><label for="s-tex">Texto</label><input class="input" id="s-tex" name="texto" [(ngModel)]="seccion.texto" maxlength="80"></div>
-        <div class="field"><label for="s-not">Nota escrita a mano</label><input class="input" id="s-not" name="nota" [(ngModel)]="seccion.nota" maxlength="40" placeholder="Siempre queda bien."></div>
+        <div class="field"><label for="s-not">Nota escrita a mano</label><textarea class="input py-2" id="s-not" name="nota" rows="2" [(ngModel)]="seccion.nota" maxlength="40" placeholder="Siempre queda bien."></textarea></div>
         <div class="sm:col-span-3"><button class="btn">Guardar textos</button></div>
       </form>
 

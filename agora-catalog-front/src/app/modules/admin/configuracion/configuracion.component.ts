@@ -140,7 +140,7 @@ interface Edicion {
 
           <section class="card grid gap-3 p-5">
             <h2 class="text-lg font-semibold">«Nos vemos en…»</h2>
-            <div class="field max-w-md"><label for="c-vnota">Nota escrita a mano</label><input class="input" id="c-vnota" name="visitaNota" [(ngModel)]="c.visitaNota" maxlength="40" placeholder="El buen sabor de siempre"></div>
+            <div class="field max-w-md"><label for="c-vnota">Nota escrita a mano</label><textarea class="input py-2" id="c-vnota" rows="2" name="visitaNota" [(ngModel)]="c.visitaNota" maxlength="40" placeholder="El buen sabor de siempre"></textarea></div>
             <p class="text-sm font-semibold">Dibujo del local</p>
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
               <label class="grid cursor-pointer place-items-center gap-1 rounded-xl border border-line p-3 text-sm font-semibold has-[:checked]:border-ink has-[:checked]:ring-1 has-[:checked]:ring-ink">

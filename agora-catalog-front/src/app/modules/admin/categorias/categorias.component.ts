@@ -53,7 +53,7 @@ import {ADMIN_LINKS, AdminService, Categoria} from '../admin.service';
       </ol>
 
       @if (franja(); as c) {
-        <div class="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" (click)="$event.target === $event.currentTarget && franja.set(null)">
+        <div class="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" (click)="$event.target === $event.currentTarget ? franja.set(null) : null">
           <form class="card grid w-full max-w-lg gap-4 p-6" role="dialog" aria-modal="true" [attr.aria-label]="'Franja de ' + c.nombre" (ngSubmit)="guardarFranja(c)">
             <h2 class="text-xl font-semibold">Franja de «{{ c.nombre }}» en el inicio</h2>
             <p class="text-sm text-muted">Una foto grande con un título que lleva a esta categoría.
@@ -68,7 +68,7 @@ import {ADMIN_LINKS, AdminService, Categoria} from '../admin.service';
             @if (errorFranja()) { <p class="alert-error" role="alert">{{ errorFranja() }}</p> }
             <div class="field"><label for="f-tit">Título</label><textarea class="input py-2" id="f-tit" name="titulo" rows="2" maxlength="40" [(ngModel)]="datos.titulo" placeholder="Combos de la casa"></textarea></div>
             <div class="field"><label for="f-fra">Frase</label><input class="input" id="f-fra" name="frase" maxlength="80" [(ngModel)]="datos.frase"></div>
-            <div class="field"><label for="f-not">Nota escrita a mano</label><input class="input" id="f-not" name="nota" maxlength="32" [(ngModel)]="datos.nota" placeholder="Listos para disfrutar"></div>
+            <div class="field"><label for="f-not">Nota escrita a mano</label><textarea class="input py-2" id="f-not" name="nota" rows="2" maxlength="32" [(ngModel)]="datos.nota" placeholder="Listos para disfrutar"></textarea></div>
             <div class="flex flex-wrap gap-2">
               <button class="btn btn-dark" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Guardar franja' }}</button>
               @if (c.bannerActivo) { <button type="button" class="btn" (click)="quitarFranja(c)">Quitar franja</button> }

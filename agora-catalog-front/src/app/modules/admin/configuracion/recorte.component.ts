@@ -16,7 +16,7 @@ export interface Rect {
   selector: 'app-recorte',
   host: {style: 'display:contents', '(document:keydown)': 'tecla($event)'},
   template: `
-    <div class="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" (click)="$event.target === $event.currentTarget && cancelar.emit()">
+    <div class="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" (click)="$event.target === $event.currentTarget ? cancelar.emit() : null">
       <div class="card grid w-full max-w-2xl gap-4 p-5" role="dialog" aria-modal="true" [attr.aria-label]="titulo()">
         <h2 class="text-xl font-semibold">{{ titulo() }}</h2>
         <div #marco class="relative w-full touch-none select-none overflow-hidden rounded-xl bg-white outline outline-1 outline-line"
