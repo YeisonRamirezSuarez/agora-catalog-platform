@@ -27,7 +27,8 @@ const NOCHE = '#15120D';
     class: 'cat-root',
     '[style.--brand]': 'colores()?.brand',
     '[style.--accent]': 'colores()?.accent',
-    '(window:scroll)': 'alDesplazar()'
+    '(window:scroll)': 'alDesplazar()',
+    '(document:click)': 'clicWhatsapp($event)'
   },
   template: `
     @switch (store.estado()) {
@@ -131,6 +132,16 @@ export class CatalogoShellComponent {
       if (meta && antes) meta.content = antes;
       document.body.style.overflow = '';
     });
+  }
+
+  /**
+   * Cualquier enlace a WhatsApp del catálogo (contacto, preguntar por un producto…) cuenta un clic.
+   * La hoja de elegir número cuenta por su cuenta (pedido o no), y un enlace que en vez de abrir
+   * WhatsApp abre esa hoja (preventDefault) todavía no cuenta.
+   */
+  clicWhatsapp(e: MouseEvent): void {
+    const a = (e.target as Element | null)?.closest?.('a[href^="https://wa.me/"]');
+    if (a && !e.defaultPrevented && !a.closest('.wa-list')) this.store.registrar('WHATSAPP');
   }
 
   alDesplazar(): void {

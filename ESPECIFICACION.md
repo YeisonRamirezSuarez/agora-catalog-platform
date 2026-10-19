@@ -188,6 +188,7 @@ Reglas:
   - Leer ancho y alto de la cabecera (`ImageReader.getWidth(0)` / `getHeight(0)`) **antes** de decodificar: un PNG de pocos MB puede ocupar varios GB de RAM al decodificarse.
   - Generar imagen máx. 1200 px + miniatura 400 px, ambas en JPG.
 - `GET /admin/dashboard` (contadores)
+- `GET /admin/estadisticas?dias=30` (7 a 90): visitas, pedidos enviados y clics a WhatsApp por día, y los 5 productos más vistos. Los suma `POST /public/catalogos/{publicHash}/eventos` (`VISITA`, `PRODUCTO` con `productoId`, `PEDIDO`, `WHATSAPP`), que manda el catálogo público: contadores por día en `estadistica_diaria`, sin datos de quien visita. Visita y producto cuentan una vez por sesión del navegador; con una sesión del panel abierta no se cuenta.
 
 **Importación (`ADMIN_EMPRESA`)**
 - `GET /admin/importacion/plantilla` → descarga `.xlsx`

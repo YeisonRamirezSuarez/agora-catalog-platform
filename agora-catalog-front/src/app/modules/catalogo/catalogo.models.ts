@@ -102,7 +102,7 @@ export type Hoja =
   | {tipo: 'pedido'}
   | {tipo: 'menu'}
   | {tipo: 'filtros'}
-  | {tipo: 'whatsapp'; mensaje: string};
+  | {tipo: 'whatsapp'; mensaje: string; pedido?: boolean};
 
 /** Filtros de la página de catálogo; viven en la URL para poder compartir una búsqueda. */
 export interface Filtros {

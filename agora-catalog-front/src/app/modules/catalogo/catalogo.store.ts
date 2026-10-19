@@ -6,6 +6,8 @@ import {CatalogoPublico, Filtros, Hoja, Producto} from './catalogo.models';
 import {efectivo, FILTROS_VACIOS, filtrosAQuery, LineaPedido, MSG_GENERAL, norm, porRelevancia, waHref} from './catalogo.util';
 
 type Estado = 'cargando' | 'listo' | 'no-disponible' | 'error';
+/** Lo que el catálogo cuenta para las estadísticas del negocio (sin datos de quien visita). */
+export type Evento = 'VISITA' | 'PRODUCTO' | 'PEDIDO' | 'WHATSAPP';
 
 /**
  * Estado del catálogo público de un negocio. Se crea con la página (providers del shell) y muere con
@@ -60,6 +62,7 @@ export class CatalogoStore {
         this.data.set(data);
         this.leerNavegador();
         this.estado.set('listo');
+        this.registrar('VISITA');
         // Slug viejo o mal escrito: se corrige la URL sin romper el link (en producción también responde el backend).
         const correcto = `${data.negocio.slug}-${data.negocio.publicHash}`;
         if (publicId !== correcto) {
@@ -118,6 +121,7 @@ export class CatalogoStore {
   escribir(mensaje = MSG_GENERAL): void {
     const numeros = this.whatsapps();
     if (numeros.length === 1) {
+      this.registrar('WHATSAPP');
       window.open(waHref(numeros[0].numero, mensaje), '_blank', 'noopener');
     } else if (numeros.length > 1) {
       this.hoja.set({tipo: 'whatsapp', mensaje});
@@ -188,6 +192,33 @@ export class CatalogoStore {
 
   private clave(k: string): string {
     return `ec-${k}-${this.negocio().publicHash}`;
+  }
+
+  // ---------- Estadísticas ----------
+
+  /**
+   * Avisa al backend para las estadísticas del dueño. Visita y producto cuentan una vez por sesión
+   * del navegador (recargar no infla); pedido y WhatsApp, cada vez. Con una sesión del panel abierta
+   * en este navegador no cuenta: es el dueño o alguien probando, no un cliente.
+   */
+  registrar(tipo: Evento, productoId?: number): void {
+    const hash = this.data()?.negocio.publicHash;
+    if (!hash) return;
+    try {
+      if (localStorage.getItem('ac-sesion')) return;
+      if (tipo === 'VISITA' || tipo === 'PRODUCTO') {
+        const clave = `ac-ev-${hash}-${tipo}-${productoId ?? ''}`;
+        if (sessionStorage.getItem(clave)) return;
+        sessionStorage.setItem(clave, '1');
+      }
+    } catch {
+      // Sin almacenamiento se cuenta igual.
+    }
+    // keepalive: el aviso sale aunque el clic abra WhatsApp y el navegador deje la página.
+    void fetch(`/api/public/catalogos/${encodeURIComponent(hash)}/eventos`, {
+      method: 'POST', keepalive: true, headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({tipo, productoId: productoId ?? null})
+    }).catch(() => undefined);
   }
 
   private guardar(k: string, v: unknown): void {

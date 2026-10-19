@@ -1,4 +1,4 @@
-import {afterRenderEffect, Component, computed, ElementRef, inject, viewChild} from '@angular/core';
+import {afterRenderEffect, Component, computed, effect, ElementRef, inject, viewChild} from '@angular/core';
 import {RouterLink} from '@angular/router';
 
 import {CatalogoStore} from './catalogo.store';
@@ -150,7 +150,7 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
                 <p class="muted">El mensaje ya va escrito.</p>
                 <div class="wa-list">
                   @for (w of store.whatsapps(); track w.numero) {
-                    <a class="btn btn-brand" [href]="waHref(w.numero, h.mensaje)" target="_blank" rel="noopener" (click)="cerrar()">
+                    <a class="btn btn-brand" [href]="waHref(w.numero, h.mensaje)" target="_blank" rel="noopener" (click)="store.registrar(h.pedido ? 'PEDIDO' : 'WHATSAPP'); cerrar()">
                       <svg catIcono="wa"></svg>
                       <span>@if (w.nombre) { {{ w.nombre }}<small>{{ phone(w.numero) }}</small> } @else { {{ phone(w.numero) }} }</span>
                     </a>
@@ -188,6 +188,11 @@ export class HojasComponent {
   });
 
   constructor() {
+    // Cada producto abierto cuenta para "los más vistos" del dueño (una vez por sesión).
+    effect(() => {
+      const h = this.store.hoja();
+      if (h?.tipo === 'producto') this.store.registrar('PRODUCTO', h.id);
+    });
     // Al abrir: el foco va a "Cerrar" y la página de atrás no se desplaza. Al cerrar: vuelve a donde estaba.
     afterRenderEffect(() => {
       const abierta = !!this.store.hoja(), btn = this.cerrarBtn()?.nativeElement;
@@ -219,9 +224,10 @@ export class HojasComponent {
     if (!this.store.unidades() || !this.store.hayWhatsapp()) return;
     const msg = mensajePedido(this.store.lineas(), this.store.precios(), nombre.trim(), entrega.trim());
     if (this.store.whatsapps().length > 1) {
-      this.store.hoja.set({tipo: 'whatsapp', mensaje: msg});
+      this.store.hoja.set({tipo: 'whatsapp', mensaje: msg, pedido: true});
       return;
     }
+    this.store.registrar('PEDIDO');
     window.open(waHref(this.store.whatsapps()[0].numero, msg), '_blank', 'noopener');
     this.store.avisar('Abrimos WhatsApp con tu pedido');
   }

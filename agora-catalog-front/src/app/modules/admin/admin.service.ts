@@ -37,6 +37,16 @@ export interface Dashboard {
   linkPublico: string;
 }
 
+/** Contadores del catálogo público (GET /admin/estadisticas). */
+export interface Estadisticas {
+  dias: number;
+  visitas: number;
+  pedidos: number;
+  whatsapp: number;
+  porDia: {fecha: string; visitas: number; productosVistos: number; pedidos: number; whatsapp: number}[];
+  masVistos: {id: number; nombre: string; imagenThumbUrl: string | null; vistas: number}[];
+}
+
 export interface Categoria {
   id: number;
   nombre: string;
@@ -180,6 +190,10 @@ export class AdminService {
 
   dashboard(): Observable<Dashboard> {
     return this.http.get<Dashboard>('/admin/dashboard');
+  }
+
+  estadisticas(dias = 30): Observable<Estadisticas> {
+    return this.http.get<Estadisticas>('/admin/estadisticas', {params: {dias}});
   }
 
   // ---------- Categorías ----------
