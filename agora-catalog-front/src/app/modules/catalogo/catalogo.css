@@ -519,5 +519,10 @@ html:has(.top){scroll-padding-top:84px}
 .cat-root .sellos{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:0}
 
 }
-
+.cat-root .hint{color:var(--muted);font-size:13px}
+.cat-root .wa-list{display:grid;gap:10px;margin-top:6px}
+.cat-root .wa-list .btn{justify-content:flex-start;min-height:56px;padding:0 18px;border-radius:14px;font-size:16px;font-weight:700}
+.cat-root .wa-list small{display:block;font-size:13px;font-weight:500;opacity:.9}
+.cat-root .m-pad{display:grid;gap:12px;padding:56px 20px 20px}
+.cat-root .m-pad h2{font-size:22px;font-weight:800}
 

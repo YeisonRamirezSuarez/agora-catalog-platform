@@ -20,7 +20,11 @@ base = base.replace('  --ease:cubic-bezier(.16,1,.3,1);\n}',
                     '  --night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;\n'
                     '  --c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--price:#B4182D;--on-accent:#231A0E;--accent:#DDB06C;\n'
                     "  --serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;\n}")
-css = base + CAT_CSS
+# Reglas de la sección del panel que también usan las hojas del catálogo (aviso chico y elegir número
+# de WhatsApp). Sin ellas, la hoja "¿A qué número le escribes?" sale sin márgenes ni formato.
+PANEL_EN_CATALOGO = ('.hint', '.wa-list', '.m-pad')
+panel = [linea for linea in style.splitlines() if linea.startswith(PANEL_EN_CATALOGO)]
+css = base + CAT_CSS + '\n' + '\n'.join(panel) + '\n'
 
 
 def scope_selector(sel):
