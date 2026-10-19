@@ -174,11 +174,13 @@ export class CatalogoStore {
     this.avisoTimer = setTimeout(() => this.aviso.set(''), 2800);
   }
 
-  async compartir(): Promise<void> {
-    const url = location.origin + this.base();
+  /** El catálogo, o un producto: su link abre la hoja del producto y en WhatsApp sale con su foto y precio. */
+  async compartir(p?: Producto): Promise<void> {
+    const url = location.origin + this.base() + (p ? `/catalogo?p=${p.id}` : '');
+    const title = p ? `${p.nombre} · ${this.negocio().nombre}` : this.negocio().nombre;
     try {
       if (navigator.share) {
-        await navigator.share({title: this.negocio().nombre, url});
+        await navigator.share({title, url});
       } else {
         await navigator.clipboard.writeText(url);
         this.avisar('Link copiado');

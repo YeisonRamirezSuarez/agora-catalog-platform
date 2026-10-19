@@ -174,7 +174,12 @@ export class CatalogoPageComponent {
   readonly libres = signal(0);
 
   constructor() {
-    const sub = this.route.queryParams.subscribe(q => this.store.filtros.set(leerFiltros(q)));
+    const sub = this.route.queryParams.subscribe(q => {
+      this.store.filtros.set(leerFiltros(q));
+      // ?p=<id>: link de un producto compartido; abre su hoja si el producto está en el catálogo.
+      const id = Number(q['p']);
+      if (id && this.store.porId().has(id) && this.store.hoja()?.tipo !== 'producto') this.store.hoja.set({tipo: 'producto', id});
+    });
     inject(DestroyRef).onDestroy(() => sub.unsubscribe());
 
     // La tarjeta "Pide en tres pasos" llena los huecos de la última fila; se recalcula al cambiar el ancho.

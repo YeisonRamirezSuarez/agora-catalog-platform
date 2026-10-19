@@ -34,6 +34,7 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
                     @if (p.presentacion) { <p class="muted">{{ p.presentacion }}</p> }
                     @if (p.disponible) { <cat-precio [p]="p" clase="price big" /> }
                     @if (p.descripcion) { <p class="ps-desc">{{ p.descripcion }}</p> }
+                    <button type="button" class="ps-share" (click)="store.compartir(p)"><svg catIcono="share"></svg>Compartir este producto</button>
                   </div>
                 </div>
                 @if ((store.pedidos() && p.disponible) || store.hayWhatsapp()) {

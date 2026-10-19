@@ -6,6 +6,7 @@ import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Ne
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Sello;
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Whatsapp;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -84,19 +85,29 @@ public class CatalogoPublicoRepository {
     }
 
     /** Productos de categorías activas; los agotados solo si el negocio los muestra. */
+    private static final RowMapper<ProductoFila> PRODUCTO = (rs, i) -> new ProductoFila(rs.getLong("id"),
+            rs.getLong("categoria_id"), rs.getString("nombre"), rs.getString("descripcion"), rs.getString("presentacion"),
+            rs.getString("unidad_venta"), rs.getBigDecimal("precio"), rs.getBigDecimal("precio_oferta"),
+            rs.getObject("oferta_desde", LocalDate.class), rs.getObject("oferta_hasta", LocalDate.class),
+            rs.getString("imagen_url"), rs.getString("imagen_thumb_url"), rs.getBoolean("disponible"),
+            rs.getBoolean("destacado"), rs.getObject("created_at", OffsetDateTime.class).toInstant());
+
     public List<ProductoFila> findProductos(long empresaId, boolean incluirAgotados) {
         return jdbc.query("""
                 SELECT p.* FROM main.producto p
                   JOIN main.categoria c ON c.id = p.categoria_id AND c.activa
                  WHERE p.empresa_id = ? AND (p.disponible OR ?)
                  ORDER BY c.orden, p.orden, lower(p.nombre)
-                """, (rs, i) -> new ProductoFila(rs.getLong("id"), rs.getLong("categoria_id"), rs.getString("nombre"),
-                rs.getString("descripcion"), rs.getString("presentacion"), rs.getString("unidad_venta"),
-                rs.getBigDecimal("precio"), rs.getBigDecimal("precio_oferta"),
-                rs.getObject("oferta_desde", LocalDate.class), rs.getObject("oferta_hasta", LocalDate.class),
-                rs.getString("imagen_url"), rs.getString("imagen_thumb_url"), rs.getBoolean("disponible"),
-                rs.getBoolean("destacado"), rs.getObject("created_at", OffsetDateTime.class).toInstant()),
-                empresaId, incluirAgotados);
+                """, PRODUCTO, empresaId, incluirAgotados);
+    }
+
+    /** Un producto tal como lo ve el catálogo público (categoría activa; agotado solo si se muestran). */
+    public Optional<ProductoFila> findProducto(long empresaId, long id, boolean incluirAgotados) {
+        return jdbc.query("""
+                SELECT p.* FROM main.producto p
+                  JOIN main.categoria c ON c.id = p.categoria_id AND c.activa
+                 WHERE p.empresa_id = ? AND p.id = ? AND (p.disponible OR ?)
+                """, PRODUCTO, empresaId, id, incluirAgotados).stream().findFirst();
     }
 
     /** Una fila por colección visible y producto (productoId null si no tiene ninguno). */

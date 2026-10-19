@@ -258,6 +258,9 @@ html{touch-action:manipulation}
 .price.big{margin-top:6px;font-size:26px}
 .price.big s{font-size:16px}
 .ps-desc{margin-top:6px;color:var(--c-ink-2);line-height:1.55}
+/* Compartir el producto: un link que en WhatsApp sale con su foto, nombre y precio. */
+.ps-share{display:inline-flex;align-items:center;justify-self:start;gap:7px;min-height:40px;margin-top:2px;padding:0;border:0;background:none;color:var(--c-muted);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ps-share svg{width:16px;height:16px}
 .ps-foot{display:grid;gap:6px;padding:12px 20px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--c-line)}
 .ps-buy{display:flex;gap:10px}
 .qty.big{flex:0 0 132px;height:52px;border-radius:14px}

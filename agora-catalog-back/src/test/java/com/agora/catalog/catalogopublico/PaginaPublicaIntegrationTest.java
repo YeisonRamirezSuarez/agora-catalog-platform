@@ -89,6 +89,35 @@ class PaginaPublicaIntegrationTest {
     }
 
     @Test
+    void unProductoCompartidoTieneSuPropiaVistaPrevia() throws Exception {
+        long cat = jdbc.queryForObject("INSERT INTO main.categoria (empresa_id, nombre) VALUES (?, 'Quesos') RETURNING id",
+                Long.class, empresaId);
+        long id = jdbc.queryForObject("""
+                INSERT INTO main.producto (empresa_id, categoria_id, codigo, nombre, presentacion, unidad_venta, precio,
+                                           precio_oferta, imagen_url)
+                VALUES (?, ?, 'Q-1', 'Queso campesino', 'Bloque x 500 g', 'UNIDAD', 16800, 14900, '/api/uploads/x/q.jpg')
+                RETURNING id
+                """, Long.class, empresaId, cat);
+
+        mvc.perform(get("/public/paginas/" + link + "/catalogo").param("p", String.valueOf(id)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("<title>Queso campesino · Quesera &lt;script&gt;</title>")))
+                .andExpect(content().string(containsString("content=\"$14.900 (antes $16.800) · Bloque x 500 g\"")))
+                .andExpect(content().string(containsString("content=\"https://catalogo.test/api/uploads/x/q.jpg\"")))
+                .andExpect(content().string(containsString("content=\"https://catalogo.test/c/" + link + "/catalogo?p=" + id + "\"")));
+
+        // Con los precios ocultos, la vista previa tampoco los muestra.
+        jdbc.update("UPDATE main.empresa SET mostrar_precios = FALSE WHERE id = ?", empresaId);
+        mvc.perform(get("/public/paginas/" + link + "/catalogo").param("p", String.valueOf(id)))
+                .andExpect(content().string(not(containsString("$14.900"))))
+                .andExpect(content().string(containsString("content=\"Bloque x 500 g\"")));
+
+        // Un producto que no es de este negocio: la vista previa del negocio.
+        mvc.perform(get("/public/paginas/" + link + "/catalogo").param("p", "999999999"))
+                .andExpect(content().string(containsString("<title>Quesera &lt;script&gt;</title>")));
+    }
+
+    @Test
     void unaEmpresaInactivaOInexistenteDaLaPaginaSinEtiquetasY404() throws Exception {
         jdbc.update("UPDATE main.empresa SET activa = FALSE WHERE id = ?", empresaId);
         mvc.perform(get("/public/paginas/" + link))

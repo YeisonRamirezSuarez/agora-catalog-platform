@@ -2,6 +2,9 @@ package com.agora.catalog.catalogopublico.service;
 
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Negocio;
 import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository;
+import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository.EmpresaPublica;
+import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository.ProductoFila;
+import com.agora.catalog.producto.service.ReglasProducto;
 import com.agora.catalog.storage.ImagenService;
 import com.agora.catalog.storage.StorageService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.regex.Pattern;
 
 /**
@@ -40,15 +50,17 @@ public class PaginaPublicaService {
     private final CatalogoPublicoRepository repository;
     private final StorageService storage;
     private final ImagenService imagenes;
+    private final Clock clock;
     private final String baseUrl;
     private final String indexPath;
 
     public PaginaPublicaService(CatalogoPublicoRepository repository, StorageService storage, ImagenService imagenes,
-                                @Value("${settings.frontend-url}") String baseUrl,
+                                Clock clock, @Value("${settings.frontend-url}") String baseUrl,
                                 @Value("${settings.front-index-path:}") String indexPath) {
         this.repository = repository;
         this.storage = storage;
         this.imagenes = imagenes;
+        this.clock = clock;
         this.baseUrl = baseUrl.replaceAll("/+$", "");
         this.indexPath = indexPath;
     }
@@ -57,33 +69,55 @@ public class PaginaPublicaService {
      * @param slugHash lo que va después de {@code /c/}; la empresa se busca solo por el hash (lo que
      *                 sigue al último guion), así un link con el slug viejo sigue sirviendo
      * @param resto    subpágina ({@code /catalogo}) y query string, que se conservan al redirigir
+     * @param productoId el {@code ?p=} de un producto compartido: la vista previa es la de ese producto
      */
-    public Pagina pagina(String slugHash, String resto) {
+    public Pagina pagina(String slugHash, String resto, Long productoId) {
         Optional<String> index = index();
         if (index.isEmpty()) {
             return new Pagina(503, null, "<!doctype html><meta charset=\"utf-8\"><p>El catálogo no está disponible en este momento.</p>");
         }
         String hash = slugHash.substring(slugHash.lastIndexOf('-') + 1);
-        Optional<Negocio> negocio = HASH.matcher(hash).matches()
-                ? repository.findEmpresaActiva(hash).map(CatalogoPublicoRepository.EmpresaPublica::negocio)
-                : Optional.empty();
+        Optional<EmpresaPublica> empresa = HASH.matcher(hash).matches() ? repository.findEmpresaActiva(hash) : Optional.empty();
         // Sin negocio, Angular pide el catálogo, recibe 404 y muestra "Catálogo no disponible".
-        if (negocio.isEmpty()) return new Pagina(404, null, index.get());
+        if (empresa.isEmpty()) return new Pagina(404, null, index.get());
 
-        Negocio n = negocio.get();
+        Negocio n = empresa.get().negocio();
         String actual = n.slug() + "-" + n.publicHash();
         if (!actual.equals(slugHash)) return new Pagina(301, "/c/" + actual + resto, null);
-        return new Pagina(200, null, conEtiquetas(index.get(), n, baseUrl + "/c/" + actual));
+        // Un producto que no existe, es de otro negocio o está oculto: la vista previa es la del negocio.
+        Optional<ProductoFila> producto = productoId == null ? Optional.empty()
+                : repository.findProducto(empresa.get().id(), productoId, empresa.get().mostrarAgotados());
+        if (producto.isPresent()) {
+            ProductoFila p = producto.get();
+            return new Pagina(200, null, conEtiquetas(index.get(), n, p.nombre() + " · " + n.nombre(), descripcion(n, p),
+                    p.imagenUrl() != null ? p.imagenUrl() : imagen(n), baseUrl + "/c/" + actual + "/catalogo?p=" + p.id()));
+        }
+        return new Pagina(200, null, conEtiquetas(index.get(), n, n.nombre(), primero(n.portadaSubtitulo(), n.lema(), DESCRIPCION),
+                imagen(n), baseUrl + "/c/" + actual));
     }
 
-    private String conEtiquetas(String index, Negocio n, String url) {
-        String descripcion = primero(n.portadaSubtitulo(), n.lema(), DESCRIPCION);
-        String imagen = imagen(n);
+    /** "$14.900 (antes $16.800) · Paquete x 5 · Receta tradicional": el precio solo si el negocio los muestra. */
+    private String descripcion(Negocio n, ProductoFila p) {
+        String precio = null;
+        if (n.mostrarPrecios()) {
+            boolean oferta = ReglasProducto.ofertaVigente(p.precioOferta(), p.ofertaDesde(), p.ofertaHasta(), LocalDate.now(clock));
+            precio = oferta ? cop(p.precioOferta()) + " (antes " + cop(p.precio()) + ")" : cop(p.precio());
+        }
+        String texto = Stream.of(precio, p.presentacion(), p.descripcion())
+                .filter(v -> v != null && !v.isBlank()).map(String::trim).collect(Collectors.joining(" · "));
+        return primero(texto, n.lema(), DESCRIPCION);
+    }
+
+    private static String cop(BigDecimal valor) {
+        return "$" + NumberFormat.getIntegerInstance(Locale.forLanguageTag("es-CO")).format(valor);
+    }
+
+    private String conEtiquetas(String index, Negocio n, String titulo, String descripcion, String imagen, String url) {
         StringBuilder og = new StringBuilder()
                 .append(meta("og:type", "website"))
                 .append(meta("og:site_name", "Agorá Catalog"))
                 .append(meta("og:locale", "es_CO"))
-                .append(meta("og:title", n.nombre()))
+                .append(meta("og:title", titulo))
                 .append(meta("og:description", descripcion))
                 .append(meta("og:url", url));
         og.append(meta("og:image", baseUrl + imagen));
@@ -92,7 +126,7 @@ public class PaginaPublicaService {
         }
         og.append("<meta name=\"twitter:card\" content=\"summary_large_image\">\n");
         og.append("<meta name=\"description\" content=\"").append(esc(descripcion)).append("\">\n");
-        return index.replace(TITULO, "<title>" + esc(n.nombre()) + "</title>")
+        return index.replace(TITULO, "<title>" + esc(titulo) + "</title>")
                 .replace(MARCADOR, og.toString());
     }
 

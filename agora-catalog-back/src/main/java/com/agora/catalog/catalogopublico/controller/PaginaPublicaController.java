@@ -32,7 +32,7 @@ public class PaginaPublicaController {
                                          HttpServletRequest request) {
         String resto = (subpagina == null ? "" : "/" + subpagina)
                 + (request.getQueryString() == null ? "" : "?" + request.getQueryString());
-        Pagina p = service.pagina(slugHash, resto);
+        Pagina p = service.pagina(slugHash, resto, productoId(request.getParameter("p")));
         if (p.status() == 301) {
             return ResponseEntity.status(301).header(HttpHeaders.LOCATION, p.location()).build();
         }
@@ -41,5 +41,10 @@ public class PaginaPublicaController {
                 .contentType(new MediaType(MediaType.TEXT_HTML, java.nio.charset.StandardCharsets.UTF_8))
                 .cacheControl(CacheControl.noCache())
                 .body(p.html());
+    }
+
+    /** {@code ?p=} de un producto compartido; cualquier otra cosa se ignora. */
+    private static Long productoId(String p) {
+        return p != null && p.matches("\\d{1,18}") ? Long.valueOf(p) : null;
     }
 }
