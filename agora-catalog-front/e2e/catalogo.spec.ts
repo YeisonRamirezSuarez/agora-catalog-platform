@@ -49,9 +49,12 @@ test.describe('catálogo público', () => {
     test.skip(isMobile, 'en el celular los filtros van en una hoja');
     await page.goto(CATALOGO + '/catalogo');
     const rango = page.getByLabel('Precio máximo');
+    // Sin catálogo pintado la página no alcanza a bajar y el control queda fuera de la pantalla.
+    await expect(rango).toBeVisible();
     await page.evaluate(() => window.scrollTo(0, 500));
     await page.waitForTimeout(300);
     const antes = await page.evaluate(() => window.scrollY);
+    expect(antes, 'la página bajó antes de mover el filtro').toBeGreaterThan(0);
     const b = (await rango.boundingBox())!;
     await page.mouse.move(b.x + b.width - 6, b.y + b.height / 2);
     await page.mouse.down();
