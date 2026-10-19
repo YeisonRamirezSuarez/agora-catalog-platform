@@ -32,8 +32,28 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [rolGuard('ADMIN_EMPRESA')],
-    title: 'Panel · Agorá Catalog',
-    loadComponent: () => import('@app/modules/admin/inicio/inicio.component').then(c => c.InicioComponent)
+    children: [
+      {
+        path: '', title: 'Panel · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/inicio/inicio.component').then(c => c.InicioComponent)
+      },
+      {
+        path: 'productos', title: 'Productos · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/productos/productos.component').then(c => c.ProductosComponent)
+      },
+      {
+        path: 'productos/nuevo', title: 'Nuevo producto · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/productos/producto-form.component').then(c => c.ProductoFormComponent)
+      },
+      {
+        path: 'productos/:id', title: 'Producto · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/productos/producto-form.component').then(c => c.ProductoFormComponent)
+      },
+      {
+        path: 'categorias', title: 'Categorías · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/categorias/categorias.component').then(c => c.CategoriasComponent)
+      },
+    ]
   },
   {
     // Catálogo público: /c/:publicId, /c/:publicId/catalogo y /c/:publicId/contacto (un solo componente).

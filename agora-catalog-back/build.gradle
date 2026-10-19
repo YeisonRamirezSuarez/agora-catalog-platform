@@ -31,6 +31,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	// Fotos: redimensionar a JPG (Thumbnailator) y leer WebP, que el JDK no trae (TwelveMonkeys).
+	implementation 'net.coobird:thumbnailator:0.4.20'
+	runtimeOnly 'com.twelvemonkeys.imageio:imageio-webp:3.12.0'
 
 	compileOnly 'org.projectlombok:lombok'
 

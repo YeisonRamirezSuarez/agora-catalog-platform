@@ -29,6 +29,8 @@ public class SecurityConfig {
             "/auth/logout",
             // Catálogo público por link: sin login, por diseño.
             "/public/**",
+            // Fotos subidas (logo, portada, productos): las ve cualquiera que abra el catálogo.
+            "/uploads/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",

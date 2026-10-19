@@ -22,6 +22,11 @@ server:
 spring:
   application:
     name: agora-catalog-back
+  servlet:
+    multipart:
+      # Una foto: 5 MB (el servicio de imágenes da el mensaje claro). El ZIP de fotos de la importación: 50 MB.
+      max-file-size: 50MB
+      max-request-size: 52MB
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
   autoconfigure:
@@ -59,6 +64,10 @@ settings:
       # Cifra en la base la contraseña del proveedor de correo. Cualquier largo (se deriva con
       # SHA-256). Si se cambia, lo ya cifrado deja de leerse. Generar: openssl rand -hex 32
       key: ${AES_KEY}
+
+  # Carpeta donde se guardan las fotos (logo, portada, productos). Se sirven en /api/uploads/**.
+  # Respaldarla junto con la base: sin ella las fotos se pierden.
+  storage-path: ${STORAGE_PATH:./uploads}
 
   # Usuario SUPER_ADMIN que se crea al arrancar si su correo no existe (SuperAdminBootstrap).
   # Sin correo o sin contraseña no se crea nada. Se le pide cambiar la contraseña al entrar.
