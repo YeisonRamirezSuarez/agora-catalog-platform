@@ -1,0 +1,19 @@
+# Normalización de finales de línea del monorepo.
+#
+# Se trabaja en Windows pero el servidor es Linux. Un script .sh con finales CRLF falla allá
+# con "bash: $'\r': command not found", así que se fija acá de forma permanente.
+*.sh text eol=lf
+
+# Los .yaml del backend los lee la JVM en Linux; Caddyfile y Dockerfile también corren allá.
+*.yaml text eol=lf
+*.yml  text eol=lf
+Caddyfile  text eol=lf
+Dockerfile text eol=lf
+
+# Hooks de git: los ejecuta bash.
+.githooks/* text eol=lf
+
+# Wrappers de Gradle: el shell va en LF y el .bat en CRLF, sí o sí.
+gradlew text eol=lf
+*.bat   text eol=crlf
+*.jar   binary

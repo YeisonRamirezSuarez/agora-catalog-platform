@@ -1,0 +1,80 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.1.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.agora'
+version = '0.1.0'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	runtimeOnly 'org.postgresql:postgresql'
+
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+// ----------------------------------------------------------------------
+// Hooks de git, activados solos
+// ----------------------------------------------------------------------
+// Git no deja que un repositorio configure su propio `core.hooksPath` al clonarse
+// (sería ejecutar código ajeno sin autorización). Así que se engancha donde cada
+// quien ya pasa igual: acá para quien trabaja el backend, y en el `prepare` del
+// package.json para quien trabaja el front.
+//
+// Sin esto, los hooks existen en el repo y no corren: nadie se entera hasta que
+// alguien pushea una migración con un número ya tomado y rompe la rama compartida.
+//
+// Nunca falla el build: si git no está o el directorio no es un repositorio, se
+// ignora en silencio.
+tasks.register('configurarHooksDeGit') {
+	description = 'Apunta core.hooksPath a .githooks para que los hooks del repo corran'
+	group = 'build setup'
+	doLast {
+		try {
+			def proceso = new ProcessBuilder('git', 'config', 'core.hooksPath', '.githooks')
+				.directory(projectDir)
+				.start()
+			proceso.waitFor()
+		} catch (Exception ignorada) {
+			logger.info('No se pudo configurar core.hooksPath; se continúa igual.')
+		}
+	}
+}
+
+tasks.named('compileJava') {
+	dependsOn 'configurarHooksDeGit'
+}

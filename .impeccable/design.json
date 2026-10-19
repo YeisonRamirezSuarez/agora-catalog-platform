@@ -1,0 +1,1022 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T21:27:48.671Z",
+  "title": "Design System: Agorá Catalog",
+  "extensions": {
+    "colorMeta": {
+      "business-primary": {
+        "role": "primary",
+        "displayName": "Javier Pine (business primary, configurable)",
+        "canonical": "#24331F",
+        "tonalRamp": [
+          "#030F01",
+          "#1A2915",
+          "#354530",
+          "#53634D",
+          "#75866F",
+          "#99AB93",
+          "#BED1B8",
+          "#E2F5DB"
+        ]
+      },
+      "business-accent": {
+        "role": "secondary",
+        "displayName": "Javier Gold (business accent, configurable)",
+        "canonical": "#DDB06C",
+        "tonalRamp": [
+          "#130900",
+          "#332000",
+          "#553A05",
+          "#7C550C",
+          "#A27832",
+          "#C89C58",
+          "#F0C27E",
+          "#FFEBD0"
+        ]
+      },
+      "on-accent": {
+        "role": "secondary",
+        "displayName": "Roast Brown on Gold",
+        "canonical": "#231A0E",
+        "tonalRamp": [
+          "#120902",
+          "#2C2216",
+          "#483E31",
+          "#675C4E",
+          "#8A7E70",
+          "#AFA393",
+          "#D5C8B9",
+          "#F9ECDC"
+        ]
+      },
+      "price": {
+        "role": "tertiary",
+        "displayName": "Price Crimson",
+        "canonical": "#B4182D",
+        "tonalRamp": [
+          "#1F0002",
+          "#4A020B",
+          "#7A0619",
+          "#AE0E29",
+          "#D9434B",
+          "#FC7374",
+          "#FEB5B1",
+          "#FEE9E7"
+        ]
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Night Table",
+        "canonical": "#15120D",
+        "tonalRamp": [
+          "#0E0B06",
+          "#27241E",
+          "#433F39",
+          "#615D57",
+          "#848079",
+          "#A8A49D",
+          "#CECAC3",
+          "#F2EEE6"
+        ]
+      },
+      "night-text": {
+        "role": "neutral",
+        "displayName": "Candlelit Text",
+        "canonical": "#ECE4D6",
+        "tonalRamp": [
+          "#100A03",
+          "#292319",
+          "#453F34",
+          "#645D51",
+          "#867F73",
+          "#ABA496",
+          "#D1CABC",
+          "#F6EDDF"
+        ]
+      },
+      "night-muted": {
+        "role": "neutral",
+        "displayName": "Dim Candlelit Text",
+        "canonical": "#D8CEBF",
+        "tonalRamp": [
+          "#100A02",
+          "#2A2317",
+          "#473E32",
+          "#655C4F",
+          "#887F71",
+          "#ADA395",
+          "#D3C9BA",
+          "#F7EDDE"
+        ]
+      },
+      "cream": {
+        "role": "neutral",
+        "displayName": "Counter Cream",
+        "canonical": "#F7F1E6",
+        "tonalRamp": [
+          "#0E0B05",
+          "#28231B",
+          "#443F36",
+          "#625D54",
+          "#858076",
+          "#A9A49A",
+          "#D0CABF",
+          "#F4EEE3"
+        ]
+      },
+      "sand": {
+        "role": "neutral",
+        "displayName": "Sand",
+        "canonical": "#EFE4D0",
+        "tonalRamp": [
+          "#110A00",
+          "#2B2313",
+          "#473E2E",
+          "#665C4B",
+          "#897F6D",
+          "#AEA390",
+          "#D4C9B6",
+          "#F8EDD9"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#FFFDF9",
+        "tonalRamp": [
+          "#0C0B09",
+          "#252421",
+          "#413F3C",
+          "#5F5D5A",
+          "#82807C",
+          "#A6A4A1",
+          "#CCCAC6",
+          "#F0EEEA"
+        ]
+      },
+      "cream-ink": {
+        "role": "neutral",
+        "displayName": "Roast Ink",
+        "canonical": "#211C16",
+        "tonalRamp": [
+          "#0F0A06",
+          "#28231D",
+          "#443F38",
+          "#635D55",
+          "#857F78",
+          "#AAA39C",
+          "#D0C9C1",
+          "#F4EDE5"
+        ]
+      },
+      "cream-ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Roast Ink",
+        "canonical": "#4A4036",
+        "tonalRamp": [
+          "#110903",
+          "#2B2219",
+          "#483E34",
+          "#665C51",
+          "#897E73",
+          "#AEA297",
+          "#D4C8BC",
+          "#F9ECE0"
+        ]
+      },
+      "cream-muted": {
+        "role": "neutral",
+        "displayName": "Muted Roast",
+        "canonical": "#6F655A",
+        "tonalRamp": [
+          "#110A03",
+          "#2B2219",
+          "#473E34",
+          "#665C51",
+          "#897E73",
+          "#ADA397",
+          "#D4C8BC",
+          "#F8ECE0"
+        ]
+      },
+      "cream-line": {
+        "role": "neutral",
+        "displayName": "Cream Hairline",
+        "canonical": "#E7DDCC",
+        "tonalRamp": [
+          "#110A02",
+          "#2A2316",
+          "#473F31",
+          "#655C4E",
+          "#887F70",
+          "#ADA393",
+          "#D3C9B9",
+          "#F7EDDC"
+        ]
+      },
+      "badge-best": {
+        "role": "tertiary",
+        "displayName": "Honey Badge",
+        "canonical": "#ECB85F",
+        "tonalRamp": [
+          "#120900",
+          "#322000",
+          "#543A06",
+          "#7B5600",
+          "#A77609",
+          "#CD9B40",
+          "#F5C168",
+          "#FFECCE"
+        ]
+      },
+      "badge-best-ink": {
+        "role": "tertiary",
+        "displayName": "Honey Badge Ink",
+        "canonical": "#3A2706",
+        "tonalRamp": [
+          "#130900",
+          "#322000",
+          "#503C1C",
+          "#6F5A3A",
+          "#937C5C",
+          "#B8A17F",
+          "#DFC7A4",
+          "#FFECD0"
+        ]
+      },
+      "badge-promo": {
+        "role": "tertiary",
+        "displayName": "Promo Yellow",
+        "canonical": "#F6DF5E",
+        "tonalRamp": [
+          "#0F0B00",
+          "#2A2400",
+          "#4A4001",
+          "#6C5E02",
+          "#92810D",
+          "#BCA503",
+          "#E3CC48",
+          "#FEF0A2"
+        ]
+      },
+      "badge-promo-ink": {
+        "role": "tertiary",
+        "displayName": "Promo Ink",
+        "canonical": "#3A3000",
+        "tonalRamp": [
+          "#0F0B00",
+          "#2B2401",
+          "#4A3F12",
+          "#685E32",
+          "#8B8154",
+          "#B0A577",
+          "#D6CB9C",
+          "#FBEFBF"
+        ]
+      },
+      "badge-new": {
+        "role": "tertiary",
+        "displayName": "Mint Badge",
+        "canonical": "#C9EBDC",
+        "tonalRamp": [
+          "#000F08",
+          "#0D2A20",
+          "#29473B",
+          "#476559",
+          "#69887B",
+          "#8DAD9F",
+          "#B2D4C5",
+          "#D6F8E9"
+        ]
+      },
+      "badge-new-ink": {
+        "role": "tertiary",
+        "displayName": "Mint Badge Ink",
+        "canonical": "#0F3D2A",
+        "tonalRamp": [
+          "#000F07",
+          "#002C1B",
+          "#1D4A36",
+          "#3C6853",
+          "#5F8C75",
+          "#83B199",
+          "#A8D7BF",
+          "#CBFCE2"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Agorá Ink",
+        "canonical": "#1C1814",
+        "tonalRamp": [
+          "#0E0B07",
+          "#28241F",
+          "#433F3A",
+          "#615D58",
+          "#857F7A",
+          "#A9A39E",
+          "#CFC9C4",
+          "#F3EDE8"
+        ]
+      },
+      "ink-hover": {
+        "role": "neutral",
+        "displayName": "Agorá Ink Hover",
+        "canonical": "#342C24",
+        "tonalRamp": [
+          "#110A04",
+          "#2A221A",
+          "#463E36",
+          "#655C53",
+          "#887E75",
+          "#ADA399",
+          "#D3C9BF",
+          "#F7EDE2"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Agorá Ink",
+        "canonical": "#3D362F",
+        "tonalRamp": [
+          "#0F0A05",
+          "#29221C",
+          "#463E37",
+          "#645C55",
+          "#867E76",
+          "#ACA39B",
+          "#D2C9C0",
+          "#F5ECE3"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Warm Grey",
+        "canonical": "#6B6259",
+        "tonalRamp": [
+          "#100A04",
+          "#2A221B",
+          "#473E36",
+          "#655C53",
+          "#887E75",
+          "#ACA298",
+          "#D3C8BE",
+          "#F7ECE2"
+        ]
+      },
+      "faint": {
+        "role": "neutral",
+        "displayName": "Faint Warm Grey",
+        "canonical": "#776D63",
+        "tonalRamp": [
+          "#110904",
+          "#2A221A",
+          "#473E35",
+          "#665C52",
+          "#887E74",
+          "#ADA297",
+          "#D3C8BD",
+          "#F8ECE1"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Warm Hairline",
+        "canonical": "#ECE6DC",
+        "tonalRamp": [
+          "#0F0B05",
+          "#28241C",
+          "#443F37",
+          "#625D54",
+          "#858077",
+          "#A9A49A",
+          "#D0CAC0",
+          "#F4EEE4"
+        ]
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Strong Warm Hairline",
+        "canonical": "#DCD3C6",
+        "tonalRamp": [
+          "#100A03",
+          "#2A2319",
+          "#463E34",
+          "#645C51",
+          "#877F73",
+          "#ACA397",
+          "#D2C9BC",
+          "#F6EDE0"
+        ]
+      },
+      "switch-off": {
+        "role": "neutral",
+        "displayName": "Switch Off Warm",
+        "canonical": "#D6CDBF",
+        "tonalRamp": [
+          "#100A03",
+          "#2A2319",
+          "#463E33",
+          "#645C50",
+          "#877F72",
+          "#ACA396",
+          "#D2C9BB",
+          "#F7EDDF"
+        ]
+      },
+      "wash": {
+        "role": "neutral",
+        "displayName": "Paper Wash",
+        "canonical": "#F6F2EA",
+        "tonalRamp": [
+          "#0D0B06",
+          "#27241E",
+          "#434039",
+          "#605D56",
+          "#838079",
+          "#A8A49C",
+          "#CECAC2",
+          "#F2EEE6"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#808080",
+          "#A4A4A4",
+          "#CACACA",
+          "#EEEEEE"
+        ]
+      },
+      "panel-focus": {
+        "role": "neutral",
+        "displayName": "Panel Focus Dark Gold",
+        "canonical": "#8E5F18",
+        "tonalRamp": [
+          "#130800",
+          "#341F01",
+          "#593801",
+          "#815301",
+          "#A67533",
+          "#CC9A59",
+          "#F4C07E",
+          "#FFEBD3"
+        ]
+      },
+      "agora-gold": {
+        "role": "tertiary",
+        "displayName": "Agorá Gold",
+        "canonical": "#E0A43A",
+        "tonalRamp": [
+          "#120900",
+          "#322001",
+          "#563A00",
+          "#7D5604",
+          "#A97500",
+          "#D3982A",
+          "#FCBE58",
+          "#FFECCF"
+        ]
+      },
+      "deal": {
+        "role": "tertiary",
+        "displayName": "Deal Yellow",
+        "canonical": "#FFD43B",
+        "tonalRamp": [
+          "#100A00",
+          "#2D2300",
+          "#4D3E05",
+          "#705B0C",
+          "#9A7D07",
+          "#C4A11B",
+          "#F1C624",
+          "#FFEEBA"
+        ]
+      },
+      "deal-ink": {
+        "role": "tertiary",
+        "displayName": "Deal Ink",
+        "canonical": "#3A2C00",
+        "tonalRamp": [
+          "#100A00",
+          "#2E2200",
+          "#4C3E14",
+          "#6B5C33",
+          "#8F7F55",
+          "#B4A378",
+          "#DAC99D",
+          "#FFEDC0"
+        ]
+      },
+      "whatsapp": {
+        "role": "tertiary",
+        "displayName": "WhatsApp Green",
+        "canonical": "#138A4A",
+        "tonalRamp": [
+          "#001004",
+          "#002D13",
+          "#064D27",
+          "#0F703B",
+          "#299756",
+          "#55BD7A",
+          "#7EE59F",
+          "#C7FFD6"
+        ]
+      },
+      "whatsapp-press": {
+        "role": "tertiary",
+        "displayName": "WhatsApp Green Pressed",
+        "canonical": "#0E733D",
+        "tonalRamp": [
+          "#001004",
+          "#012D14",
+          "#034D26",
+          "#08703B",
+          "#3C955C",
+          "#63BA80",
+          "#8AE2A5",
+          "#C6FFD5"
+        ]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Danger Red",
+        "canonical": "#C42B2B",
+        "tonalRamp": [
+          "#1F0001",
+          "#4A0205",
+          "#7B050D",
+          "#B00D18",
+          "#DA433E",
+          "#FE7369",
+          "#FFB5AC",
+          "#FFE9E6"
+        ]
+      },
+      "danger-soft": {
+        "role": "tertiary",
+        "displayName": "Danger Tint",
+        "canonical": "#FCEDED",
+        "tonalRamp": [
+          "#110809",
+          "#2B2121",
+          "#483C3C",
+          "#675A5A",
+          "#8A7D7D",
+          "#AFA1A1",
+          "#D5C7C7",
+          "#F9EAEA"
+        ]
+      },
+      "danger-ink": {
+        "role": "tertiary",
+        "displayName": "Danger Ink",
+        "canonical": "#7A1C1C",
+        "tonalRamp": [
+          "#1E0001",
+          "#4B0005",
+          "#751718",
+          "#993A36",
+          "#C15E57",
+          "#EA837A",
+          "#FEB5AE",
+          "#FEE9E6"
+        ]
+      },
+      "ok": {
+        "role": "tertiary",
+        "displayName": "OK Green",
+        "canonical": "#1E7A46",
+        "tonalRamp": [
+          "#001004",
+          "#022D15",
+          "#054D28",
+          "#0D703D",
+          "#3E945E",
+          "#65BA82",
+          "#8BE1A7",
+          "#C7FFD7"
+        ]
+      },
+      "ok-soft": {
+        "role": "tertiary",
+        "displayName": "OK Tint",
+        "canonical": "#E8F4EC",
+        "tonalRamp": [
+          "#060D08",
+          "#1E2721",
+          "#39423C",
+          "#56615A",
+          "#79837C",
+          "#9DA8A0",
+          "#C2CEC6",
+          "#E6F2EA"
+        ]
+      },
+      "ok-ink": {
+        "role": "tertiary",
+        "displayName": "OK Ink",
+        "canonical": "#165C35",
+        "tonalRamp": [
+          "#001005",
+          "#002D15",
+          "#064D29",
+          "#2A6D45",
+          "#4F9166",
+          "#74B68A",
+          "#99DDAF",
+          "#C7FED8"
+        ]
+      },
+      "warn-soft": {
+        "role": "tertiary",
+        "displayName": "Warning Tint",
+        "canonical": "#FFF6DB",
+        "tonalRamp": [
+          "#100A00",
+          "#2A230E",
+          "#473F29",
+          "#655D46",
+          "#888068",
+          "#ADA48B",
+          "#D3CAB0",
+          "#F7EED3"
+        ]
+      },
+      "warn-ink": {
+        "role": "tertiary",
+        "displayName": "Warning Ink",
+        "canonical": "#6A4B00",
+        "tonalRamp": [
+          "#120900",
+          "#312100",
+          "#533B05",
+          "#775815",
+          "#9B7A3D",
+          "#C19F61",
+          "#E8C586",
+          "#FFECCC"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline: roman line plus gold italic line (desktop)."
+      },
+      "display-mobile": {
+        "displayName": "Display Mobile",
+        "purpose": "Hero headline on phones; catalog hero uses 40px."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Combos band headline (desktop)."
+      },
+      "headline-photo": {
+        "displayName": "Headline Photo",
+        "purpose": "Contact photo card headline (desktop)."
+      },
+      "headline-mobile": {
+        "displayName": "Headline Mobile",
+        "purpose": "Combos band headline (phone)."
+      },
+      "headline-photo-mobile": {
+        "displayName": "Headline Photo Mobile",
+        "purpose": "Contact photo card and catalog hero headline (phone)."
+      },
+      "section": {
+        "displayName": "Section",
+        "purpose": "Centered section titles (desktop)."
+      },
+      "section-mobile": {
+        "displayName": "Section Mobile",
+        "purpose": "Centered section titles (phone)."
+      },
+      "title-serif": {
+        "displayName": "Title Serif",
+        "purpose": "Sheet titles: product, filters, Mi pedido."
+      },
+      "title-serif-sm": {
+        "displayName": "Title Serif Sm",
+        "purpose": "Plan names (desktop), info sheet, menu links."
+      },
+      "title-serif-xs": {
+        "displayName": "Title Serif Xs",
+        "purpose": "Favorites heading on phones."
+      },
+      "note-lg": {
+        "displayName": "Note Lg",
+        "purpose": "Favorites heading on desktop, rotated."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "Side note and contact sign-off (desktop)."
+      },
+      "note-sm": {
+        "displayName": "Note Sm",
+        "purpose": "Paper tag (desktop) and contact sign-off (phone)."
+      },
+      "note-xs": {
+        "displayName": "Note Xs",
+        "purpose": "Paper tag on phones."
+      },
+      "title-lg": {
+        "displayName": "Title Lg",
+        "purpose": "Admin sheet and form titles; order total."
+      },
+      "price": {
+        "displayName": "Price",
+        "purpose": "Card price in crimson."
+      },
+      "title-sm": {
+        "displayName": "Title Sm",
+        "purpose": "Header total, order total label, empty-state heading."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default text."
+      },
+      "body-lg": {
+        "displayName": "Body Lg",
+        "purpose": "Subtitles on night; full-width sheet button text."
+      },
+      "item-name": {
+        "displayName": "Item Name",
+        "purpose": "Product card name."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Labels, chips, buttons."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Descriptions, hints, crumbs."
+      },
+      "badge": {
+        "displayName": "Badge",
+        "purpose": "Merch badges."
+      },
+      "nav-micro": {
+        "displayName": "Nav Micro",
+        "purpose": "Admin mobile tab bar labels."
+      },
+      "numeric": {
+        "displayName": "Numeric",
+        "purpose": "Tabular figures for totals, steppers, admin prices."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-ring",
+        "value": "0 0 0 1px rgba(33,28,22,.06), 0 2px 8px -3px rgba(33,28,22,.12)",
+        "purpose": "Product cards on cream; the filter card takes the ring alone."
+      },
+      {
+        "name": "plan-lift",
+        "value": "0 14px 30px -16px rgba(33,28,22,.5)",
+        "purpose": "Plan cards on hover with a 2px rise."
+      },
+      {
+        "name": "circle",
+        "value": "0 2px 8px -2px rgba(33,28,22,.35)",
+        "purpose": "Category circle photos."
+      },
+      {
+        "name": "paper-tag",
+        "value": "0 10px 22px -10px rgba(0,0,0,.6)",
+        "purpose": "Pinned note on the combos band."
+      },
+      {
+        "name": "header-solid",
+        "value": "0 1px 0 rgba(255,255,255,.07)",
+        "purpose": "Solid night header after scroll, over 94% night with a 10px backdrop blur."
+      },
+      {
+        "name": "rest",
+        "value": "0 1px 2px rgba(24,24,27,.06), 0 1px 1px rgba(24,24,27,.04)",
+        "purpose": "Admin round buttons, login card."
+      },
+      {
+        "name": "float",
+        "value": "0 8px 24px -8px rgba(24,24,27,.22)",
+        "purpose": "Admin logos, save bar."
+      },
+      {
+        "name": "sheet",
+        "value": "0 -10px 32px -12px rgba(24,24,27,.3)",
+        "purpose": "Sheets rising from below."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "All transitions and animations."
+      },
+      {
+        "name": "settle",
+        "value": "2.4s",
+        "purpose": "Hero photo scales in from 108% on load."
+      },
+      {
+        "name": "lift",
+        "value": "1s",
+        "purpose": "Hero headline lines rise 16px; italic line 120ms later."
+      },
+      {
+        "name": "bump",
+        "value": ".6s",
+        "purpose": "Cart count bump when an item is added."
+      },
+      {
+        "name": "rise",
+        "value": ".45s",
+        "purpose": "Sheets from below (mobile); order drawer slide (desktop)."
+      },
+      {
+        "name": "pop",
+        "value": ".4s",
+        "purpose": "Centered dialogs on desktop."
+      },
+      {
+        "name": "state",
+        "value": ".15s",
+        "purpose": "Color, border, and filter state changes."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "form-one-column",
+        "value": "640px"
+      },
+      {
+        "name": "import-steps",
+        "value": "760px"
+      },
+      {
+        "name": "panel",
+        "value": "860px"
+      },
+      {
+        "name": "store-desktop",
+        "value": "960px"
+      },
+      {
+        "name": "editor",
+        "value": "1000px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Brand Button",
+      "kind": "button",
+      "refersTo": "button-brand-cta",
+      "description": "Every storefront action that advances an order, in the business primary.",
+      "html": "<button class=\"ds-btn-brand\">Enviar pedido por WhatsApp</button>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-btn-brand{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;border:1px solid var(--brand);border-radius:14px;background:var(--brand);color:#fff;font:700 16px var(--font);cursor:pointer;transition:filter .15s} .ds-btn-brand:hover{filter:brightness(1.18)} .ds-btn-brand:focus-visible{outline:2px solid var(--brand);outline-offset:2px}"
+    },
+    {
+      "name": "Hero CTA",
+      "kind": "button",
+      "refersTo": "hero-cta",
+      "description": "Gold button on the night hero (desktop).",
+      "html": "<div class=\"ds-night\"><a class=\"ds-hero-cta\" href=\"#\">Explorar el catálogo<svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></a></div>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-night{padding:24px;background:var(--night)} .ds-hero-cta{display:inline-flex;align-items:center;gap:12px;min-height:52px;padding:0 24px;border-radius:8px;background:var(--accent);color:var(--on-accent);font:700 15px var(--font);text-decoration:none;transition:filter .15s} .ds-hero-cta svg{transition:transform .25s var(--ease)} .ds-hero-cta:hover{filter:brightness(1.07)} .ds-hero-cta:hover svg{transform:translateX(4px)} .ds-hero-cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "product-card",
+      "description": "Paper card on cream: badge, heart, crimson price, presentation, stepper and cart button.",
+      "html": "<div class=\"ds-cream\"><article class=\"ds-pc\"><div class=\"ds-ph\"><span class=\"ds-tag\">Más vendido</span><button class=\"ds-heart\" aria-label=\"Guardar\" aria-pressed=\"false\"><svg viewBox=\"0 0 24 24\" width=\"25\" height=\"25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z\"/></svg></button></div><div class=\"ds-body\"><b class=\"ds-name\">Jamón de cerdo ahumado</b><span class=\"ds-desc\">Tajado fino, ideal para picadas.</span><span class=\"ds-price\">$12.500 <s>$14.000</s></span><span class=\"ds-pres\">x 250 g</span></div><div class=\"ds-buy\"><div class=\"ds-qty\"><button aria-label=\"Quitar uno\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/></svg></button><output>1</output><button aria-label=\"Agregar uno\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button></div><button class=\"ds-add\" aria-label=\"Agregar al pedido\"><svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9\" cy=\"20\" r=\"1.5\"/><circle cx=\"18\" cy=\"20\" r=\"1.5\"/><path d=\"M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 7H6\"/></svg></button></div></article></div>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-cream{padding:20px;background:var(--cream)} .ds-pc{position:relative;width:240px;overflow:hidden;border-radius:14px;background:var(--paper);color:var(--c-ink);box-shadow:0 0 0 1px rgba(33,28,22,.06),0 2px 8px -3px rgba(33,28,22,.12)} .ds-ph{position:relative;aspect-ratio:4/3;background:var(--sand)} .ds-tag{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;height:25px;padding:0 10px;border-radius:999px;background:#ECB85F;color:#3A2706;font:700 12px var(--font)} .ds-heart{position:absolute;top:6px;right:6px;display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;background:none;color:#fff;cursor:pointer;filter:drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 4px rgba(0,0,0,.45))} .ds-heart svg{transition:transform .2s var(--ease)} .ds-heart:hover svg{transform:scale(1.08)} .ds-heart[aria-pressed=true]{color:var(--price)} .ds-heart[aria-pressed=true] svg{fill:currentColor} .ds-body{display:grid;gap:4px;padding:12px 12px 0} .ds-name{font:700 15px/1.25 var(--font)} .ds-desc{color:var(--c-muted);font-size:13px;line-height:1.4} .ds-price{margin-top:4px;color:var(--price);font:800 18px var(--font);letter-spacing:-.01em} .ds-price s{color:var(--c-muted);font-size:13px;font-weight:500} .ds-pres{justify-self:start;padding:4px 9px;border-radius:7px;background:#EFE9DF;color:var(--c-ink-2);font-size:12px} .ds-buy{display:flex;gap:8px;padding:12px} .ds-qty{display:flex;flex:1;align-items:center;height:40px;border:1px solid var(--c-line);border-radius:10px;background:#fff} .ds-qty button{display:grid;place-items:center;width:34px;height:100%;padding:0;border:0;background:none;color:var(--c-ink);cursor:pointer} .ds-qty output{flex:1;text-align:center;font-weight:700;font-variant-numeric:tabular-nums} .ds-add{display:grid;place-items:center;width:46px;height:40px;padding:0;border:0;border-radius:10px;background:var(--brand);color:#fff;cursor:pointer;transition:filter .15s,transform .15s} .ds-add:hover{filter:brightness(1.2)} .ds-add:active{transform:scale(.94)} .ds-pc button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}"
+    },
+    {
+      "name": "Plan Card",
+      "kind": "card",
+      "refersTo": "plan-card",
+      "description": "Collection card for \"¿Cuál es el plan?\": sand, serif name, gold arrow.",
+      "html": "<div class=\"ds-cream\"><a class=\"ds-plan\" href=\"#\"><span class=\"ds-plan-ph\"></span><span class=\"ds-plan-txt\"><b>Picada para compartir</b><span class=\"ds-plan-desc\">Quesos, carnes frías y algo para picar.</span><span class=\"ds-go\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></span></span></a></div>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-cream{padding:20px;background:var(--cream)} .ds-plan{display:grid;grid-template-columns:42% 1fr;width:310px;min-height:150px;overflow:hidden;border-radius:16px;background:var(--sand);color:var(--c-ink);text-decoration:none;transition:transform .3s var(--ease),box-shadow .3s} .ds-plan-ph{background:var(--c-line)} .ds-plan-txt{position:relative;display:grid;align-content:start;gap:6px;padding:16px 14px 56px} .ds-plan-txt b{font:700 20px/1.12 var(--serif);letter-spacing:-.01em} .ds-plan-desc{color:var(--c-ink-2);font-size:13px;line-height:1.4} .ds-go{position:absolute;right:12px;bottom:12px;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--on-accent);transition:transform .3s var(--ease)} .ds-plan:hover{box-shadow:0 14px 30px -16px rgba(33,28,22,.5);transform:translateY(-2px)} .ds-plan:hover .ds-go{transform:translateX(4px)} .ds-plan:focus-visible{outline:2px solid var(--brand);outline-offset:2px}"
+    },
+    {
+      "name": "Merch Badges",
+      "kind": "chip",
+      "refersTo": "badge-best",
+      "description": "Más vendido, Promo, Nuevo, Agotado pills on product photos.",
+      "html": "<div class=\"ds-row\"><span class=\"ds-b ds-best\">Más vendido</span><span class=\"ds-b ds-promo\">Promo</span><span class=\"ds-b ds-new\">Nuevo</span><span class=\"ds-b ds-out\">Agotado</span></div>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-row{display:flex;gap:8px;padding:16px;background:var(--cream)} .ds-b{display:inline-flex;align-items:center;height:25px;padding:0 10px;border-radius:999px;font:700 12px var(--font);white-space:nowrap} .ds-best{background:#ECB85F;color:#3A2706} .ds-promo{background:#F6DF5E;color:#3A3000} .ds-new{background:#C9EBDC;color:#0F3D2A} .ds-out{background:var(--c-ink);color:#fff}"
+    },
+    {
+      "name": "Catalog Search",
+      "kind": "input",
+      "refersTo": "catalog-search",
+      "description": "Search on the catalog page with an attached primary submit.",
+      "html": "<div class=\"ds-cream\"><form class=\"ds-cs\" role=\"search\"><input type=\"search\" placeholder=\"Busca jamón, queso, chorizo…\" aria-label=\"Buscar\"><button aria-label=\"Buscar\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg></button></form></div>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-cream{padding:20px;background:var(--cream)} .ds-cs{display:flex;align-items:center;height:48px;padding-left:14px;overflow:hidden;border:1px solid var(--c-line);border-radius:12px;background:#fff;transition:border-color .15s,box-shadow .15s} .ds-cs:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 18%,transparent)} .ds-cs input{flex:1;min-width:0;height:100%;border:0;background:none;outline:none;color:var(--c-ink);font:15px var(--font)} .ds-cs input::placeholder{color:var(--c-muted)} .ds-cs button{display:grid;place-items:center;width:52px;height:100%;border:0;background:var(--brand);color:#fff;cursor:pointer} .ds-cs button:hover{filter:brightness(1.18)}"
+    },
+    {
+      "name": "Favorites Chips",
+      "kind": "nav",
+      "refersTo": "filter-chip",
+      "description": "Desktop category tabs in the favorites rail, beside the Ms Madi heading.",
+      "html": "<div class=\"ds-cream\"><h3 class=\"ds-script\">Favoritos de la casa</h3><div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">Todos</button><button class=\"ds-chip\" aria-pressed=\"false\">Quesos</button><button class=\"ds-chip\" aria-pressed=\"false\">Carnes frías</button></div></div>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-cream{display:flex;align-items:center;gap:44px;padding:24px;background:var(--cream)} .ds-script{max-width:4.4em;margin:0;color:var(--c-ink);font:400 56px/.84 var(--script);transform:rotate(-6deg)} .ds-chips{display:flex;gap:26px} .ds-chip{position:relative;padding:10px 0 12px;border:0;background:none;color:var(--c-muted);font:600 14.5px var(--font);cursor:pointer} .ds-chip:hover,.ds-chip[aria-pressed=true]{color:var(--c-ink)} .ds-chip[aria-pressed=true]::after{content:\"\";position:absolute;left:0;right:0;bottom:2px;height:2px;border-radius:2px;background:var(--c-ink)} .ds-chip:focus-visible{outline:2px solid var(--brand);outline-offset:2px}"
+    },
+    {
+      "name": "Admin Dark Button",
+      "kind": "button",
+      "refersTo": "button-dark",
+      "description": "Primary admin action (save, sign in).",
+      "html": "<button class=\"ds-btn-dark\">Guardar</button>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-btn-dark{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border:1px solid var(--ink);border-radius:12px;background:var(--ink);color:#fff;font:600 15px var(--font);cursor:pointer;transition:background .15s} .ds-btn-dark:hover{background:#342C24} .ds-btn-dark:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}"
+    },
+    {
+      "name": "Admin Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Panel form field with label and hint.",
+      "html": "<label class=\"ds-field\"><span>Nombre del producto</span><input class=\"ds-input\" value=\"Queso campesino\"><small>Así lo verán tus clientes.</small></label>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-field{display:grid;gap:6px;max-width:320px;color:var(--ink)} .ds-field span{font:600 14px var(--font)} .ds-field small{color:var(--muted);font-size:13px} .ds-input{min-height:44px;padding:0 14px;border:1px solid var(--line-2);border-radius:12px;background:#fff;font:15px var(--font);transition:border-color .15s,box-shadow .15s} .ds-input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(142,95,24,.16)}"
+    },
+    {
+      "name": "Admin Sidebar Nav",
+      "kind": "nav",
+      "refersTo": "side-nav-item",
+      "description": "Panel sidebar items with ink selection.",
+      "html": "<nav class=\"ds-side\"><a href=\"#\" aria-current=\"page\">Inicio</a><a href=\"#\">Productos</a><a href=\"#\">Configuración</a></nav>",
+      "css": ":host{--brand:#24331F;--accent:#DDB06C;--on-accent:#231A0E;--price:#B4182D;--night:#15120D;--cream:#F7F1E6;--sand:#EFE4D0;--paper:#FFFDF9;--c-ink:#211C16;--c-ink-2:#4A4036;--c-muted:#6F655A;--c-line:#E7DDCC;--ink:#1C1814;--ink-2:#3D362F;--muted:#6B6259;--line:#ECE6DC;--line-2:#DCD3C6;--wash:#F6F2EA;--brand-2:#8E5F18;--serif:'Playfair Display',Georgia,'Times New Roman',serif;--script:'Ms Madi',cursive;--font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.16,1,.3,1);font-family:var(--font)} .ds-side{display:grid;gap:2px;width:220px;padding:14px;background:#fff;border-right:1px solid var(--line)} .ds-side a{padding:10px 12px;border-radius:10px;color:var(--ink-2);font:500 15px var(--font);text-decoration:none} .ds-side a:hover{background:var(--wash)} .ds-side a[aria-current=page]{background:var(--ink);color:#fff} .ds-side a:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Table Set at Night",
+    "overview": "Every public catalog is a neighborhood shop's window told as a table laid out after dark: full-bleed photography under a warm night gradient with a large serif headline in two tones, and below it a cream counter where each product is a paper card that adds itself to an order. The order leaves through WhatsApp with quantities and total already written. The world has three materials (night, cream, paper), three voices (Playfair Display for what the shop says, Ms Madi for what the shop scribbles in the margin, Onest for everything the shopper reads to act), and two business colors that each store sets for itself: a dark primary that fills every action button and a light accent that carries the gold italic, the hero button, and the stamp-like details.\n\nThe admin and super admin panels are a second room in the same house: white surfaces on a zinc wash, near-black ink selection, Onest only. They keep the earlier operational system intact and meet the storefront only inside the store preview in Configuración, which renders the night cover, the gold italic, and the cream strip in miniature.\n\nThe storefront follows the client's comp (`Salsamentaria Javier_ Tradición y Buen Sabor.png`) by explicit user direction; where this document and the comp disagree, the build and the comp win.",
+    "keyCharacteristics": [
+      "Two grounds: night (#15120D family) for photography bands, header, and footer; cream for the shopping counter.",
+      "Products on warm paper cards with a hairline ring, a 4:3 photo, a crimson price, and a quantity stepper beside a dark cart button.",
+      "Playfair Display headlines with the second line in gold italic; Ms Madi only for asides rotated a few degrees off the grid.",
+      "Wave edges where night meets cream; a circular stamp and a pinned paper tag as the shop's marks.",
+      "One action color per store (the business primary), validated to carry white text."
+    ],
+    "rules": [
+      {
+        "name": "The Two Grounds Rule",
+        "body": "The storefront has exactly two grounds: night for photography and frame (header, hero, band, footer), cream for shopping. Paper sits on cream; nothing sits on white except fields and steppers.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Action Color Rule",
+        "body": "Buttons that advance an order fill the business primary with white text. Gold fills only the hero button and the plan arrows; crimson never fills a button.",
+        "section": "colors"
+      },
+      {
+        "name": "The Crimson Means Money Rule",
+        "body": "Crimson marks a price, the order count, and a saved favorite. Nothing else is crimson.",
+        "section": "colors"
+      },
+      {
+        "name": "The Script Is an Aside Rule",
+        "body": "Ms Madi never carries information the shopper needs to act. Notes and the paper tag are `aria-hidden` restatements; prices, names, buttons, and fields are always Onest.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two-Tone Headline Rule",
+        "body": "A hero headline is a roman line and an italic line in the business accent. The italic is the emphasis; no other color or weight change is added inside a headline.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Columns Rule",
+        "body": "`tnum` applies where numbers update in place or stack: the header total, the order total, quantity outputs, the price range, admin price inputs and tables. Catalog card prices stay proportional.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ring Not Border Rule",
+        "body": "Storefront cards on cream take the 1px ring shadow, not a drawn border. Fields, steppers, and chips are the only bordered things on the counter.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** fill every button that advances an order with the business primary and white text, and keep Configuración's 4.5:1 checks for both business colors.",
+      "**Do** set products on paper cards over cream with the card ring, a 4:3 photo, a crimson Onest price, and the stepper beside the cart button.",
+      "**Do** write each hero headline as a roman line plus a gold italic line.",
+      "**Do** join night and cream with the wave edge.",
+      "**Do** keep handwritten notes rotated, `aria-hidden`, and redundant with nearby Onest text.",
+      "**Do** keep test photography credited (`docs/prototipo/img/CREDITOS.md`) and never present it as the business's own."
+    ],
+    "donts": [
+      "**Don't** set prices, product names, buttons, or form text in Playfair Display or Ms Madi.",
+      "**Don't** use crimson for anything but prices, the order count, and a saved favorite.",
+      "**Don't** fill buttons with gold beyond the hero CTA and the plan arrows.",
+      "**Don't** add a mobile bottom bar; the order lives in the header.",
+      "**Don't** bring cream, night, Playfair, or Ms Madi into the admin panel outside the store preview.",
+      "**Don't** reuse the tracked-caps line above the hero and catalog headlines on new surfaces; it is carried here only to match the client comp."
+    ]
+  }
+}

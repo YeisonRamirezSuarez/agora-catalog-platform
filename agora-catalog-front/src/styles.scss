@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Colores del negocio por defecto; el catálogo los reemplaza con los de cada empresa. */
+:root {
+  --brand: #24331F;
+  --accent: #DDB06C;
+}
+
+body {
+  @apply bg-cream font-sans text-cream-ink antialiased;
+}

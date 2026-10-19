@@ -1,0 +1,10 @@
+# Contexto de docker/web/Dockerfile (la raíz): solo hace falta el front.
+**/node_modules
+**/dist
+**/.angular
+**/build
+**/.gradle
+**/.env
+.git
+docs
+herramientas

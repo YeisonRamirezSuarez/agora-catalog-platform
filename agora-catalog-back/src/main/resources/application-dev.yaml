@@ -1,0 +1,19 @@
+# Perfil `dev`: ambiente desplegado de pruebas.
+#
+# Todo lo que cambia por ambiente sale de variables de entorno (o del `.env` del
+# directorio de trabajo). Ver .env.example para la lista completa.
+
+server:
+  # Detrás del proxy inverso (Caddy), el backend escucha solo en loopback.
+  address: ${SERVER_ADDRESS:127.0.0.1}
+
+settings:
+  security:
+    # Caddy es el proxy delante. Ajustar al número real.
+    trusted-proxy-count: ${TRUSTED_PROXY_COUNT:1}
+
+logging:
+  file:
+    path: ${LOG_PATH:./logs}
+  level:
+    root: INFO

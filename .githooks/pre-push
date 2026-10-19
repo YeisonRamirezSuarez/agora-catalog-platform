@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+#
+# Red de seguridad antes de pushear. Protege sobre todo las migraciones de Flyway:
+#
+#   1) Numero de migracion ya tomado en la rama base  -> Flyway no arranca con dos V iguales.
+#   2) Rama atrasada respecto de la rama base          -> integrar antes de subir.
+#   3) Migracion nueva sin la cabecera obligatoria     -> quien la revisa no deberia leer todo el SQL.
+#   4) Migracion ya publicada que se modifico          -> rompe el arranque de quien ya la aplico
+#                                                         (Flyway valida el checksum).
+#
+# No es un control de seguridad: se saltea con `git push --no-verify` y no corre en el
+# servidor. Es una red para el error distraido.
+#
+# Instalacion (una vez por clon; el build del backend y el `prepare` del front ya lo hacen):
+#   git config core.hooksPath .githooks
+#
+set -euo pipefail
+
+DIR_MIGRACIONES="agora-catalog-back/src/main/resources/db/migration"
+# Rama base: PRE_PUSH_BASE si se define; si no, origin/develop; si no existe, origin/master y luego origin/main.
+# `|| true`: en el primer push el remoto no tiene ninguna, el `for` sale con error y `set -e` cortaría.
+REF_BASE="${PRE_PUSH_BASE:-$(for r in origin/develop origin/master origin/main; do git rev-parse --verify --quiet "$r" >/dev/null && { echo "$r"; break; }; done || true)}"
+
+# Sin la referencia remota no hay con que comparar: no se bloquea nada.
+if [ -z "$REF_BASE" ] || ! git rev-parse --verify --quiet "$REF_BASE" >/dev/null; then
+    exit 0
+fi
+
+AGREGADAS="$(git diff --name-only --diff-filter=A "$REF_BASE"...HEAD -- "$DIR_MIGRACIONES" || true)"
+
+# ----------------------------------------------------------------------
+# 1) Numero de migracion ya tomado en la rama base
+# ----------------------------------------------------------------------
+CHOQUES=""
+for archivo in $AGREGADAS; do
+    version="$(basename "$archivo" | sed -nE 's/^V([0-9]+(\.[0-9]+)?)__.*/\1/p')"
+    [ -z "$version" ] && continue
+    yaexiste="$(git ls-tree --name-only "$REF_BASE" "$(dirname "$archivo")/" 2>/dev/null \
+                | grep -E "/V${version}__" || true)"
+    if [ -n "$yaexiste" ]; then
+        CHOQUES="$CHOQUES  V$version: la tuya es $(basename "$archivo"), en $REF_BASE ya esta $(basename "$yaexiste")
+"
+    fi
+done
+
+if [ -n "$CHOQUES" ]; then
+    echo "" >&2
+    echo "PUSH BLOQUEADO — el numero de migracion ya esta tomado en $REF_BASE:" >&2
+    printf '%s' "$CHOQUES" >&2
+    cat >&2 <<AYUDA
+
+Renombra la tuya al siguiente numero libre y vuelve a pushear:
+
+  git fetch
+  ls $DIR_MIGRACIONES | sort -V | tail -3
+  git mv <ruta>/V<N>__descripcion.sql <ruta>/V<N+1>__descripcion.sql
+
+AYUDA
+    exit 1
+fi
+
+# ----------------------------------------------------------------------
+# 2) Rama atrasada respecto de la base
+# ----------------------------------------------------------------------
+ATRAS="$(git rev-list --count "HEAD..$REF_BASE" 2>/dev/null || echo 0)"
+if [ "$ATRAS" -gt 0 ]; then
+    echo "" >&2
+    echo "PUSH BLOQUEADO — estas $ATRAS commit(s) atras de $REF_BASE:" >&2
+    git log --no-merges --pretty=format:'  %h  %<(18,trunc)%an %s' "HEAD..$REF_BASE" >&2
+    cat >&2 <<AYUDA
+
+
+Integra primero y revisa si lo que entro toca los mismos archivos que tu cambio:
+
+  git fetch && git rebase $REF_BASE
+
+Un rebase sin conflictos igual puede dejar codigo que compila y no funciona.
+Para saltear esta comprobacion:  git push --no-verify
+
+AYUDA
+    exit 1
+fi
+
+# ----------------------------------------------------------------------
+# 3) Migracion nueva sin la cabecera obligatoria
+# ----------------------------------------------------------------------
+SIN_CABECERA=""
+for archivo in $AGREGADAS; do
+    [ -f "$archivo" ] || continue
+    faltan=""
+    for campo in "QUE HACE" "DESTRUCTIVO" "TIPOS" "POR QUE" "MEDIDO EN"; do
+        # Alternancia (E|É) y no conjunto [EÉ]: la É son dos bytes en UTF-8.
+        patron="${campo/QUE/QU(E|É)}"
+        if ! grep -qiE "^[[:space:]]*--[[:space:]]*$patron[[:space:]]*:" "$archivo"; then
+            faltan="$faltan, $campo"
+        fi
+    done
+    if [ -n "$faltan" ]; then
+        SIN_CABECERA="$SIN_CABECERA  $(basename "$archivo") — falta: ${faltan#, }
+"
+    fi
+done
+
+if [ -n "$SIN_CABECERA" ]; then
+    echo "" >&2
+    echo "PUSH BLOQUEADO — migracion nueva sin la cabecera obligatoria:" >&2
+    printf '%s' "$SIN_CABECERA" >&2
+    cat >&2 <<'AYUDA'
+
+Pegala arriba del archivo y completala:
+
+-- ============================================================
+-- V3 — descripcion corta
+-- ============================================================
+-- QUE HACE:    3 ALTER TABLE (aditivo), 12 INSERT con ON CONFLICT
+-- DESTRUCTIVO: NO
+-- TIPOS:       no cambia el tipo de ninguna columna
+-- POR QUE:     <el problema que resuelve, no lo que hace>
+-- MEDIDO EN:   local — 0 filas afectadas
+-- ============================================================
+
+En DESTRUCTIVO cuenta cualquier DELETE, DROP o TRUNCATE, y tambien un UPDATE que
+pise datos existentes. En MEDIDO EN, "no medido" es valido; un numero inventado no.
+
+AYUDA
+    exit 1
+fi
+
+# ----------------------------------------------------------------------
+# 4) Migracion ya publicada que se esta modificando
+# ----------------------------------------------------------------------
+MODIFICADAS="$(git diff --name-only --diff-filter=M "$REF_BASE"...HEAD -- "$DIR_MIGRACIONES" || true)"
+if [ -n "$MODIFICADAS" ]; then
+    echo "" >&2
+    echo "PUSH BLOQUEADO — se modifico una migracion que ya esta en $REF_BASE:" >&2
+    echo "$MODIFICADAS" | sed 's#.*/#  - #' >&2
+    cat >&2 <<AYUDA
+
+Una migracion es inmutable desde que se publica: cambiarla rompe el arranque del
+backend a quien ya la aplico (checksum mismatch).
+
+  1. Revertir el archivo:  git checkout $REF_BASE -- <ruta-de-la-migracion>
+  2. Poner el cambio en una migracion NUEVA. Si cambia el tipo de una columna,
+     correr antes scripts/bd/preflight-cambio-de-tipo.sql.
+
+Si de verdad no hay alternativa (el arreglo tiene que correr antes que una
+migracion posterior), avisar al equipo y saltear el hook:  git push --no-verify
+
+AYUDA
+    exit 1
+fi
+
+exit 0

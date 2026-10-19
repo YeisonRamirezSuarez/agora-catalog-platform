@@ -1,0 +1,47 @@
+# Secretos locales. Cada proyecto copia su .env.example y lo completa.
+.env
+
+# Dumps y respaldos de base de datos: suelen contener correos reales y hashes.
+*.backup
+*.dump
+
+# Imágenes subidas en local (STORAGE_PATH)
+uploads/
+
+# Dependencias y salidas de build
+node_modules/
+dist/
+build/
+target/
+.angular/
+.gradle/
+*.class
+*.jar
+*.war
+*.log
+logs/
+
+# Editores
+.idea/
+.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Reportes de pruebas
+TEST*.xml
+test-results/
+
+# Python (herramientas/)
+*.py[cod]
+__pycache__/
+
+# Overrides personales de Claude Code y material local de trabajo
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+.superpowers/
+docs/superpowers/
+
+# Excepción: el wrapper de Gradle sí se versiona
+!gradle/wrapper/gradle-wrapper.jar

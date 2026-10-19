@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" type="image/svg+xml" href="marca/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="marca/favicon-32.png">
+<link rel="apple-touch-icon" href="marca/apple-touch-icon.png">
+<title>Salsamentaria Javier: catálogo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#18181B;--ink-2:#3F3F46;--muted:#686871;--faint:#71717A;
+  --line:#ECECEF;--line-2:#DEDEE3;--wash:#F4F4F5;--bg:#FFFFFF;
+  --brand:#1E3B34;--brand-2:#2E9B5F;
+  --deal:#FFD43B;--deal-ink:#3A2C00;
+  --wa:#138A4A;--wa-press:#0E733D;--wa-soft:#E6F4EC;
+  --danger:#C42B2B;--danger-soft:#FCEDED;--ok:#1E7A46;--ok-soft:#E8F4EC;--warn-soft:#FFF6DB;--warn-ink:#6A4B00;
+  --r-sm:8px;--r:12px;--r-lg:16px;--r-xl:22px;
+  --sh-1:0 1px 2px rgba(24,24,27,.06),0 1px 1px rgba(24,24,27,.04);
+  --sh-2:0 8px 24px -8px rgba(24,24,27,.22);
+  --sh-3:0 -10px 32px -12px rgba(24,24,27,.3);
+  --font:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--font);-webkit-font-smoothing:antialiased;caret-color:var(--brand-2)}
+::selection{background:color-mix(in srgb,var(--brand-2) 22%,transparent)}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{text-wrap:balance;letter-spacing:-.01em}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+img{display:block;max-width:100%}
+svg{width:20px;height:20px;flex:none}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px;border-radius:6px}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.muted{color:var(--muted)}
+.grow{flex:1;min-width:0}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ---------- Piezas compartidas ---------- */
+.ec{display:block;flex:none;width:auto;height:26px}
+.ph{position:relative;display:block;overflow:hidden;background:var(--wash)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph-none{display:grid;place-items:center;width:100%;height:100%;color:var(--faint)}
+.ph-none svg{width:28px;height:28px}
+.logo{display:grid;place-items:center;flex:none;overflow:hidden;width:44px;height:44px;border-radius:26%;background:var(--brand);color:#fff;font-weight:800;font-size:16px;letter-spacing:-.02em}
+.logo.lg{width:84px;height:84px;font-size:30px;border:3px solid #fff;box-shadow:var(--sh-2)}
+.logo.sm{width:32px;height:32px;font-size:12px}
+/* El logo siempre ocupa la misma caja cuadrada: la imagen ya viene recortada a 1:1 desde el editor. */
+.logo.has-img{background:#fff}
+.logo.has-img img{display:block;width:100%;height:100%;object-fit:cover}
+.badge-deal{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;background:var(--deal);color:var(--deal-ink);font-size:12px;font-weight:800;letter-spacing:-.01em}
+.badge-out{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:var(--ink);color:#fff;font-size:12px;font-weight:700}
+.round{display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:var(--ink);box-shadow:var(--sh-1)}
+.round:hover{background:var(--wash)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;border:1px solid var(--line-2);border-radius:var(--r);background:#fff;font-weight:600;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--wash)}
+.btn-dark{border-color:var(--ink);background:var(--ink);color:#fff}
+.btn-dark:hover{background:#2A2A2F}
+.btn-wa{border-color:var(--wa);background:var(--wa);color:#fff}
+.btn-wa:hover{background:var(--wa-press)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.icon{width:42px;padding:0}
+.btn.link{min-height:auto;padding:6px 0;border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.wide{width:100%}
+.wa-mini{position:absolute;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#fff;color:var(--wa);box-shadow:var(--sh-2);text-decoration:none}
+.wa-mini:hover{background:var(--wa-soft)}
+.wa-mini svg{width:20px;height:20px}
+.input{width:100%;min-height:44px;padding:0 14px;border:1px solid var(--line-2);border-radius:var(--r);background:#fff;transition:border-color .15s,box-shadow .15s}
+textarea.input{padding:10px 14px;resize:vertical}
+.input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(24,24,27,.08)}
+.input[aria-invalid=true]{border-color:var(--danger)}
+select.input{appearance:none;padding-right:36px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23686871' stroke-width='2'%3E%3Cpath d='m1 1 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center}
+.switch{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:44px;height:26px;margin:0;border-radius:999px;background:#D4D4D8;transition:background .2s var(--ease)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .25s var(--ease)}
+.switch:checked{background:var(--ok)}
+.switch:checked::after{transform:translateX(18px)}
+.sw-label{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-weight:500}
+#toast{position:fixed;left:50%;bottom:96px;z-index:90;max-width:calc(100% - 32px);padding:11px 16px;border-radius:var(--r);background:var(--ink);color:#fff;font-weight:500;opacity:0;pointer-events:none;transform:translate(-50%,12px);transition:opacity .2s,transform .3s var(--ease)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- Catálogo público ---------- */
+.store{min-height:100vh;padding-bottom:104px;background:var(--bg)}
+.wrap{max-width:1120px;margin:0 auto}
+.cover{position:relative;height:184px;background:var(--brand)}
+.cover > img{width:100%;height:100%;object-fit:cover}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.28),rgba(0,0,0,0) 45%)}
+.cover-bar{position:absolute;inset:12px 12px auto;z-index:1;display:flex;align-items:center;gap:8px}
+.ec-pill{display:inline-flex;align-items:center;height:38px;padding:0 14px 0 8px;border-radius:999px;background:#fff;box-shadow:var(--sh-1)}
+.ec-pill .ec{height:28px}
+.store-head{position:relative;padding:0 16px 18px;border-bottom:8px solid var(--wash)}
+.store-head .logo.lg{margin-top:-42px}
+.store-head h1{margin-top:10px;font-size:26px;font-weight:800;line-height:1.1}
+.store-sub{margin-top:4px;color:var(--muted)}
+.facts{display:grid;gap:8px;margin:14px 0 0;padding:0;list-style:none}
+.facts li{display:flex;align-items:flex-start;gap:10px;min-width:0;font-size:14px}
+.facts li span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.facts svg{width:18px;height:18px;color:var(--muted)}
+.more{margin-top:12px;padding:0;border:0;background:none;color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
+.tools{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.tools-in{padding:10px 16px 0}
+.search{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:var(--r);background:var(--wash);color:var(--muted);transition:box-shadow .15s}
+.search:focus-within{box-shadow:0 0 0 2px var(--ink);background:#fff}
+.search input{flex:1;min-width:0;border:0;background:none;outline:none;color:var(--ink)}
+.search input::placeholder{color:var(--faint)}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;width:18px;height:18px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23686871' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/18px no-repeat;cursor:pointer}
+.tabs{display:flex;gap:22px;margin-top:6px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+.tabs::-webkit-scrollbar{display:none}
+.tab{position:relative;flex:none;padding:10px 0 12px;border:0;background:none;color:var(--muted);font-weight:600;white-space:nowrap}
+.tab::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--brand);transform:scaleX(0);transition:transform .3s var(--ease)}
+.tab.on{color:var(--ink)}
+.tab.on::after{transform:scaleX(1)}
+[hidden]{display:none!important}
+.sec{padding:22px 0 6px;scroll-margin-top:118px}
+.sec + .sec{border-top:8px solid var(--wash)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 16px}
+.sec h2{font-size:20px;font-weight:800}
+.sec-count{color:var(--muted);font-size:13px}
+.rail{display:flex;gap:12px;padding:14px 16px 4px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.pcard{position:relative;flex:none;width:148px;scroll-snap-align:start}
+.pcard-hit{display:grid;gap:3px;width:100%;padding:0;border:0;background:none;text-align:left}
+.pcard .ph{width:148px;height:148px;margin-bottom:6px;border-radius:var(--r-lg)}
+.pcard .badge-deal{position:absolute;top:8px;left:8px}
+.pcard .wa-mini{top:0;right:6px;margin-top:calc(100% - 44px)} /* margin % se mide sobre el ancho: queda en la esquina de la foto cuadrada */
+.pcard-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:16px;font-weight:800}
+.pcard-price s,.row-price s,.sheet-price s{color:var(--faint);font-size:13px;font-weight:500}
+.pcard-name{font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcard-pres,.row-pres{color:var(--muted);font-size:13px}
+.list{padding:4px 16px 0}
+.row{position:relative;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-hit{display:flex;gap:14px;width:100%;padding:16px 0;border:0;background:none;text-align:left}
+.row-txt{display:grid;flex:1;align-content:start;gap:2px;min-width:0}
+.row-name{font-size:15.5px;font-weight:600;line-height:1.3}
+.row-desc{margin-top:2px;color:var(--muted);font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row-price{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:8px;font-size:15.5px;font-weight:700}
+.row-price small{color:var(--muted);font-size:13px;font-weight:500}
+.ask{color:var(--wa);font-size:13.5px;font-weight:600}
+.row .ph{flex:none;width:104px;height:104px;border-radius:var(--r)}
+.row .wa-mini{right:-4px;bottom:10px}
+.out .ph img{filter:grayscale(1);opacity:.55}
+.out .ph::after{content:"Agotado";position:absolute;left:50%;top:50%;padding:3px 8px;border-radius:6px;background:var(--ink);color:#fff;font-size:12px;font-weight:700;transform:translate(-50%,-50%)}
+.out .row-price,.out .pcard-price{color:var(--faint)}
+.no-hits{display:grid;justify-items:center;gap:6px;padding:56px 24px;text-align:center;color:var(--muted)}
+.no-hits b{color:var(--ink);font-size:17px}
+.store-foot{display:grid;justify-items:center;gap:10px;padding:36px 16px 24px;border-top:8px solid var(--wash);color:var(--muted);font-size:13px;text-align:center}
+.store-foot .ec{height:30px}
+.wa-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0))}
+.wa-bar .btn-wa{width:100%;min-height:52px;border-radius:14px;font-size:16px;font-weight:700;box-shadow:0 8px 20px -8px rgba(19,138,74,.6)}
+.wa-bar svg{width:22px;height:22px}
+.tools-wa{display:none}
+.proto-note{max-width:420px}
+.proto-note button{padding:0;border:0;background:none;color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.cred-list{display:grid;gap:0;margin:14px 0 0;padding:0;list-style:none;font-size:14px}
+.cred-list li{padding:10px 0;border-bottom:1px solid var(--line)}
+.cred-list a{color:var(--muted)}
+
+/* Hoja inferior */
+.sheet-bg{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(24,24,27,.5);animation:fade .25s ease-out}
+.sheet{position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;max-height:92vh;border-radius:var(--r-xl) var(--r-xl) 0 0;background:#fff;box-shadow:var(--sh-3);animation:rise .45s var(--ease)}
+.sheet-scroll{overflow-y:auto;overscroll-behavior:contain}
+.sheet .grab{position:absolute;top:8px;left:50%;z-index:2;width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.85);transform:translateX(-50%)}
+.sheet-close{position:absolute;top:14px;right:14px;z-index:2}
+.sheet-ph{aspect-ratio:4/3;border-radius:var(--r-xl) var(--r-xl) 0 0}
+.sheet-body{display:grid;gap:8px;padding:18px 20px 8px}
+.sheet-body h2{font-size:24px;font-weight:800;line-height:1.15}
+.sheet-price{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:4px;font-size:24px;font-weight:800}
+.sheet-price small{color:var(--muted);font-size:14px;font-weight:500}
+.sheet-price s{font-size:16px}
+.sheet-desc{color:var(--ink-2);line-height:1.55}
+.sheet-cta{padding:12px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.sheet-cta .btn{width:100%;min-height:52px;border-radius:14px;font-size:16px;font-weight:700}
+.sheet-info{padding:52px 20px 8px}
+.sheet-info h2{font-size:22px;font-weight:800}
+.info-list{display:grid;gap:0;margin:14px 0 0;padding:0}
+.info-list div{display:grid;grid-template-columns:24px 1fr;gap:4px 12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.info-list div:last-child{border-bottom:0}
+.info-list svg{grid-row:span 2;margin-top:2px;color:var(--muted)}
+.info-list dt{color:var(--muted);font-size:13px}
+.info-list dd{margin:0;font-weight:500}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{transform:translateY(100%)}}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}}
+
+/* No disponible */
+.na{display:grid;place-items:center;min-height:100vh;padding:24px;text-align:center}
+.na-box{display:grid;justify-items:center;gap:12px;max-width:340px;color:var(--muted)}
+.na-icon{display:grid;place-items:center;width:64px;height:64px;border-radius:20px;background:var(--wash);color:var(--ink)}
+.na-icon svg{width:30px;height:30px}
+.na-box h1{color:var(--ink);font-size:24px;font-weight:800}
+.na-box .ec{margin-top:24px}
+
+@media(min-width:960px){
+  .store{padding-bottom:40px}
+  .cover{height:260px;max-width:1120px;margin:0 auto;border-radius:0 0 var(--r-xl) var(--r-xl);overflow:hidden}
+  .store-head{display:grid;grid-template-columns:auto 1fr auto;align-items:end;column-gap:20px;max-width:1120px;margin:0 auto;padding:16px 24px 24px;border-bottom:0}
+  .store-head .logo.lg{width:112px;height:112px;margin-top:-72px;font-size:40px;grid-row:span 2}
+  .store-head h1{margin-top:0;font-size:34px}
+  .facts{grid-column:3;grid-row:1/span 2;margin:0;align-self:end;max-width:380px}
+  .sheet .grab{display:none}
+  .more{grid-column:2;justify-self:start;margin-top:6px}
+  .tools-in{display:grid;grid-template-columns:minmax(0,420px) 1fr auto;align-items:center;column-gap:16px;max-width:1120px;margin:0 auto;padding:12px 24px 0}
+  .tools-in .tabs{grid-column:1/-1}
+  .tools-wa{display:inline-flex;grid-column:3}
+  .row .ph{width:140px;height:140px}
+  .search{max-width:420px}
+  #results{max-width:1120px;margin:0 auto;padding:0 8px}
+  .sec + .sec{border-top:1px solid var(--line)}
+  .rail{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,240px));overflow:visible}
+  .pcard{width:auto}
+  .pcard .ph{width:100%;height:auto;aspect-ratio:1}
+  .list{display:grid;grid-template-columns:1fr 1fr;column-gap:40px}
+  .row:nth-last-child(2):nth-child(odd){border-bottom:0}
+  .store-foot{border-top:1px solid var(--line)}
+  .wa-bar{display:none}
+  .sheet-bg{align-items:center;padding:24px}
+  .sheet{border-radius:var(--r-xl);animation:pop .4s var(--ease)}
+  #toast{bottom:32px}
+}
+
+/* ---------- Login ---------- */
+.login{display:grid;place-items:center;min-height:100vh;padding:24px 16px;background:var(--wash)}
+.login-box{display:grid;gap:18px;width:100%;max-width:400px;padding:32px 28px;border:1px solid var(--line);border-radius:var(--r-xl);background:#fff;box-shadow:var(--sh-1)}
+.login-box .ec{height:44px}
+.login-box h1{font-size:26px;font-weight:800}
+
+/* ---------- Panel ---------- */
+.shell{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh;background:var(--wash)}
+.side{position:sticky;top:0;display:flex;flex-direction:column;gap:2px;height:100vh;padding:20px 14px;border-right:1px solid var(--line);background:#fff}
+.side-brand{display:grid;gap:14px;padding:4px 8px 18px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.side-store{display:flex;align-items:center;gap:12px;font-size:15.5px;font-weight:700;line-height:1.2}
+.side-ec{padding:14px 12px 8px;margin-top:8px;border-top:1px solid var(--line)}
+.side-ec .ec{height:28px}
+.side a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--ink-2);font-weight:500;text-decoration:none}
+.side a svg{color:var(--faint)}
+.side a:hover{background:var(--wash)}
+.side a[aria-current=page]{background:var(--ink);color:#fff}
+.side a[aria-current=page] svg{color:#fff}
+.spacer{flex:1}
+.main{width:100%;max-width:1180px;padding:32px 36px 120px}
+.mtop{display:none}
+.page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:22px}
+.page-head h1{font-size:30px;font-weight:800}
+.page-head p{margin-top:4px;color:var(--muted)}
+.back{display:inline-flex;align-items:center;gap:4px;margin-bottom:6px;color:var(--muted);font-size:14px;font-weight:500;text-decoration:none}
+.panel{padding:22px;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff}
+.panel h2{margin-bottom:6px;font-size:18px;font-weight:700}
+.main > .panel + .panel,.grid-2 + .panel{margin-top:16px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+@media(max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;inset:auto 0 0 0;z-index:40;flex-direction:row;justify-content:space-around;height:auto;padding:6px 4px calc(6px + env(safe-area-inset-bottom));border-top:1px solid var(--line);border-right:0}
+  .side .side-brand,.side .spacer,.side .side-extra{display:none}
+  .side a{flex:1;flex-direction:column;gap:3px;padding:7px 2px;font-size:11px;text-align:center}
+  .main{padding:0 16px 120px}
+  .mtop{display:flex;align-items:center;gap:10px;margin:0 -16px 18px;padding:12px 16px;border-bottom:1px solid var(--line);background:#fff;font-weight:700}
+  .mtop a{margin-left:auto;color:var(--muted);font-size:14px;font-weight:500}
+  .page-head h1{font-size:26px}
+  .grid-2{grid-template-columns:minmax(0,1fr)}
+  #toast{bottom:84px}
+}
+
+/* Inicio */
+.stat-list{display:grid;margin-top:6px}
+.stat-row{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.stat-row:last-child{border-bottom:0}
+.stat-row > svg:first-child{color:var(--muted)}
+.stat-row b{margin-left:auto;font-size:18px;font-weight:800}
+.stat-row .chev{color:var(--faint)}
+.stat-row:hover{background:var(--wash);border-radius:10px}
+.stat-row.bad b{color:var(--danger)}
+.link-box{display:flex;flex-wrap:wrap;align-items:center;gap:20px}
+.link-txt{display:grid;flex:1 1 260px;gap:10px}
+.copy-row{display:flex;gap:8px}
+.qr{display:grid;justify-items:center;gap:10px;margin:0;padding:12px;border:1px solid var(--line);border-radius:var(--r)}
+.qr-svg{width:140px;height:140px}
+
+/* Productos */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.toolbar .search{flex:1 1 260px;max-width:none;background:#fff;border:1px solid var(--line-2)}
+.toolbar select.input{width:auto}
+.table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff;overflow:hidden}
+.table th{padding:11px 14px;border-bottom:1px solid var(--line);background:#FAFAFA;color:var(--muted);font-size:12.5px;font-weight:600;text-align:left}
+.table td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.table tr:last-child td{border-bottom:0}
+.table tbody tr:hover td{background:#FCFCFC}
+.num,.table .num{text-align:right}
+.table .ph,.mcard .ph{width:48px;height:48px;border-radius:10px}
+.code{color:var(--muted);font-size:13px}
+.price-input{width:116px;text-align:right}
+.price-input.dirty{border-color:var(--ok);background:var(--ok-soft)}
+.mcards{display:none}
+.scroll-x{overflow-x:auto}
+.scroll-x .table.wide-t{min-width:700px}
+.pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;color:var(--muted);font-size:14px}
+.pager div{display:flex;gap:8px}
+.empty{display:grid;justify-items:center;gap:12px;padding:44px 20px;text-align:center}
+.savebar{position:fixed;left:50%;bottom:24px;z-index:45;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 18px;border-radius:16px;background:var(--ink);color:#fff;white-space:nowrap;box-shadow:var(--sh-2);transform:translateX(-50%);animation:pop .35s var(--ease)}
+.savebar .btn{min-height:38px}
+.savebar .btn:not(.btn-wa){border-color:#3F3F46;background:transparent;color:#fff}
+.mcard{display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff}
+.mcard .ph{width:56px;height:56px}
+.mcard .price-input{width:124px}
+.mcard .money{margin-top:6px}
+.money{position:relative;display:inline-block}
+.money::before{content:"$";position:absolute;left:12px;top:50%;color:var(--muted);transform:translateY(-50%);pointer-events:none}
+.money .price-input{padding-left:24px}
+.price-input,.table td,.stat-row b{font-variant-numeric:tabular-nums}
+.mcard-side{display:grid;justify-items:end;gap:8px}
+@media(max-width:860px){
+  .table-wrap{display:none}
+  .mcards{display:grid;gap:10px}
+  .toolbar select.input{flex:1 1 140px}
+  .savebar{left:16px;right:16px;bottom:80px;flex-wrap:wrap;white-space:normal;transform:none}
+}
+
+/* Formularios */
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) 340px;align-items:start;gap:16px}
+.stack{display:grid;gap:16px}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.form.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.form h2,.full{grid-column:1/-1}
+.field{display:grid;align-content:start;gap:6px}
+.field label{font-size:14px;font-weight:600}
+.hint{color:var(--muted);font-size:13px}
+.err{color:var(--danger);font-size:13px;font-weight:500}
+.err:empty{display:none}
+.offer{display:grid;gap:10px;margin:0;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:#FCFCFC}
+.offer legend{padding:0 6px;font-weight:700}
+.toggles{display:flex;flex-wrap:wrap;gap:28px}
+.photo-panel{position:sticky;top:24px;display:grid;gap:14px}
+.photo-panel .ph{aspect-ratio:1;border-radius:var(--r)}
+.drop{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px dashed var(--line-2);border-radius:var(--r);color:var(--muted);font-size:13.5px;cursor:pointer}
+.drop b{color:var(--ink)}
+.drop:hover,.drop:focus-within{border-color:var(--ink);background:var(--wash)}
+.drop svg{width:26px;height:26px}
+.form-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.tog:last-child{padding-bottom:0;border-bottom:0}
+.tog > span{display:grid;gap:2px}
+.preview{overflow:hidden;border:1px solid var(--line);border-radius:var(--r)}
+.preview .cover{display:block;width:100%;height:auto;aspect-ratio:1600/754;margin:0;padding:0;border:0;border-radius:0;cursor:pointer}
+.preview .cover::after{display:none}
+.preview .pv-body{position:relative;display:flex;align-items:flex-end;gap:10px;min-width:0;padding:0 12px 12px;margin-top:-28px}
+.preview .pv-body b{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pv-logo{position:relative;flex:none;padding:0;border:0;border-radius:26%;background:none;cursor:pointer}
+.preview .logo{width:60px;height:60px;border:2px solid #fff;font-size:20px;box-shadow:var(--sh-1)}
+.pv-cam{position:absolute;right:8px;bottom:8px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:rgba(24,24,27,.72);color:#fff}
+.pv-cam svg{width:17px;height:17px}
+.pv-logo .pv-cam{right:-6px;bottom:-6px;width:26px;height:26px;border:2px solid #fff}
+.pv-logo .pv-cam svg{width:14px;height:14px}
+.pv-empty{display:grid;place-items:center;height:100%;color:#fff;font-size:13px;font-weight:600}
+/* Editor de recorte */
+.crop{display:grid;gap:12px;padding:56px 20px 20px}
+.crop h2{font-size:22px;font-weight:800}
+.crop-stage{position:relative;overflow:hidden;width:100%;border-radius:var(--r);background:#fff;touch-action:none;cursor:grab;outline-offset:3px;box-shadow:inset 0 0 0 1px var(--line)}
+.crop-stage:active{cursor:grabbing}
+.crop-stage img{position:absolute;top:0;left:0;max-width:none;user-select:none;-webkit-user-drag:none;transform-origin:0 0}
+.crop-stage.is-logo{width:min(100%,300px);justify-self:center;border-radius:26%}
+.crop-band{position:absolute;left:0;right:0;top:25.4%;bottom:25.4%;border-block:2px dashed rgba(255,255,255,.95);box-shadow:0 0 0 999px rgba(24,24,27,.28);pointer-events:none}
+.crop-zoom{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.crop-zoom input{flex:1;accent-color:var(--ink)}
+.crop-actions{display:flex;flex-wrap:wrap;gap:8px}
+.crop-actions .btn-dark{flex:1 1 100%;min-height:50px;border-radius:14px}
+.preview b{font-weight:800}
+.preview .pv-tab{display:inline-block;margin:0 12px 12px;padding-bottom:6px;border-bottom:3px solid var(--brand);font-weight:600;font-size:14px}
+.color{width:100%;height:46px;padding:3px;border:1px solid var(--line-2);border-radius:var(--r);background:#fff;cursor:pointer}
+@media(max-width:1000px){.two-col{grid-template-columns:minmax(0,1fr)}.photo-panel{position:static}}
+@media(max-width:640px){.form,.form.three{grid-template-columns:minmax(0,1fr)}}
+
+/* Categorías */
+.sortable{margin:0;padding:0;list-style:none;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff;overflow:hidden}
+.sortable li{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:#fff}
+.sortable li:last-child{border-bottom:0}
+.sortable li.drag{opacity:.4}
+.grip{display:grid;padding:6px;border:0;border-radius:8px;background:none;color:var(--faint);cursor:grab}
+.cat-thumb{flex:none;width:40px;height:40px;border-radius:10px}
+.cat-name{width:100%;max-width:280px;padding:7px 9px;border:1px solid transparent;border-radius:var(--r-sm);background:none;font-weight:600}
+.cat-name:hover{border-color:var(--line-2)}
+.cat-name:focus{outline:none;border-color:var(--ink);background:#fff}
+.cat-count{color:var(--muted);font-size:13.5px;white-space:nowrap}
+@media(max-width:640px){.sortable .sw-label span,.cat-count{display:none}}
+
+/* Importar */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 16px;padding:0;list-style:none}
+.step{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:#fff;color:var(--muted);font-size:14px;font-weight:500}
+.step b{display:grid;place-items:center;flex:none;width:26px;height:26px;border-radius:50%;background:var(--wash);color:var(--muted);font-size:13px}
+.step.now{border-color:var(--ink);color:var(--ink)}
+.step.now b{background:var(--ink);color:#fff}
+.step.done{color:var(--ink)}
+.step.done b{background:var(--ok);color:#fff}
+@media(max-width:760px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.summary{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.summary div{padding:8px 12px;border-radius:10px;background:var(--wash);font-size:14px}
+.summary b{margin-right:4px;font-weight:800}
+.summary .bad{background:var(--danger-soft);color:var(--danger)}
+.alert{margin-bottom:12px;padding:12px 14px;border-radius:var(--r);background:var(--danger-soft);color:#7A1C1C;font-size:14px}
+.alert.ok{background:var(--ok-soft);color:#165C35}
+.alert.warn{background:var(--warn-soft);color:var(--warn-ink)}
+.zip{display:grid;gap:12px}
+
+/* Super admin */
+.who{display:flex;align-items:center;gap:10px}
+.note{margin-top:12px;font-size:14px}
+.wa-list{display:grid;gap:10px;margin-top:6px}
+.wa-list .btn{justify-content:flex-start;min-height:56px;padding:0 18px;border-radius:14px;font-size:16px;font-weight:700}
+.wa-list small{display:block;font-size:13px;font-weight:500;opacity:.9}
+.flabel{font-size:14px;font-weight:600}
+#wa-rows{display:grid;gap:8px}
+.wa-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto;gap:8px}
+.wa-add{justify-self:start}
+.creds{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:8px 0;padding:14px;border-radius:var(--r);background:var(--wash)}
+.creds dt{color:var(--muted)}
+.creds dd{margin:0;font-weight:600;word-break:break-all}
+.form-stack{display:grid;gap:14px;padding:56px 20px 20px}
+.form-stack h2{font-size:22px;font-weight:800}
+.form-stack h3{margin-top:4px;font-size:16px;font-weight:700}
+.m-pad{display:grid;gap:12px;padding:56px 20px 20px}
+.m-pad h2{font-size:22px;font-weight:800}
+</style>
+</head>
+<body>
+<noscript><div style="max-width:720px;margin:40px auto;padding:0 16px;font:16px/1.55 system-ui,sans-serif">
+  <h1>Prototipo Agorá Catalog: catálogo de Salsamentaria Javier</h1>
+  <p>Esta versión es interactiva y necesita JavaScript. Para leerla sin JavaScript, abre la <a href="estatico/">versión estática</a>, con una página por pantalla:</p>
+  <ul>
+    <li><a href="estatico/catalogo.html">Catálogo público</a>, <a href="estatico/catalogo-producto.html">producto abierto</a> y <a href="estatico/catalogo-whatsapp.html">elegir número de WhatsApp</a></li>
+    <li><a href="estatico/login.html">Ingreso</a>, <a href="estatico/panel.html">inicio del panel</a>, <a href="estatico/productos.html">productos</a>, <a href="estatico/producto.html">editar producto</a>, <a href="estatico/categorias.html">categorías</a>, <a href="estatico/importar.html">importar</a></li>
+    <li><a href="estatico/configuracion.html">Configuración</a>, <a href="estatico/configuracion-recorte.html">recortar logo</a> y <a href="estatico/superadmin.html">super admin</a></li>
+  </ul>
+</div></noscript>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const app = $('#app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const miles = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const cop = n => '$' + miles(Math.round(n));
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const shift = n => { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); };
+const today = () => iso(new Date());
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const slugify = s => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const ini = s => s.split(/\s+/).filter(w => w.length > 2 || /^[A-ZÁÉÍÓÚ]/.test(w)).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const listJoin = a => a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} y ${a[a.length - 1]}`;
+const phone = n => n.replace(/^(\d{2})(\d{3})(\d{3})(\d+)$/, '+$1 $2 $3 $4');
+const rand = (n, abc) => Array.from(crypto.getRandomValues(new Uint32Array(n)), v => abc[v % abc.length]).join('');
+const motion = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+console.assert(cop(9800) === '$9.800' && cop(1234567) === '$1.234.567' && cop(500) === '$500', 'formato COP');
+console.assert(listJoin(['a', 'b', 'c']) === 'a, b y c' && phone('573001234567') === '+57 300 123 4567', 'textos');
+
+const I = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  wa: '<path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"/>',
+  share: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  truck: '<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  home: '<path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/>',
+  box: '<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+  tag: '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+  upload: '<path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/><path d="M12 16V4M7 9l5-5 5 5"/>',
+  download: '<path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/><path d="M12 4v12M7 11l5 5 5-5"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  logout: '<path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"/><path d="M9 12h12l-3-3m0 6 3-3"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  minus: '<path d="M5 12h14"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  store: '<path d="M3 21h18M5 21V10M19 21V10M3 7l2-4h14l2 4a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0"/>',
+  file: '<path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="m10 12 4 5m0-5-4 5"/>',
+  photo: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>',
+  chev: '<path d="m9 6 6 6-6 6"/>',
+  back: '<path d="m15 6-6 6 6 6"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  alert: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/>',
+  link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+};
+const ic = (n, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+const ecLogo = () => '<img class="ec" src="marca/logo.svg" alt="Agorá Catalog" width="123" height="26">';
+
+// ---------- Datos de ejemplo (en el producto vienen de la API) ----------
+const UNI = { UNIDAD: 'unidad', LIBRA: 'libra', KILO: 'kilo', GRAMOS: 'gramos', PAQUETE: 'paquete', CAJA: 'caja' };
+const S = {
+  empresa: {
+    id: 1, nombre: 'Salsamentaria Javier', slug: 'salsamentaria-javier', hash: 'x7k2m9ab',
+    whatsapps: [{ numero: '573163218276', nombre: '' }, { numero: '573015303994', nombre: '' }],
+    direccion: 'Calle 45 # 12-30, barrio San José',
+    horario: 'Lunes a sábado de 7:00 a. m. a 8:00 p. m. Domingos hasta la 1:00 p. m.',
+    domicilios: 'Domicilio gratis en el barrio por compras desde $30.000.',
+    primario: '#2B4141', secundario: '#1B9C5F', precios: true, waProducto: true, agotados: true, activa: true,
+    logo: 'img/cliente/logo-javier-cuadrado.webp', logoSrc: 'img/cliente/logo-javier.webp', logoCrop: null,
+    portada: 'img/portada.jpg', portadaSrc: 'img/portada.jpg', portadaCrop: null, admin: 'javier@ejemplo.com',
+  },
+  cats: [
+    { id: 1, nombre: 'Embutidos', activa: true },
+    { id: 2, nombre: 'Carnes frías', activa: true },
+    { id: 3, nombre: 'Quesos', activa: true },
+    { id: 4, nombre: 'Lácteos', activa: true },
+    { id: 5, nombre: 'Abarrotes', activa: true },
+  ],
+  prods: [],
+};
+S.empresas = [S.empresa,
+  { id: 2, nombre: 'Panadería La Espiga', slug: 'panaderia-la-espiga', hash: 'q4n8d2zt', productos: 31, activa: true, admin: 'espiga@ejemplo.com' },
+  { id: 3, nombre: 'Frutería Doña Rosa', slug: 'fruteria-dona-rosa', hash: 'm2p9x7ce', productos: 0, activa: false, admin: 'rosa@ejemplo.com' }];
+let pid = 0;
+const P = (codigo, cat, nombre, pres, unidad, precio, o = {}) => S.prods.push({
+  id: ++pid, codigo, cat, nombre, pres, unidad, precio,
+  oferta: o.oferta ?? null, desde: o.oferta ? shift(-5) : null, hasta: o.oferta ? shift(10) : null,
+  disp: o.disp ?? true, dest: !!o.dest, img: `img/${codigo}-400.jpg`, big: `img/${codigo}.jpg`, photo: null, desc: o.desc ?? '',
+});
+P('EMB-001', 1, 'Salchichón cervecero', 'Pieza x 500 g', 'UNIDAD', 14500, { oferta: 12900, dest: true, desc: 'Salchichón ahumado con pimienta, para picar con una cerveza bien fría.' });
+P('EMB-002', 1, 'Chorizo santarrosano', 'Paquete x 5 unidades', 'PAQUETE', 16000, { dest: true, desc: 'Chorizo de cerdo al estilo de Santa Rosa de Cabal, para asar o freír.' });
+P('EMB-003', 1, 'Salchicha ranchera', 'Paquete x 10 unidades', 'PAQUETE', 12800, { desc: 'Salchicha gruesa ahumada, para el desayuno o el perro caliente.' });
+P('EMB-004', 1, 'Butifarra soledeña', 'Paquete x 12 unidades', 'PAQUETE', 15500, { disp: false, desc: 'Butifarra costeña cocida, lista para servir con limón.' });
+P('EMB-005', 1, 'Longaniza', 'Por libra', 'LIBRA', 13000, { desc: 'Longaniza delgada de cerdo.' });
+P('CF-001', 2, 'Mortadela clásica', 'Tajada fina', 'LIBRA', 9800, { desc: 'Mortadela de cerdo y res, tajada al momento.' });
+P('CF-002', 2, 'Jamón de cerdo tajado', 'Tajado x 250 g', 'UNIDAD', 11900, { oferta: 9900, desc: 'Jamón cocido de pierna de cerdo, tajado delgado.' });
+P('CF-003', 2, 'Jamón de pollo', 'Tajado x 250 g', 'UNIDAD', 9500, { desc: 'Jamón de pechuga de pollo, bajo en grasa.' });
+P('CF-004', 2, 'Tocineta ahumada', 'Paquete x 250 g', 'PAQUETE', 13900, { desc: 'Tocineta de cerdo ahumada con leña.' });
+P('CF-005', 2, 'Pechuga ahumada', 'Por libra', 'LIBRA', 21000, { desc: 'Pechuga de pollo ahumada, tajada a tu gusto.' });
+P('QS-001', 3, 'Queso campesino', 'Bloque', 'LIBRA', 12000, { dest: true, desc: 'Queso fresco de la región, suave y salado en su punto.' });
+P('QS-002', 3, 'Queso doble crema', 'Bloque', 'LIBRA', 14000, { oferta: 12500, desc: 'Queso semiblando que se derrite fácil. Para arepas y sánduches.' });
+P('QS-003', 3, 'Quesillo', 'Hoja x 500 g', 'UNIDAD', 9000, { desc: 'Quesillo envuelto en hoja de plátano.' });
+P('QS-004', 3, 'Queso costeño', 'Bloque', 'LIBRA', 13500, { desc: 'Queso duro y salado, para rallar o acompañar la yuca.' });
+P('LAC-001', 4, 'Kumis', 'Botella x 1 L', 'UNIDAD', 6800, { desc: 'Kumis artesanal, espeso y bien frío.' });
+P('LAC-002', 4, 'Mantequilla', 'Barra x 250 g', 'UNIDAD', 8900, { desc: 'Mantequilla con sal.' });
+P('LAC-003', 4, 'Yogur de melocotón', 'Vaso x 200 g', 'UNIDAD', 2900, { desc: 'Yogur entero con trozos de fruta.' });
+P('LAC-004', 4, 'Crema de leche', 'Caja x 200 ml', 'UNIDAD', 4200, { desc: 'Crema de leche para cocinar.' });
+P('ABA-001', 5, 'Arepas de maíz blanco', 'Paquete x 10', 'PAQUETE', 5200, { desc: 'Arepas delgadas listas para asar.' });
+P('ABA-002', 5, 'Huevos AA', 'Panal x 30', 'UNIDAD', 18500, { dest: true, desc: 'Huevos rojos tamaño AA.' });
+P('ABA-003', 5, 'Pan tajado', 'Bolsa x 600 g', 'UNIDAD', 7500, { desc: 'Pan blanco tajado.' });
+P('ABA-004', 5, 'Salsa de tomate', 'Frasco x 400 g', 'UNIDAD', 6200, { desc: 'Salsa de tomate para acompañar.' });
+
+const catOf = p => S.cats.find(c => c.id === p.cat);
+const byId = id => S.prods.find(p => p.id === id);
+const vigente = p => p.oferta != null && (!p.desde || p.desde <= today()) && (!p.hasta || today() <= p.hasta);
+const pct = p => Math.round((1 - p.oferta / p.precio) * 100);
+const path = e => `${e.slug}-${e.hash}`;
+const publicUrl = (e = S.empresa) => `http://186.147.6.105:2020/#/c/${path(e)}`; // en producción: PUBLIC_BASE_URL + /c/...
+const hasWa = () => S.empresa.whatsapps.length > 0;
+const waAttrs = p => `href="${waLink(p)}" target="_blank" rel="noopener"${S.empresa.whatsapps.length > 1 ? ` data-act="wa-pick" data-id="${p ? p.id : ''}"` : ''}`;
+const waLink = (p, numero = S.empresa.whatsapps[0]?.numero) => `https://wa.me/${numero}?text=${encodeURIComponent(p
+  ? `Hola, vi en su catálogo: ${p.nombre} (${p.pres}). ¿Lo tiene disponible?`
+  : 'Hola, vi su catálogo y quiero hacer un pedido.')}`;
+const visibles = () => S.prods.filter(p => (S.empresa.agotados || p.disp) && catOf(p).activa);
+const src = (p, big = false) => p.photo || (big ? p.big : p.img);
+const thumb = (p, cls = '', big = false) => {
+  const s = src(p, big);
+  return `<span class="ph ${cls}">${s ? `<img src="${s}" alt="" loading="lazy" decoding="async">` : `<span class="ph-none">${ic('photo')}</span>`}</span>`;
+};
+const logo = (e = S.empresa, cls = '') => e.logo
+  ? `<span class="logo has-img ${cls}" aria-hidden="true"><img src="${e.logo}" alt=""></span>`
+  : `<span class="logo ${cls}" aria-hidden="true">${ini(e.nombre)}</span>`;
+console.assert(pct({ precio: 14500, oferta: 12900 }) === 11, 'descuento');
+
+// ---------- Utilidades de interfaz ----------
+let toastTimer, lastFocus;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch { const ta = document.createElement('textarea'); ta.value = text; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  toast('Link copiado');
+}
+function sheet(html, label, cls = '') {
+  if (!$('.sheet')?.contains(document.activeElement)) lastFocus = document.activeElement;
+  $('#modal-root').innerHTML = `<div class="sheet-bg" data-act="close-bg"><div class="sheet ${cls}" role="dialog" aria-modal="true" aria-label="${esc(label)}">
+    <button class="round sheet-close" data-act="close" aria-label="Cerrar">${ic('x')}</button>${html}</div></div>`;
+  document.body.style.overflow = 'hidden';
+  $('.sheet-close').focus();
+}
+function closeModal() {
+  if (!$('#modal-root').innerHTML) return;
+  $('#modal-root').innerHTML = '';
+  document.body.style.overflow = '';
+  lastFocus?.focus?.({ preventScroll: true });
+}
+function showErr(f, err) {
+  $$('[data-err]', f).forEach(el => {
+    const m = err[el.dataset.err] || '';
+    el.textContent = m;
+    f.elements[el.dataset.err]?.setAttribute('aria-invalid', m ? 'true' : 'false');
+  });
+  $('[aria-invalid="true"]', f)?.focus();
+  return Object.keys(err).length > 0;
+}
+const fld = (name, label, input, { hint = '', full = false } = {}) =>
+  `<div class="field${full ? ' full' : ''}"><label for="f-${name}">${label}</label>${input}${hint ? `<p class="hint">${hint}</p>` : ''}<p class="err" data-err="${name}" aria-live="polite"></p></div>`;
+const inp = (name, val, attrs = '') => `<input class="input" id="f-${name}" name="${name}" value="${esc(val ?? '')}" ${attrs}>`;
+
+// ---------- Catálogo público ----------
+const priceHtml = (p, cls) => {
+  if (!S.empresa.precios) return `<span class="${cls}"><span class="ask">Pregunta el precio</span></span>`;
+  const u = p.unidad === 'UNIDAD' ? '' : ` <small>/ ${UNI[p.unidad]}</small>`;
+  return vigente(p)
+    ? `<span class="${cls}">${cop(p.oferta)}${u}<s><span class="sr">Antes </span>${cop(p.precio)}</s>${cls === 'pcard-price' ? '' : `<span class="badge-deal">-${pct(p)}%</span>`}</span>`
+    : `<span class="${cls}">${cop(p.precio)}${u}</span>`;
+};
+const waMini = p => S.empresa.waProducto && hasWa() && p.disp
+  ? `<a class="wa-mini" ${waAttrs(p)} aria-label="Preguntar por ${esc(p.nombre)} en WhatsApp">${ic('wa')}</a>` : '';
+const card = p => `<article class="pcard${p.disp ? '' : ' out'}">
+  <button class="pcard-hit" data-act="open" data-id="${p.id}">${thumb(p)}
+    ${priceHtml(p, 'pcard-price')}<span class="pcard-name">${esc(p.nombre)}</span><span class="pcard-pres">${esc(p.pres)}</span>
+  </button>${S.empresa.precios && vigente(p) ? `<span class="badge-deal" aria-hidden="true">-${pct(p)}%</span>` : ''}${waMini(p)}</article>`;
+const row = p => `<article class="row${p.disp ? '' : ' out'}">
+  <button class="row-hit" data-act="open" data-id="${p.id}">
+    <span class="row-txt"><span class="row-name">${esc(p.nombre)}</span><span class="row-pres">${esc(p.pres)}</span>
+      ${p.desc ? `<span class="row-desc">${esc(p.desc)}</span>` : ''}${priceHtml(p, 'row-price')}</span>
+    ${thumb(p)}
+  </button>${waMini(p)}</article>`;
+const sec = (id, title, ps, rail = false) => `<section class="sec" id="s-${id}" aria-labelledby="h-${id}">
+  <div class="sec-head"><h2 id="h-${id}">${title}</h2><span class="sec-count">${plural(ps.length, 'producto')}</span></div>
+  ${rail ? `<div class="rail">${ps.map(card).join('')}</div>` : `<div class="list">${ps.map(row).join('')}</div>`}</section>`;
+
+function sections(q = '') {
+  const e = S.empresa, v = visibles();
+  if (q) {
+    const hits = v.filter(p => norm(`${p.nombre} ${p.pres} ${catOf(p).nombre}`).includes(norm(q)));
+    return hits.length
+      ? sec('resultados', `Resultados para “${esc(q)}”`, hits)
+      : `<div class="no-hits"><b>No encontramos “${esc(q)}”</b><span>Prueba con otra palabra${hasWa() ? ' o pregúntanos por WhatsApp' : ''}.</span></div>`;
+  }
+  const deals = v.filter(p => e.precios && vigente(p) && p.disp), dest = v.filter(p => p.dest);
+  return (deals.length ? sec('ofertas', 'Ofertas de hoy', deals, true) : '')
+    + (dest.length ? sec('destacados', 'Los más pedidos', dest, true) : '')
+    + S.cats.filter(c => c.activa).map(c => {
+      const ps = v.filter(p => p.cat === c.id);
+      return ps.length ? sec('c' + c.id, esc(c.nombre), ps) : '';
+    }).join('');
+}
+const tabsFor = () => $$('#results .sec').map(s => `<button class="tab" data-act="tab" data-to="${s.id}">${$('h2', s).textContent}</button>`).join('');
+
+function catalogo(arg) {
+  const e = S.empresa;
+  if ((arg || '').split('-').pop() !== e.hash || !e.activa) return noDisponible();
+  if (arg !== path(e)) return location.replace(`#/c/${path(e)}`); // en producción: 301 del backend
+  document.title = `${e.nombre}: catálogo`;
+  const cats = S.cats.filter(c => c.activa && visibles().some(p => p.cat === c.id)).map(c => c.nombre.toLowerCase());
+  app.innerHTML = `<div class="store" style="--brand:${e.primario};--brand-2:${e.secundario}">
+    <header class="cover">${e.portada ? `<img src="${e.portada}" alt="">` : ''}
+      <div class="cover-bar"><span class="ec-pill">${ecLogo()}</span><span class="grow"></span>
+        <button class="round" data-act="find" aria-label="Buscar productos">${ic('search')}</button>
+        <button class="round" data-act="share" aria-label="Compartir catálogo">${ic('share')}</button></div>
+    </header>
+    <section class="store-head">${logo(e, 'lg')}
+      <div><h1>${esc(e.nombre)}</h1><p class="store-sub">${esc(listJoin(cats).replace(/^./, c => c.toUpperCase()))}</p></div>
+      <ul class="facts">
+        ${e.horario ? `<li>${ic('clock')}<span>${esc(e.horario)}</span></li>` : ''}
+        ${e.domicilios ? `<li>${ic('truck')}<span>${esc(e.domicilios)}</span></li>` : ''}
+      </ul>
+      <button class="more" data-act="info">Horario, dirección y domicilios</button>
+    </section>
+    <div class="tools" id="tools"><div class="tools-in">
+      <label class="search">${ic('search')}<input id="q" type="search" placeholder="Buscar en ${esc(e.nombre)}" aria-label="Buscar productos" autocomplete="off" enterkeyhint="search"></label>
+      ${hasWa() ? `<a class="btn btn-wa tools-wa" ${waAttrs()}>${ic('wa')}Escribir por WhatsApp</a>` : ''}
+      <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+    </div></div>
+    <main id="results">${sections()}</main>
+    <footer class="store-foot">${ecLogo()}<span>Catálogo digital de ${esc(e.nombre)}. ${e.precios ? 'Precios en pesos colombianos; pueden cambiar sin aviso.' : 'Pregunta precios y disponibilidad por WhatsApp.'}</span>
+      <span class="proto-note">Prototipo con datos de ejemplo. Las fotos son de prueba, tomadas de Wikimedia Commons; no son del negocio. <button data-act="credits">Ver créditos</button></span></footer>
+    ${hasWa() ? `<div class="wa-bar"><a class="btn btn-wa" ${waAttrs()}>${ic('wa')}Escribir por WhatsApp</a></div>` : ''}
+  </div>`;
+  $('#tabs').innerHTML = tabsFor();
+  startSpy();
+}
+
+let spy;
+function startSpy() {
+  spy?.disconnect();
+  const secs = $$('#results .sec');
+  if (!secs.length) return;
+  setTab(secs[0].id);
+  spy = new IntersectionObserver(entries => entries.forEach(en => { if (en.isIntersecting) setTab(en.target.id); }),
+    { rootMargin: `-${$('#tools').offsetHeight + 12}px 0px -65% 0px` });
+  secs.forEach(s => spy.observe(s));
+}
+function setTab(id) {
+  $$('.tab').forEach(t => {
+    const on = t.dataset.to === id;
+    t.classList.toggle('on', on);
+    if (on) { t.setAttribute('aria-current', 'true'); t.parentElement.scrollTo({ left: t.offsetLeft - 16, behavior: motion() }); }
+    else t.removeAttribute('aria-current');
+  });
+}
+function goTo(id) {
+  const s = $('#' + id);
+  if (s) window.scrollTo({ top: s.getBoundingClientRect().top + scrollY - $('#tools').offsetHeight + 1, behavior: motion() });
+}
+
+function openProd(id) {
+  const p = byId(id), e = S.empresa;
+  const cta = !hasWa() ? '' : p.disp
+    ? `<a class="btn btn-wa" ${waAttrs(e.waProducto ? p : null)}>${ic('wa')}${e.waProducto ? 'Preguntar por este producto' : 'Escribir por WhatsApp'}</a>`
+    : `<a class="btn" ${waAttrs(p)}>${ic('wa')}Preguntar cuándo llega</a>`;
+  sheet(`<span class="grab" aria-hidden="true"></span><div class="sheet-scroll">${thumb(p, 'sheet-ph', true)}
+    <div class="sheet-body"><h2>${esc(p.nombre)}</h2><p class="muted">${esc(p.pres)}</p>
+      ${p.disp ? priceHtml(p, 'sheet-price') : `<span class="sheet-price"><span class="badge-out">Agotado</span></span>`}
+      ${p.desc ? `<p class="sheet-desc">${esc(p.desc)}</p>` : ''}</div></div>
+    ${cta ? `<div class="sheet-cta">${cta}</div>` : ''}`, p.nombre);
+}
+function openInfo() {
+  const e = S.empresa;
+  const item = (icn, dt, dd) => dd ? `<div>${ic(icn)}<dt>${dt}</dt><dd>${dd}</dd></div>` : '';
+  sheet(`<div class="sheet-scroll sheet-info"><h2>${esc(e.nombre)}</h2><dl class="info-list">
+    ${item('clock', 'Horario', esc(e.horario))}${item('pin', 'Dirección', esc(e.direccion))}
+    ${item('truck', 'Domicilios', esc(e.domicilios))}${item('wa', 'WhatsApp', e.whatsapps.map(w => (w.nombre ? `${esc(w.nombre)}: ` : '') + phone(w.numero)).join('<br>'))}</dl></div>
+    ${hasWa() ? `<div class="sheet-cta"><a class="btn btn-wa" ${waAttrs()}>${ic('wa')}Escribir por WhatsApp</a></div>` : ''}`, 'Información del negocio');
+}
+function pickWa(t) {
+  const p = t.dataset.id ? byId(+t.dataset.id) : null;
+  sheet(`<div class="sheet-scroll m-pad"><h2>¿A qué número le escribes?</h2>
+    <p class="muted">${p ? `El mensaje sobre ${esc(p.nombre)} ya va escrito.` : `${esc(S.empresa.nombre)} te atiende en cualquiera de estos números.`}</p>
+    <div class="wa-list">${S.empresa.whatsapps.map(w => `<a class="btn btn-wa" href="${waLink(p, w.numero)}" target="_blank" rel="noopener">${ic('wa')}<span>${w.nombre ? `${esc(w.nombre)}<small>${phone(w.numero)}</small>` : phone(w.numero)}</span></a>`).join('')}</div></div>`, 'Elegir número de WhatsApp');
+}
+async function openCredits() {
+  let list;
+  try { list = await (await fetch('img/creditos.json')).json(); }
+  catch { return toast('No se pudieron cargar los créditos.'); }
+  sheet(`<div class="sheet-scroll sheet-info"><h2>Créditos de las fotos</h2>
+    <p class="muted">Fotos de prueba de Wikimedia Commons, usadas solo en este prototipo. No son de ${esc(S.empresa.nombre)}.</p>
+    <ul class="cred-list">${list.map(c => `<li><b>${esc(c.titulo.replace(/^File:/, ''))}</b><br>${esc(c.autor)}. Licencia ${esc(c.licencia)}. <a href="${esc(c.fuente)}" target="_blank" rel="noopener">Ver en Commons</a></li>`).join('')}</ul></div>`, 'Créditos de las fotos');
+}
+async function share() {
+  try {
+    if (navigator.share) await navigator.share({ title: S.empresa.nombre, url: publicUrl() });
+    else await copy(publicUrl());
+  } catch { /* el usuario cerró el diálogo de compartir */ }
+}
+function noDisponible() {
+  document.title = 'Catálogo no disponible';
+  app.innerHTML = `<main class="na"><div class="na-box"><span class="na-icon">${ic('store')}</span><h1>Catálogo no disponible</h1>
+    <p>Este link no lleva a un catálogo activo. Pídele al negocio que te lo comparta de nuevo.</p>${ecLogo()}</div></main>`;
+}
+
+// ---------- Login ----------
+function login() {
+  document.title = 'Ingresar a Agorá Catalog';
+  app.innerHTML = `<main class="login"><form class="login-box" data-form="login" novalidate>
+    ${ecLogo()}
+    <div><h1>Ingresa a tu panel</h1><p class="muted">Administra tu catálogo, tus precios y tus ofertas.</p></div>
+    ${fld('email', 'Correo', inp('email', S.empresa.admin, 'type="email" autocomplete="username" required'))}
+    ${fld('pass', 'Contraseña', inp('pass', 'prototipo', 'type="password" autocomplete="current-password" required'))}
+    <button class="btn btn-dark wide">Ingresar</button>
+    <p class="hint">En el prototipo, con un correo que empiece por <b>super</b> entras como super admin.</p>
+  </form></main>`;
+}
+function submitLogin(f) {
+  const v = Object.fromEntries(new FormData(f)), err = {};
+  if (!/^\S+@\S+\.\S+$/.test(v.email)) err.email = 'Escribe tu correo.';
+  if (!v.pass) err.pass = 'Escribe tu contraseña.';
+  const sa = v.email.startsWith('super');
+  if (!err.email && !sa && !S.empresa.activa) err.email = 'Tu empresa está desactivada. Escríbele al administrador de Agorá Catalog.';
+  if (showErr(f, err)) return;
+  location.hash = sa ? '#/superadmin' : '#/admin';
+}
+
+// ---------- Panel: estructura ----------
+function shell(active, content, sa = false) {
+  const e = S.empresa;
+  const nav = sa
+    ? [['superadmin', 'Empresas', 'store']]
+    : [['admin', 'Inicio', 'home'], ['admin/productos', 'Productos', 'box'], ['admin/categorias', 'Categorías', 'tag'], ['admin/importar', 'Importar', 'upload'], ['admin/configuracion', 'Configuración', 'gear']];
+  document.title = sa ? 'Super admin: Agorá Catalog' : `Panel de ${e.nombre}`;
+  app.innerHTML = `<div class="shell">
+    <nav class="side" aria-label="Menú">
+      <div class="side-brand">${sa ? `${ecLogo()}<span class="muted">Super admin</span>` : `<span class="side-store">${logo(e)}${esc(e.nombre)}</span>`}</div>
+      ${nav.map(([h, t, i]) => `<a href="#/${h}"${h === active ? ' aria-current="page"' : ''}>${ic(i)}<span>${t}</span></a>`).join('')}
+      <div class="spacer"></div>
+      ${sa ? '' : `<div class="side-ec side-extra">${ecLogo()}</div><a class="side-extra" href="#/c/${path(e)}">${ic('eye')}<span>Ver mi catálogo</span></a>`}
+      <a class="side-extra" href="#/login">${ic('logout')}<span>Salir</span></a>
+    </nav>
+    <main class="main">
+      <div class="mtop">${sa ? ecLogo() : `${logo(e, 'sm')}${esc(e.nombre)}`}<a href="#/login">Salir</a></div>
+      ${content}
+    </main>
+  </div>`;
+}
+
+// ---------- Panel: inicio ----------
+function qrSvg(seed) {
+  // QR de muestra: en el producto lo genera la librería qrcode.
+  let h = 0;
+  for (const c of seed) h = (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0;
+  const rnd = () => (h = (Math.imul(h, 1103515245) + 12345) >>> 0) / 2 ** 32;
+  const finder = (x, y) => `<rect x="${x}" y="${y}" width="7" height="7"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" fill="#fff"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3"/>`;
+  let cells = '';
+  for (let y = 0; y < 25; y++) for (let x = 0; x < 25; x++) {
+    const inFinder = (x < 8 && y < 8) || (x > 16 && y < 8) || (x < 8 && y > 16);
+    if (!inFinder && rnd() < 0.48) cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  }
+  return `<svg class="qr-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 29 29" role="img" aria-label="Código QR del link público (de muestra)"><rect x="-2" y="-2" width="29" height="29" fill="#fff"/><g fill="#000">${finder(0, 0)}${finder(18, 0)}${finder(0, 18)}${cells}</g></svg>`;
+}
+function dashboard() {
+  const p = S.prods, e = S.empresa;
+  const n = { sinFoto: p.filter(x => !src(x)).length, agot: p.filter(x => !x.disp).length, ofertas: p.filter(vigente).length };
+  const stat = (icn, label, val, f, alert = false) => `<a class="stat-row${alert && val ? ' bad' : ''}" href="#/admin/productos" data-act="filter" data-f="${f}">${ic(icn)}<span>${label}</span><b>${val}</b>${ic('chev', 'chev')}</a>`;
+  shell('admin', `<header class="page-head"><div><h1>Hola, Javier</h1><p>Así va tu catálogo hoy.</p></div>
+      <a class="btn" href="#/c/${path(e)}">${ic('eye')}Ver mi catálogo</a></header>
+    <div class="grid-2">
+      <section class="panel"><h2>Tu catálogo</h2><div class="stat-list">
+        ${stat('box', 'Productos publicados', p.length, '')}
+        ${stat('tag', 'Ofertas vigentes', n.ofertas, '')}
+        ${stat('alert', 'Agotados', n.agot, '0', true)}
+        ${stat('photo', 'Sin foto', n.sinFoto, '', true)}
+      </div></section>
+      <section class="panel link-box">
+        <div class="link-txt"><h2>Tu link público</h2>
+          <p class="muted">Compártelo por WhatsApp o imprímelo como QR. Sigue funcionando aunque cambies el nombre del negocio.</p>
+          <div class="copy-row"><input class="input grow" readonly value="${publicUrl()}" aria-label="Link público">
+            <button class="btn btn-dark" data-act="copy-link">${ic('copy')}Copiar</button></div>
+          <button class="btn" data-act="dl-qr">${ic('download')}Descargar QR</button></div>
+        <figure class="qr">${qrSvg(publicUrl())}</figure>
+      </section>
+    </div>`);
+}
+
+// ---------- Panel: productos ----------
+const F = { q: '', cat: '', disp: '', page: 1 };
+let D = {}; // precios editados sin guardar: { id: precio }
+const priceInput = p => `<span class="money"><input class="input price-input${p.id in D ? ' dirty' : ''}" inputmode="numeric" data-price="${p.id}" value="${miles(D[p.id] ?? p.precio)}" aria-label="Precio de ${esc(p.nombre)}"></span>`;
+const sw = p => `<input type="checkbox" class="switch" role="switch" data-disp="${p.id}" ${p.disp ? 'checked' : ''} aria-label="${esc(p.nombre)} disponible">`;
+const editBtn = p => `<a class="btn icon" href="#/admin/producto/${p.id}" aria-label="Editar ${esc(p.nombre)}">${ic('edit')}</a>`;
+const trow = p => `<tr><td>${thumb(p)}</td><td class="code">${p.codigo}</td><td><b>${esc(p.nombre)}</b><div class="muted">${esc(p.pres)}</div></td>
+  <td>${esc(catOf(p).nombre)}</td><td class="num">${priceInput(p)}</td>
+  <td>${vigente(p) ? `<span class="badge-deal">${cop(p.oferta)}</span>` : '<span class="muted">No</span>'}</td><td>${sw(p)}</td><td>${editBtn(p)}</td></tr>`;
+const mcard = p => `<div class="mcard">${thumb(p)}<div><b>${esc(p.nombre)}</b><div class="muted">${esc(catOf(p).nombre)}</div>${priceInput(p)}</div>
+  <div class="mcard-side">${sw(p)}${editBtn(p)}</div></div>`;
+
+function productos() {
+  shell('admin/productos', `<header class="page-head"><div><h1>Productos</h1><p>${plural(S.prods.length, 'producto')} en tu catálogo.</p></div>
+      <a class="btn btn-dark" href="#/admin/producto/nuevo">${ic('plus')}Nuevo producto</a></header>
+    <div class="toolbar">
+      <label class="search">${ic('search')}<input type="search" id="pf-q" placeholder="Buscar por nombre o código" value="${esc(F.q)}" aria-label="Buscar productos"></label>
+      <select class="input" id="pf-cat" aria-label="Categoría"><option value="">Todas las categorías</option>${S.cats.map(c => `<option value="${c.id}"${F.cat === String(c.id) ? ' selected' : ''}>${esc(c.nombre)}</option>`).join('')}</select>
+      <select class="input" id="pf-disp" aria-label="Disponibilidad">${[['', 'Disponibles y agotados'], ['1', 'Solo disponibles'], ['0', 'Solo agotados']].map(([v, t]) => `<option value="${v}"${F.disp === v ? ' selected' : ''}>${t}</option>`).join('')}</select>
+    </div>
+    <div id="plist"></div><div id="savebar"></div>`);
+  prodList();
+}
+function prodList() {
+  const q = norm(F.q), per = 10;
+  const rows = S.prods.filter(p => (!q || norm(`${p.nombre} ${p.codigo}`).includes(q)) && (!F.cat || String(p.cat) === F.cat) && (F.disp === '' || String(+p.disp) === F.disp));
+  const pages = Math.max(1, Math.ceil(rows.length / per));
+  F.page = Math.min(Math.max(F.page, 1), pages);
+  const pg = rows.slice((F.page - 1) * per, F.page * per), from = (F.page - 1) * per;
+  $('#plist').innerHTML = rows.length
+    ? `<div class="table-wrap"><table class="table"><thead><tr><th><span class="sr">Foto</span></th><th>Código</th><th>Producto</th><th>Categoría</th><th class="num">Precio</th><th>Oferta</th><th>Disponible</th><th><span class="sr">Editar</span></th></tr></thead>
+        <tbody>${pg.map(trow).join('')}</tbody></table></div>
+      <div class="mcards">${pg.map(mcard).join('')}</div>
+      <nav class="pager" aria-label="Paginación"><span>${from + 1} a ${from + pg.length} de ${rows.length}</span>
+        <div><button class="btn" data-act="page" data-d="-1"${F.page < 2 ? ' disabled' : ''}>Anterior</button><button class="btn" data-act="page" data-d="1"${F.page >= pages ? ' disabled' : ''}>Siguiente</button></div></nav>`
+    : `<div class="panel empty"><p>Ningún producto coincide con la búsqueda.</p><button class="btn" data-act="clear-filters">Quitar filtros</button></div>`;
+  savebar();
+}
+function savebar() {
+  const n = Object.keys(D).length;
+  $('#savebar').innerHTML = n ? `<div class="savebar" role="region" aria-label="Precios sin guardar"><span>${plural(n, 'precio')} sin guardar</span>
+    <button class="btn" data-act="discard">Descartar</button><button class="btn btn-wa" data-act="save-prices">Guardar precios</button></div>` : '';
+}
+function savePrices() {
+  for (const [id, v] of Object.entries(D)) {
+    const p = byId(+id);
+    if (!v) return toast(`Escribe el precio de ${p.nombre}.`);
+    if (p.oferta != null && p.oferta >= v) return toast(`${p.nombre}: el precio debe ser mayor que su oferta (${cop(p.oferta)}).`);
+  }
+  const n = Object.keys(D).length;
+  for (const [id, v] of Object.entries(D)) byId(+id).precio = v;
+  D = {};
+  prodList();
+  toast(`${plural(n, 'precio')} guardado${n === 1 ? '' : 's'}`);
+}
+
+// ---------- Panel: crear / editar producto ----------
+let pendingPhoto = null;
+function productoForm(id) {
+  const p = id === 'nuevo'
+    ? { id: null, codigo: '', cat: S.cats[0].id, nombre: '', pres: '', unidad: 'UNIDAD', precio: '', oferta: null, desde: null, hasta: null, disp: true, dest: false, img: null, big: null, photo: null, desc: '' }
+    : byId(+id);
+  if (!p) return productos();
+  pendingPhoto = null;
+  shell('admin/productos', `<header class="page-head"><div><a class="back" href="#/admin/productos">${ic('back')}Productos</a><h1>${p.id ? esc(p.nombre) : 'Nuevo producto'}</h1></div></header>
+  <form class="two-col" data-form="prod" data-id="${p.id ?? ''}" novalidate>
+    <div class="panel form">
+      ${fld('codigo', 'Código', inp('codigo', p.codigo, 'required autocapitalize="characters"'), { hint: 'Único en tu catálogo. Las fotos del ZIP se asignan por este código.' })}
+      ${fld('cat', 'Categoría', `<select class="input" id="f-cat" name="cat">${S.cats.map(c => `<option value="${c.id}"${c.id === p.cat ? ' selected' : ''}>${esc(c.nombre)}</option>`).join('')}</select>`)}
+      ${fld('nombre', 'Nombre', inp('nombre', p.nombre, 'required'), { full: true })}
+      ${fld('desc', 'Descripción', `<textarea class="input" id="f-desc" name="desc" rows="3">${esc(p.desc)}</textarea>`, { full: true, hint: 'Se ve al tocar el producto en el catálogo.' })}
+      ${fld('pres', 'Presentación', inp('pres', p.pres, 'placeholder="Ej.: Tajado x 250 g"'))}
+      ${fld('unidad', 'Se vende por', `<select class="input" id="f-unidad" name="unidad">${Object.entries(UNI).map(([k, t]) => `<option value="${k}"${k === p.unidad ? ' selected' : ''}>${t}</option>`).join('')}</select>`)}
+      ${fld('precio', 'Precio', inp('precio', p.precio, 'inputmode="numeric" required'), { hint: 'En pesos, sin puntos ni decimales.' })}
+      <fieldset class="offer full"><legend>Oferta (opcional)</legend>
+        <div class="form three">
+          ${fld('oferta', 'Precio de oferta', inp('oferta', p.oferta, 'inputmode="numeric"'))}
+          ${fld('desde', 'Desde', inp('desde', p.desde, 'type="date"'))}
+          ${fld('hasta', 'Hasta', inp('hasta', p.hasta, 'type="date"'))}
+        </div>
+        <p class="hint">Sin fechas, la oferta queda activa hasta que borres el precio de oferta.</p>
+      </fieldset>
+      <div class="field full toggles">
+        <label class="sw-label"><input type="checkbox" class="switch" role="switch" name="disp"${p.disp ? ' checked' : ''}> Disponible</label>
+        <label class="sw-label"><input type="checkbox" class="switch" role="switch" name="dest"${p.dest ? ' checked' : ''}> En «Los más pedidos»</label>
+      </div>
+    </div>
+    <div class="panel photo-panel"><h2>Foto</h2>
+      <div id="photo-prev">${thumb(p, '', true)}</div>
+      <label class="drop">${ic('photo')}<span><b>${src(p) ? 'Cambiar foto' : 'Subir foto'}</b><br>JPG, PNG o WebP. Hasta 5 MB y 8000 px por lado.</span><input type="file" class="sr" id="photo" accept="image/jpeg,image/png,image/webp"></label>
+      <p class="err" id="photo-err" aria-live="polite"></p>
+      <div class="form-actions"><a class="btn" href="#/admin/productos">Cancelar</a><button class="btn btn-dark">${p.id ? 'Guardar cambios' : 'Crear producto'}</button></div>
+    </div>
+  </form>`);
+}
+function submitProd(f) {
+  const v = Object.fromEntries(new FormData(f)), id = +f.dataset.id || null, err = {};
+  const num = s => s.trim() === '' ? null : /^\d+$/.test(s.trim()) ? +s.trim() : NaN;
+  const precio = num(v.precio), oferta = num(v.oferta), codigo = v.codigo.trim().toUpperCase();
+  if (!codigo) err.codigo = 'Escribe el código.';
+  else if (S.prods.some(p => p.codigo === codigo && p.id !== id)) err.codigo = `Ya tienes un producto con el código ${codigo}.`;
+  if (!v.nombre.trim()) err.nombre = 'Escribe el nombre.';
+  if (!(precio > 0)) err.precio = 'Escribe el precio en pesos, solo números.';
+  if (Number.isNaN(oferta)) err.oferta = 'Escribe la oferta en pesos, solo números.';
+  else if (oferta != null && precio > 0 && oferta >= precio) err.oferta = `La oferta debe ser menor que el precio (${cop(precio)}).`;
+  if (v.desde && v.hasta && v.desde > v.hasta) err.hasta = 'La fecha de fin debe ser igual o posterior a la de inicio.';
+  if (showErr(f, err)) return;
+  const data = {
+    codigo, cat: +v.cat, nombre: v.nombre.trim(), pres: v.pres.trim(), unidad: v.unidad, precio, oferta,
+    desde: oferta ? v.desde || null : null, hasta: oferta ? v.hasta || null : null, disp: !!v.disp, dest: !!v.dest, desc: v.desc.trim(),
+  };
+  if (pendingPhoto) data.photo = pendingPhoto;
+  if (id) Object.assign(byId(id), data);
+  else S.prods.push({ id: ++pid, img: null, big: null, photo: null, ...data });
+  pendingPhoto = null;
+  toast(id ? 'Cambios guardados' : 'Producto creado');
+  location.hash = '#/admin/productos';
+}
+
+// ---------- Panel: categorías ----------
+const catRow = c => {
+  const ps = S.prods.filter(p => p.cat === c.id), cover = ps.find(src);
+  return `<li draggable="true" data-cat="${c.id}">
+    <button class="grip" type="button" data-grip="${c.id}" aria-label="Mover ${esc(c.nombre)}. Usa las flechas arriba y abajo.">${ic('grip')}</button>
+    ${cover ? thumb(cover, 'cat-thumb') : `<span class="ph cat-thumb"><span class="ph-none">${ic('tag')}</span></span>`}
+    <span class="grow"><input class="cat-name" data-catname="${c.id}" value="${esc(c.nombre)}" aria-label="Nombre de la categoría"></span>
+    <span class="cat-count">${plural(ps.length, 'producto')}</span>
+    <label class="sw-label"><input type="checkbox" class="switch" role="switch" data-catact="${c.id}"${c.activa ? ' checked' : ''} aria-label="${esc(c.nombre)} visible en el catálogo"><span>Visible</span></label>
+    <button class="btn icon" type="button" data-act="del-cat" data-id="${c.id}" aria-label="Eliminar ${esc(c.nombre)}">${ic('x')}</button>
+  </li>`;
+};
+function categorias() {
+  shell('admin/categorias', `<header class="page-head"><div><h1>Categorías</h1><p>Arrastra para cambiar el orden en que aparecen en tu catálogo.</p></div></header>
+    <form class="toolbar" data-form="cat" novalidate><input class="input grow" name="nombre" placeholder="Nombre de la categoría nueva" aria-label="Nombre de la categoría nueva">
+      <button class="btn btn-dark">${ic('plus')}Agregar</button></form>
+    <ol class="sortable" id="cats">${S.cats.map(catRow).join('')}</ol>`);
+}
+function submitCat(f) {
+  const nombre = f.elements.nombre.value.trim();
+  if (!nombre) return toast('Escribe el nombre de la categoría.');
+  if (S.cats.some(c => norm(c.nombre) === norm(nombre))) return toast(`Ya tienes la categoría ${nombre}.`);
+  S.cats.push({ id: Math.max(...S.cats.map(c => c.id)) + 1, nombre, activa: true });
+  categorias();
+  toast('Categoría agregada');
+}
+function delCat(id) {
+  const c = S.cats.find(x => x.id === id), n = S.prods.filter(p => p.cat === id).length;
+  if (n) return toast(`No puedes eliminar ${c.nombre}: tiene ${plural(n, 'producto')}. Muévelos a otra categoría primero.`);
+  S.cats = S.cats.filter(x => x.id !== id);
+  categorias();
+  toast('Categoría eliminada');
+}
+function moveCat(id, to) {
+  const from = S.cats.findIndex(c => c.id === id);
+  if (to < 0 || to >= S.cats.length || from === to) return false;
+  S.cats.splice(to, 0, S.cats.splice(from, 1)[0]);
+  return true;
+}
+
+// ---------- Panel: importar ----------
+const IMP = { step: 1, clean: false, done: false, zip: false };
+const ERRS = [
+  [7, 'EMB-010', 'El precio “doce mil” no es un número.'],
+  [12, 'CF-008', 'La unidad “LIBRAS” no existe. Usa UNIDAD, LIBRA, KILO, GRAMOS, PAQUETE o CAJA.'],
+  [15, 'QS-001', 'El código QS-001 ya aparece en la fila 9.'],
+  [19, 'LAC-007', 'La oferta ($9.500) debe ser menor que el precio ($8.900).'],
+  [23, 'ABA-009', 'La oferta termina (01/10/2026) antes de empezar (15/10/2026).'],
+];
+function impBody() {
+  if (IMP.done) return `<div class="alert ok"><b>Importación lista.</b> 17 productos nuevos, 9 actualizados y 1 categoría nueva (Panadería).</div>
+    <button class="btn" data-act="imp" data-go="reset">Importar otro archivo</button>`;
+  if (IMP.step === 1) return `<p>La plantilla trae las columnas, una hoja de instrucciones y listas para elegir la unidad, si está disponible y si es destacado.</p>
+    <div class="row-actions"><button class="btn btn-dark" data-act="imp" data-go="template">${ic('file')}Descargar plantilla</button><button class="btn" data-act="imp" data-go="2">Ya tengo mi archivo</button></div>`;
+  if (IMP.step === 2) return `<label class="drop">${ic('file')}<span><b>Sube tu Excel</b><br>Archivo .xlsx con la hoja Productos.</span><input type="file" class="sr" id="xlsx" accept=".xlsx"></label>
+    <button class="btn link" data-act="imp" data-go="3">Usar un archivo de ejemplo</button>`;
+  const r = IMP.clean ? { nuevos: 17, act: 9, errores: [] } : { nuevos: 13, act: 8, errores: ERRS };
+  return `<div class="summary"><div><b>26</b>filas leídas</div><div><b>${r.nuevos}</b>nuevos</div><div><b>${r.act}</b>a actualizar</div><div><b>1</b>categoría nueva: Panadería</div><div class="${r.errores.length ? 'bad' : ''}"><b>${r.errores.length}</b>con error</div></div>
+  ${r.errores.length
+    ? `<div class="alert">Corrige estas filas en tu Excel y súbelo de nuevo. No se importa nada mientras haya errores.</div>
+      <div class="scroll-x"><table class="table"><thead><tr><th class="num">Fila</th><th>Código</th><th>Qué corregir</th></tr></thead>
+        <tbody>${r.errores.map(([fila, cod, msg]) => `<tr><td class="num">${fila}</td><td class="code">${cod}</td><td>${msg}</td></tr>`).join('')}</tbody></table></div>
+      <div class="row-actions"><button class="btn btn-dark" data-act="imp" data-go="fix">${ic('upload')}Subir archivo corregido</button><button class="btn" data-act="imp" data-go="reset">Cancelar</button></div>`
+    : `<div class="alert ok">El archivo no tiene errores.</div>
+      <div class="row-actions"><button class="btn btn-dark" data-act="imp" data-go="confirm">Importar 26 productos</button><button class="btn" data-act="imp" data-go="reset">Cancelar</button></div>`}`;
+}
+const zipReport = () => `<div class="alert ok"><b>14 fotos asignadas</b> a sus productos.</div>
+  <div class="alert warn"><b>2 fotos sin producto:</b> QS-099.jpg y foto-nevera.png. El nombre del archivo debe ser el código de un producto.</div>
+  <div class="alert"><b>1 foto con error:</b> CF-001.jpg mide más de 8000 px por lado. Redúcela y súbela de nuevo.</div>
+  <div><button class="btn" data-act="zip-reset">Subir otro ZIP</button></div>`;
+function importar() {
+  const steps = ['Descarga la plantilla', 'Sube tu Excel', 'Revisa', 'Confirma'];
+  const state = i => IMP.done || i < IMP.step ? 'done' : i === IMP.step ? 'now' : '';
+  shell('admin/importar', `<header class="page-head"><div><h1>Importar productos</h1><p>Crea o actualiza muchos productos de una vez desde Excel.</p></div>
+      <button class="btn" data-act="export">${ic('download')}Exportar mis productos</button></header>
+    <ol class="steps">${steps.map((s, i) => `<li class="step ${state(i + 1)}"${state(i + 1) === 'now' ? ' aria-current="step"' : ''}><b>${i + 1}</b>${s}</li>`).join('')}</ol>
+    <section class="panel">${impBody()}</section>
+    <section class="panel zip"><h2>Fotos en ZIP</h2>
+      <p class="muted">Nombra cada foto con el código del producto, por ejemplo <b>QS-001.jpg</b>, y súbelas todas en un .zip. Hasta 50 MB y 500 fotos.</p>
+      ${IMP.zip ? zipReport() : `<label class="drop">${ic('photo')}<span><b>Sube el ZIP de fotos</b></span><input type="file" class="sr" id="zip" accept=".zip"></label>`}
+    </section>`);
+}
+
+// ---------- Panel: configuración ----------
+// Portada y logo pendientes de guardar: undefined = sin cambios, null = quitar, { url, src, crop } = nueva.
+let pend = {};
+const media = kind => (kind in pend ? pend[kind] : S.empresa[kind] && { url: S.empresa[kind], src: S.empresa[kind + 'Src'], crop: S.empresa[kind + 'Crop'] });
+function previewMedia() {
+  const e = S.empresa, cover = media('portada'), lg = media('logo');
+  const box = lg ? `<span class="logo has-img" aria-hidden="true"><img src="${lg.url}" alt=""></span>` : logo({ nombre: e.nombre });
+  return `<button type="button" class="cover" data-act="edit-media" data-kind="portada" aria-label="${cover ? 'Cambiar o ajustar la portada' : 'Subir portada'}">
+      ${cover ? `<img src="${cover.url}" alt="">` : '<span class="pv-empty">Subir portada</span>'}<span class="pv-cam">${ic('camera')}</span></button>
+    <div class="pv-body"><button type="button" class="pv-logo" data-act="edit-media" data-kind="logo" aria-label="${lg ? 'Cambiar o ajustar el logo' : 'Subir logo'}">${box}<span class="pv-cam">${ic('camera')}</span></button><b>${esc(e.nombre)}</b></div>`;
+}
+
+// Editor de recorte: arrastrar para encuadrar, zoom con la barra, la rueda o + y -, flechas para mover.
+const CROP = {
+  portada: { title: 'Ajustar portada', out: [1600, 754], hint: 'Arrastra la foto para encuadrarla. En el celular se ve completa; en computador, la franja entre las líneas.' },
+  logo: { title: 'Ajustar logo', out: [512, 512], hint: 'Arrastra y usa el zoom. Aléjalo del todo para que el logo entre completo, o acércalo para mostrar solo una parte.' },
+};
+const clampOff = (box, size, o) => Math.min(Math.max(o, Math.min(0, box - size)), Math.max(0, box - size));
+console.assert(clampOff(100, 200, 10) === 0 && clampOff(100, 200, -150) === -100 && clampOff(100, 50, -5) === 0 && clampOff(100, 50, 80) === 50, 'recorte');
+let cs = null;
+function openCrop(kind, src, crop) {
+  const c = CROP[kind];
+  sheet(`<div class="sheet-scroll crop"><h2>${c.title}</h2><p class="muted" id="crop-hint">${c.hint}</p>
+    <div class="crop-stage${kind === 'logo' ? ' is-logo' : ''}" id="crop-stage" style="aspect-ratio:${c.out[0]}/${c.out[1]}" tabindex="0" aria-label="Encuadre. Usa las flechas para mover y + o - para el zoom." aria-describedby="crop-hint">
+      <img id="crop-img" alt="" draggable="false">${kind === 'portada' ? '<span class="crop-band" aria-hidden="true"></span>' : ''}</div>
+    <label class="crop-zoom">${ic('minus')}<input type="range" id="crop-z" min="0" max="1000" value="0" aria-label="Zoom">${ic('plus')}</label>
+    <div class="crop-actions">
+      <label class="btn">${ic('photo')}Elegir otra foto<input type="file" class="sr" data-crop-file="${kind}" accept="image/jpeg,image/png,image/webp"></label>
+      ${media(kind) ? '<button type="button" class="btn" data-act="crop-rm">Quitar</button>' : ''}
+      <button type="button" class="btn btn-dark" data-act="crop-ok">Guardar</button>
+    </div></div>`, c.title);
+  cs = { kind, src, crop };
+  const img = $('#crop-img');
+  img.onload = () => cropInit(img);
+  img.src = src;
+}
+function cropInit(img) {
+  const st = $('#crop-stage'), W = st.clientWidth, H = st.clientHeight, w = img.naturalWidth, h = img.naturalHeight;
+  const cover = Math.max(W / w, H / h), contain = Math.min(W / w, H / h);
+  const zmin = cs.kind === 'logo' ? contain / cover : 1; // el logo puede alejarse hasta entrar completo
+  const crop = cs.crop || { z: zmin, cx: 0.5, cy: 0.5 };
+  Object.assign(cs, { img, W, H, w, h, cover, zmin, zmax: 4, z: Math.min(Math.max(crop.z, zmin), 4), cx: crop.cx, cy: crop.cy });
+  $('#crop-z').value = Math.round((cs.z - zmin) / (4 - zmin) * 1000);
+  cropDraw();
+}
+function cropDraw() {
+  const k = cs.cover * cs.z, iw = cs.w * k, ih = cs.h * k;
+  cs.ox = clampOff(cs.W, iw, cs.W / 2 - cs.cx * iw);
+  cs.oy = clampOff(cs.H, ih, cs.H / 2 - cs.cy * ih);
+  cs.cx = (cs.W / 2 - cs.ox) / iw; // el centro queda guardado ya ajustado al borde
+  cs.cy = (cs.H / 2 - cs.oy) / ih;
+  Object.assign(cs.img.style, { width: `${iw}px`, height: `${ih}px`, transform: `translate(${cs.ox}px, ${cs.oy}px)` });
+}
+const cropMove = (dx, dy) => { const k = cs.cover * cs.z; cs.cx -= dx / (cs.w * k); cs.cy -= dy / (cs.h * k); cropDraw(); };
+const cropZoom = z => { cs.z = Math.min(Math.max(z, cs.zmin), cs.zmax); $('#crop-z').value = Math.round((cs.z - cs.zmin) / (cs.zmax - cs.zmin) * 1000); cropDraw(); };
+function cropSave() {
+  const [OW, OH] = CROP[cs.kind].out, f = OW / cs.W, k = cs.cover * cs.z;
+  const cv = Object.assign(document.createElement('canvas'), { width: OW, height: OH }), g = cv.getContext('2d');
+  g.fillStyle = '#fff';
+  g.fillRect(0, 0, OW, OH);
+  g.drawImage(cs.img, cs.ox * f, cs.oy * f, cs.w * k * f, cs.h * k * f);
+  const { kind, src, z, cx, cy } = cs;
+  cv.toBlob(b => {
+    pend[kind] = { url: URL.createObjectURL(b), src, crop: { z, cx, cy } };
+    closeModal();
+    $('#prev-media').innerHTML = previewMedia();
+  }, 'image/jpeg', 0.9);
+}
+let cropDrag = null;
+document.addEventListener('pointerdown', ev => {
+  if (!cs || !ev.target.closest('#crop-stage')) return;
+  cropDrag = { x: ev.clientX, y: ev.clientY };
+  $('#crop-stage').setPointerCapture(ev.pointerId);
+});
+document.addEventListener('pointermove', ev => {
+  if (!cropDrag) return;
+  cropMove(ev.clientX - cropDrag.x, ev.clientY - cropDrag.y);
+  cropDrag = { x: ev.clientX, y: ev.clientY };
+});
+document.addEventListener('pointerup', () => { cropDrag = null; });
+document.addEventListener('wheel', ev => {
+  if (!cs || !ev.target.closest('#crop-stage')) return;
+  ev.preventDefault();
+  cropZoom(cs.z * (1 - ev.deltaY * 0.0015));
+}, { passive: false });
+const waRow = w => `<div class="wa-row"><input class="input" name="wa_nombre" value="${esc(w.nombre)}" placeholder="Nombre (opcional)" aria-label="Nombre del número">`
+  + `<input class="input" name="wa_numero" value="${esc(w.numero)}" inputmode="numeric" placeholder="573001234567" aria-label="Número de WhatsApp">`
+  + `<button type="button" class="btn icon" data-act="wa-del" aria-label="Quitar este número">${ic('x')}</button></div>`;
+const tog = (name, t, hint, on) => `<label class="tog"><span><b>${t}</b><span class="muted">${hint}</span></span><input type="checkbox" class="switch" role="switch" name="${name}"${on ? ' checked' : ''}></label>`;
+const lum = hex => {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+const contrastWithWhite = hex => 1.05 / (lum(hex) + 0.05);
+console.assert(contrastWithWhite('#1E3B34') > 4.5 && contrastWithWhite('#FFFF00') < 4.5, 'contraste');
+function configuracion() {
+  const e = S.empresa;
+  pend = {};
+  shell('admin/configuracion', `<header class="page-head"><div><h1>Configuración</h1><p>Lo que ven tus clientes en el catálogo.</p></div></header>
+  <form class="two-col" data-form="conf" novalidate>
+    <div class="stack">
+      <section class="panel form"><h2>Tu negocio</h2>
+        ${fld('nombre', 'Nombre', inp('nombre', e.nombre, 'required'), { full: true })}
+        ${fld('slug', 'Nombre en el link', inp('slug', e.slug, 'required'), { full: true, hint: `Tu link: …/c/<b id="slug-prev">${esc(e.slug)}</b>-${e.hash}. Los links que ya compartiste siguen funcionando.` })}
+        <div class="field full"><span class="flabel" id="wa-label">WhatsApp</span>
+          <div id="wa-rows" role="group" aria-labelledby="wa-label">${(e.whatsapps.length ? e.whatsapps : [{ numero: '', nombre: '' }]).map(waRow).join('')}</div>
+          <button type="button" class="btn link wa-add" data-act="wa-add"${e.whatsapps.length >= 3 ? ' hidden' : ''}>Agregar otro número</button>
+          <p class="hint">Con indicativo de país, sin + ni espacios. Ej.: 573001234567. Si pones varios, tu cliente elige a cuál escribir. Máximo 3.</p>
+          <p class="err" data-err="whatsapp" aria-live="polite"></p></div>
+        ${fld('direccion', 'Dirección', inp('direccion', e.direccion), { full: true })}
+        ${fld('horario', 'Horario', inp('horario', e.horario), { full: true })}
+        ${fld('domicilios', 'Domicilios', inp('domicilios', e.domicilios), { full: true })}
+      </section>
+      <section class="panel"><h2>Qué se muestra</h2>
+        ${tog('precios', 'Mostrar precios', 'Si lo apagas, el catálogo no muestra precios ni ofertas.', e.precios)}
+        ${tog('waProducto', 'Botón de WhatsApp en cada producto', 'Tu cliente te escribe con el nombre del producto ya puesto.', e.waProducto)}
+        ${tog('agotados', 'Mostrar productos agotados', 'Aparecen con la etiqueta Agotado. Si lo apagas, se ocultan.', e.agotados)}
+      </section>
+    </div>
+    <div class="panel photo-panel"><h2>Portada, logo y colores</h2>
+      <div class="preview" id="cprev" style="--brand:${e.primario};--brand-2:${e.secundario}">
+        <div id="prev-media">${previewMedia()}</div>
+        <span class="pv-tab">Ofertas de hoy</span>
+      </div>
+      <p class="hint">Toca la portada o el logo para cambiarlos y elegir el recorte.</p>
+      <p class="err" id="media-err" aria-live="polite"></p>
+      <input type="file" class="sr" data-crop-file="portada" accept="image/jpeg,image/png,image/webp" aria-label="Elegir foto de portada" tabindex="-1">
+      <input type="file" class="sr" data-crop-file="logo" accept="image/jpeg,image/png,image/webp" aria-label="Elegir logo" tabindex="-1">
+      <div class="form">
+        ${fld('primario', 'Color principal', `<input type="color" class="color" id="f-primario" name="primario" value="${e.primario}">`)}
+        ${fld('secundario', 'Color secundario', `<input type="color" class="color" id="f-secundario" name="secundario" value="${e.secundario}">`)}
+      </div>
+      <p class="err" id="contrast" aria-live="polite"></p>
+      <div class="form-actions"><a class="btn" href="#/c/${path(e)}">${ic('eye')}Ver mi catálogo</a><button class="btn btn-dark">Guardar cambios</button></div>
+    </div>
+  </form>`);
+}
+function submitConf(f) {
+  const v = Object.fromEntries(new FormData(f)), err = {};
+  if (!v.nombre.trim()) err.nombre = 'Escribe el nombre del negocio.';
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(v.slug)) err.slug = 'Usa solo minúsculas, números y guiones. Ej.: salsamentaria-javier.';
+  const names = new FormData(f).getAll('wa_nombre');
+  const whatsapps = new FormData(f).getAll('wa_numero').map((n, i) => ({ numero: n.trim(), nombre: names[i].trim() })).filter(w => w.numero);
+  const bad = whatsapps.find(w => !/^\d{10,15}$/.test(w.numero));
+  if (bad) err.whatsapp = `${bad.numero}: escribe solo números, con el indicativo de país. Ej.: 573001234567.`;
+  else if (new Set(whatsapps.map(w => w.numero)).size < whatsapps.length) err.whatsapp = 'Ese número ya está en la lista.';
+  $$('[name=wa_numero]', f).forEach(i => i.setAttribute('aria-invalid', String(!!bad && i.value.trim() === bad.numero)));
+  if (showErr(f, err)) return;
+  Object.assign(S.empresa, {
+    nombre: v.nombre.trim(), slug: v.slug, whatsapps, direccion: v.direccion.trim(), horario: v.horario.trim(), domicilios: v.domicilios.trim(),
+    primario: v.primario, secundario: v.secundario, precios: !!v.precios, waProducto: !!v.waProducto, agotados: !!v.agotados,
+  });
+  for (const [kind, m] of Object.entries(pend)) {
+    Object.assign(S.empresa, { [kind]: m?.url || null, [kind + 'Src']: m?.src || null, [kind + 'Crop']: m?.crop || null });
+  }
+  configuracion();
+  toast('Cambios guardados');
+}
+
+// ---------- Super admin ----------
+function superadmin() {
+  const L = S.empresas;
+  shell('superadmin', `<header class="page-head"><div><h1>Empresas</h1><p>${plural(L.length, 'empresa')}, ${L.filter(x => x.activa).length} activas.</p></div>
+      <button class="btn btn-dark" data-act="new-emp">${ic('plus')}Nueva empresa</button></header>
+    <div class="scroll-x"><table class="table wide-t"><thead><tr><th>Empresa</th><th>Link público</th><th class="num">Productos</th><th>Administrador</th><th>Activa</th></tr></thead><tbody>
+    ${L.map(x => `<tr><td><div class="who">${logo(x, 'sm')}<b>${esc(x.nombre)}</b></div></td>
+      <td>${x === S.empresa ? `<a href="#/c/${path(x)}">/c/${path(x)}</a>` : `<span class="muted">/c/${path(x)}</span>`}</td>
+      <td class="num">${x === S.empresa ? S.prods.length : x.productos}</td><td>${esc(x.admin)}</td>
+      <td><input type="checkbox" class="switch" role="switch" data-emp="${x.id}"${x.activa ? ' checked' : ''} aria-label="${esc(x.nombre)} activa"></td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="muted note">Al desactivar una empresa, su catálogo muestra “Catálogo no disponible” y su administrador pierde el acceso en menos de 15 minutos.</p>`, true);
+}
+function newEmp() {
+  sheet(`<form class="sheet-scroll form-stack" data-form="emp" novalidate><h2>Nueva empresa</h2>
+    ${fld('nombre', 'Nombre del negocio', inp('nombre', '', 'required'))}
+    ${fld('slug', 'Nombre en el link', inp('slug', ''), { hint: 'Se arma solo con el nombre. Puedes cambiarlo.' })}
+    ${fld('whatsapp', 'WhatsApp', inp('whatsapp', '', 'inputmode="numeric"'), { hint: 'Opcional. Con indicativo de país.' })}
+    <h3>Administrador</h3>
+    ${fld('admin', 'Nombre', inp('admin', '', 'required'))}
+    ${fld('correo', 'Correo', inp('correo', '', 'type="email" required'))}
+    <div class="form-actions"><button type="button" class="btn" data-act="close">Cancelar</button><button class="btn btn-dark">Crear empresa</button></div>
+  </form>`, 'Nueva empresa');
+}
+function submitEmp(f) {
+  const v = Object.fromEntries(new FormData(f)), err = {};
+  if (!v.nombre.trim()) err.nombre = 'Escribe el nombre del negocio.';
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(v.slug)) err.slug = 'Usa solo minúsculas, números y guiones.';
+  else if (S.empresas.some(x => x.slug === v.slug)) err.slug = 'Ya hay una empresa con este nombre en el link.';
+  if (v.whatsapp && !/^\d{10,15}$/.test(v.whatsapp)) err.whatsapp = 'Escribe solo números, con el indicativo de país.';
+  if (!v.admin.trim()) err.admin = 'Escribe el nombre del administrador.';
+  if (!/^\S+@\S+\.\S+$/.test(v.correo)) err.correo = 'Escribe un correo válido.';
+  if (showErr(f, err)) return;
+  const x = { id: S.empresas.length + 1, nombre: v.nombre.trim(), slug: v.slug, hash: rand(8, 'abcdefghijklmnopqrstuvwxyz0123456789'), productos: 0, activa: true, admin: v.correo };
+  S.empresas.push(x);
+  const pass = rand(12, 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789');
+  superadmin();
+  sheet(`<div class="sheet-scroll m-pad"><h2>Empresa creada</h2>
+    <p>Envía estos datos a ${esc(v.admin.trim())}. La contraseña temporal se muestra solo esta vez y se pide cambiarla en el primer ingreso.</p>
+    <dl class="creds"><dt>Correo</dt><dd>${esc(v.correo)}</dd><dt>Contraseña temporal</dt><dd>${pass}</dd><dt>Link público</dt><dd>${publicUrl(x)}</dd></dl>
+    <div class="form-actions"><button class="btn btn-dark" data-act="close">Listo</button></div></div>`, 'Empresa creada');
+}
+
+// ---------- Eventos ----------
+const actions = {
+  open: t => openProd(+t.dataset.id),
+  info: openInfo,
+  credits: openCredits,
+  'wa-pick': pickWa,
+  'wa-add': t => {
+    $('#wa-rows').insertAdjacentHTML('beforeend', waRow({ numero: '', nombre: '' }));
+    t.hidden = $$('.wa-row').length >= 3;
+    $$('.wa-row [name=wa_numero]').pop().focus();
+  },
+  'wa-del': t => { t.closest('.wa-row').remove(); $('.wa-add').hidden = false; },
+  'edit-media': t => {
+    const m = media(t.dataset.kind);
+    if (m) openCrop(t.dataset.kind, m.src || m.url, m.crop);
+    else $(`form [data-crop-file="${t.dataset.kind}"]`).click(); // sin imagen: directo a elegir el archivo
+  },
+  'crop-ok': cropSave,
+  'crop-rm': () => { pend[cs.kind] = null; closeModal(); $('#prev-media').innerHTML = previewMedia(); },
+  close: closeModal,
+  'close-bg': closeModal,
+  share,
+  find: () => { goTo($('#results .sec')?.id || 'results'); $('#q').focus({ preventScroll: true }); },
+  tab: t => goTo(t.dataset.to),
+  'copy-link': () => copy(publicUrl()),
+  'dl-qr': () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([$('.qr-svg').outerHTML], { type: 'image/svg+xml' }));
+    a.download = `qr-${S.empresa.slug}.svg`;
+    a.click();
+  },
+  filter: t => Object.assign(F, { q: '', cat: '', disp: t.dataset.f, page: 1 }),
+  page: t => { F.page += +t.dataset.d; prodList(); },
+  'clear-filters': () => { Object.assign(F, { q: '', cat: '', disp: '', page: 1 }); productos(); },
+  'save-prices': savePrices,
+  discard: () => { D = {}; prodList(); },
+  'del-cat': t => delCat(+t.dataset.id),
+  imp: t => {
+    const g = t.dataset.go;
+    if (g === 'template') { toast('En el prototipo la plantilla no se descarga.'); IMP.step = 2; }
+    else if (g === 'reset') Object.assign(IMP, { step: 1, clean: false, done: false });
+    else if (g === 'fix') IMP.clean = true;
+    else if (g === 'confirm') IMP.done = true;
+    else IMP.step = +g;
+    importar();
+  },
+  'zip-reset': () => { IMP.zip = false; importar(); },
+  export: () => toast('En el prototipo el Excel no se descarga.'),
+  'new-emp': newEmp,
+};
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('[data-act]');
+  if (!t || (t.dataset.act === 'close-bg' && ev.target !== t)) return;
+  if (t.dataset.act === 'wa-pick') ev.preventDefault(); // con varios números primero se elige a cuál escribir
+  actions[t.dataset.act]?.(t);
+});
+document.addEventListener('submit', ev => {
+  ev.preventDefault();
+  ({ login: submitLogin, prod: submitProd, cat: submitCat, conf: submitConf, emp: submitEmp })[ev.target.dataset.form]?.(ev.target);
+});
+document.addEventListener('input', ev => {
+  const t = ev.target, form = t.form?.dataset.form;
+  if (t.id === 'q') {
+    const q = t.value.trim();
+    $('#results').innerHTML = sections(q);
+    $('#tabs').hidden = !!q;
+    if (!q) { $('#tabs').innerHTML = tabsFor(); startSpy(); }
+  } else if (t.id === 'crop-z') {
+    cropZoom(cs.zmin + (cs.zmax - cs.zmin) * t.value / 1000);
+  } else if (t.id === 'pf-q') {
+    F.q = t.value; F.page = 1; prodList();
+  } else if (t.dataset.price) {
+    const id = +t.dataset.price, v = t.value.replace(/\D/g, '');
+    t.value = v;
+    if (v !== '' && +v === byId(id).precio) delete D[id]; else D[id] = v === '' ? 0 : +v;
+    $$(`[data-price="${id}"]`).forEach(i => { if (i !== t) i.value = miles(v); i.classList.toggle('dirty', id in D); });
+    savebar();
+  } else if (t.type === 'color') {
+    $('#cprev').style.setProperty(t.name === 'primario' ? '--brand' : '--brand-2', t.value);
+    const bad = contrastWithWhite($('#f-primario').value) < 4.5;
+    $('#contrast').textContent = bad ? 'El texto blanco casi no se lee sobre este color principal. Elige un tono más oscuro.' : '';
+  } else if (form === 'conf' && t.name === 'slug') {
+    $('#slug-prev').textContent = t.value;
+  } else if (form === 'emp' && t.name === 'slug') {
+    t.dataset.touched = '1';
+  } else if (form === 'emp' && t.name === 'nombre' && !t.form.elements.slug.dataset.touched) {
+    t.form.elements.slug.value = slugify(t.value);
+  }
+});
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.id === 'pf-cat') { F.cat = t.value; F.page = 1; prodList(); }
+  else if (t.id === 'pf-disp') { F.disp = t.value; F.page = 1; prodList(); }
+  else if (t.dataset.disp) {
+    const p = byId(+t.dataset.disp);
+    p.disp = t.checked;
+    $$(`[data-disp="${p.id}"]`).forEach(i => { i.checked = t.checked; });
+    toast(`${p.nombre}: ${p.disp ? 'disponible' : 'agotado'}`);
+  } else if (t.dataset.catact) {
+    const c = S.cats.find(x => x.id === +t.dataset.catact);
+    c.activa = t.checked;
+    toast(`${c.nombre}: ${c.activa ? 'visible' : 'oculta'} en el catálogo`);
+  } else if (t.dataset.catname) {
+    const c = S.cats.find(x => x.id === +t.dataset.catname), nombre = t.value.trim();
+    if (!nombre) { t.value = c.nombre; return toast('La categoría necesita un nombre.'); }
+    c.nombre = nombre;
+    toast('Categoría renombrada');
+  } else if (t.dataset.emp) {
+    const x = S.empresas.find(e => e.id === +t.dataset.emp);
+    x.activa = t.checked;
+    superadmin();
+    toast(`${x.nombre}: ${x.activa ? 'activa' : 'desactivada'}`);
+  } else if (t.id === 'photo' && t.files[0]) {
+    const file = t.files[0];
+    if (file.size > 5 * 1024 * 1024) { $('#photo-err').textContent = `La foto pesa ${(file.size / 1048576).toFixed(1)} MB. El máximo es 5 MB.`; return; }
+    $('#photo-err').textContent = '';
+    pendingPhoto = URL.createObjectURL(file);
+    $('#photo-prev').innerHTML = `<span class="ph"><img src="${pendingPhoto}" alt=""></span>`;
+  } else if (t.dataset.cropFile && t.files[0]) {
+    const file = t.files[0], kind = t.dataset.cropFile;
+    t.value = '';
+    const msg = file.size > 5 * 1024 * 1024 ? `La foto pesa ${(file.size / 1048576).toFixed(1)} MB. El máximo es 5 MB.` : '';
+    $('#media-err').textContent = msg;
+    if (msg) return $('.sheet') && toast(msg);
+    openCrop(kind, URL.createObjectURL(file), null); // foto nueva: recorte desde cero
+  } else if (t.id === 'xlsx' && t.files[0]) { IMP.step = 3; importar(); }
+  else if (t.id === 'zip' && t.files[0]) { IMP.zip = true; importar(); }
+});
+// Precio en la lista: con puntos de miles al leer, solo dígitos al editar.
+document.addEventListener('focusin', ev => {
+  const t = ev.target;
+  if (!t.dataset?.price) return;
+  t.value = t.value.replace(/\D/g, '');
+  t.select(); // sin esto lo que se escribe se suma al precio anterior
+});
+document.addEventListener('focusout', ev => { if (ev.target.dataset?.price && ev.target.value) ev.target.value = miles(ev.target.value); });
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape' && $('.sheet')) return closeModal();
+  if (ev.target.id === 'crop-stage') {
+    const step = ev.shiftKey ? 40 : 10, mv = { ArrowLeft: [step, 0], ArrowRight: [-step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] }[ev.key];
+    if (mv) { ev.preventDefault(); return cropMove(...mv); }
+    if (ev.key === '+' || ev.key === '=') return cropZoom(cs.z * 1.1);
+    if (ev.key === '-') return cropZoom(cs.z / 1.1);
+  }
+  const g = ev.target.dataset?.grip;
+  if (g && (ev.key === 'ArrowUp' || ev.key === 'ArrowDown')) {
+    ev.preventDefault();
+    const i = S.cats.findIndex(c => c.id === +g);
+    if (!moveCat(+g, i + (ev.key === 'ArrowUp' ? -1 : 1))) return;
+    $('#cats').innerHTML = S.cats.map(catRow).join('');
+    $(`[data-grip="${g}"]`).focus();
+    toast('Orden guardado');
+  }
+});
+let dragId = null;
+document.addEventListener('dragstart', ev => {
+  const li = ev.target.closest?.('[data-cat]');
+  if (!li) return;
+  dragId = +li.dataset.cat;
+  li.classList.add('drag');
+  ev.dataTransfer.effectAllowed = 'move';
+});
+document.addEventListener('dragover', ev => {
+  const li = ev.target.closest?.('[data-cat]');
+  if (!li || dragId == null) return;
+  ev.preventDefault();
+  const to = S.cats.findIndex(c => c.id === +li.dataset.cat), from = S.cats.findIndex(c => c.id === dragId);
+  if (!moveCat(dragId, to)) return;
+  const el = $(`[data-cat="${dragId}"]`);
+  from < to ? li.after(el) : li.before(el);
+});
+document.addEventListener('dragend', () => {
+  if (dragId == null) return;
+  $(`[data-cat="${dragId}"]`)?.classList.remove('drag');
+  dragId = null;
+  toast('Orden guardado');
+});
+
+// ---------- Rutas ----------
+const routes = {
+  c: catalogo, login, admin: dashboard, 'admin/productos': productos, 'admin/producto': productoForm,
+  'admin/categorias': categorias, 'admin/importar': importar, 'admin/configuracion': configuracion, superadmin,
+};
+function render() {
+  closeModal();
+  spy?.disconnect();
+  const parts = (location.hash.slice(2) || `c/${path(S.empresa)}`).split('/');
+  let key = parts.join('/'), arg;
+  if (!routes[key]) { arg = parts.pop(); key = parts.join('/'); }
+  (routes[key] || noDisponible)(arg);
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>

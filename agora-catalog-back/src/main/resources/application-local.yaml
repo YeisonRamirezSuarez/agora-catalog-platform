@@ -1,0 +1,14 @@
+# Perfil `local`: desarrollo en la máquina de cada quien.
+#
+# NO lleva secretos: la base sale del archivo `.env` (copiar .env.example -> .env).
+# Acá solo va lo que cambia por ser local.
+
+settings:
+  flyway:
+    # Cómodo en local al traer migraciones de otros después de haber probado las
+    # propias. Nunca en un ambiente compartido.
+    out-of-order: true
+
+logging:
+  level:
+    com.agora.catalog: DEBUG

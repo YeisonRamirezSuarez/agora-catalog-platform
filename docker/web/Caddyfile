@@ -1,0 +1,15 @@
+# Un solo origen para el navegador: el front en / y la API en /api (sin CORS).
+:80 {
+	encode gzip
+
+	handle /api/* {
+		reverse_proxy api:9092
+	}
+
+	# Rutas de Angular (CSR): lo que no es un archivo cae en index.html.
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

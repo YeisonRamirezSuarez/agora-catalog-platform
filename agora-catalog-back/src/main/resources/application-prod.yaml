@@ -1,0 +1,30 @@
+# Perfil `prod`: producción.
+#
+# Igual que `dev` (detrás de Caddy), con lo que se cierra en producción:
+#   - escucha SOLO en loopback, sin variable que lo cambie: Caddy es el único punto de entrada.
+#   - la documentación de la API (Swagger / OpenAPI) queda apagada en la aplicación.
+#
+# Todo lo que cambia por ambiente sale de variables de entorno (o del `.env` del
+# directorio de trabajo). Ver .env.example para la lista completa.
+
+server:
+  # Fijo a propósito (sin ${SERVER_ADDRESS}). Ojo: una variable de entorno SERVER_ADDRESS
+  # igual le gana a este archivo en Spring, así que el .env de producción NO debe definirla.
+  address: 127.0.0.1
+
+settings:
+  security:
+    # Caddy es el único proxy delante. Ajustar solo si se agrega un balanceador antes.
+    trusted-proxy-count: ${TRUSTED_PROXY_COUNT:1}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+logging:
+  file:
+    path: ${LOG_PATH:./logs}
+  level:
+    root: INFO

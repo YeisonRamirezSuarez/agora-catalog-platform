@@ -1,0 +1,3 @@
+org.springframework.boot.EnvironmentPostProcessor=\
+  com.agora.catalog.common.secrets.SecretsEnvironmentPostProcessor,\
+  com.agora.catalog.common.time.TimeZoneEnvironmentPostProcessor

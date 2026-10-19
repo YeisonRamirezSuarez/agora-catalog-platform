@@ -1,0 +1,73 @@
+# Configuración común a todos los perfiles.
+#
+# Los perfiles solo sobrescriben lo que cambia por ambiente:
+#   - local  -> application-local.yaml (desarrollo en la máquina de cada quien)
+#   - dev    -> application-dev.yaml   (ambiente desplegado de pruebas)
+#   - prod   -> application-prod.yaml  (producción: solo loopback y sin Swagger)
+# Ninguno lleva secretos: se versionan tal cual.
+#
+# Los secretos NUNCA van escritos en este archivo: se leen de variables de entorno.
+# El archivo `.env` del directorio de trabajo se carga solo (ver SecretsEnvironmentPostProcessor
+# y .env.example en la raíz del backend). Lo que ya esté en el entorno del sistema gana.
+
+server:
+  port: ${SERVER_PORT:9092}
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 2KB
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: agora-catalog-back
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  autoconfigure:
+    # Sin esto Spring crea un usuario en memoria y escribe su contraseña en el log. El login
+    # es propio (JWT contra la tabla de usuarios), así que ese usuario no debe existir.
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
+  security:
+    filter:
+      # `async` queda fuera a propósito: la sesión es STATELESS, así que en el re-despacho
+      # asíncrono de una respuesta en streaming no hay SecurityContext que restaurar y la
+      # cadena respondería Access Denied con la respuesta ya comprometida. `error` queda
+      # dentro para que /error siga cubierto.
+      dispatcher-types: request, error
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+settings:
+  # Zona horaria del proyecto (nombre IANA). TimeZoneEnvironmentPostProcessor la pone como zona de
+  # la JVM al arrancar: fechas del backend (oferta vigente, producto nuevo) y sesión de cada
+  # conexión a PostgreSQL.
+  time-zone: ${APP_TIME_ZONE:America/Bogota}
+
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4251}
+
+  security:
+    # Cuántos proxies AGREGAN a X-Forwarded-For entre el cliente y esta aplicación.
+    # 0 si el navegador habla directo con el backend; 1 detrás de Caddy.
+    # Un valor mayor al real permite falsificar la IP del cliente (y saltar el rate limit).
+    trusted-proxy-count: ${TRUSTED_PROXY_COUNT:0}
+
+  # De dónde salen los secretos. 'env' lee el archivo .env del directorio de trabajo.
+  secrets:
+    provider: env
+
+  flyway:
+    # true aplica las migraciones pendientes al arrancar.
+    enabled: ${FLYWAY_ENABLED:true}
+    # SOLO en local: aplica una migración con versión menor a la última registrada. En un
+    # ambiente compartido esconde el problema y el esquema deja de ser reproducible.
+    out-of-order: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha

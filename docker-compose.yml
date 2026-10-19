@@ -1,0 +1,57 @@
+# Todo el proyecto en Docker: PostgreSQL 16, API y front (Caddy).
+#
+#   docker compose up -d --build        # levanta todo en http://localhost:8080
+#   docker compose up -d postgres       # solo la base, para correr back y front nativos
+#   docker compose down                 # lo detiene (los datos quedan en el volumen)
+#   docker compose down -v              # lo detiene y BORRA los datos
+#
+# La base se publica en el 5433 para no chocar con un PostgreSQL nativo en el 5432. Para usarla
+# desde el backend nativo: DB_URL='jdbc:postgresql://localhost:5433/agora_catalog?currentSchema=main'
+# en agora-catalog-back/.env. El esquema lo crea Flyway al arrancar el backend.
+services:
+  postgres:
+    image: postgres:16
+    container_name: agora-catalog-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-agora_catalog}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - agora-catalog-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./agora-catalog-back
+    container_name: agora-catalog-api
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      # El perfil dev escucha en loopback; dentro de la red de Docker tiene que escuchar en todas.
+      SERVER_ADDRESS: 0.0.0.0
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-agora_catalog}?currentSchema=main
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      # Caddy (servicio web) es el único proxy delante.
+      TRUSTED_PROXY_COUNT: 1
+      CORS_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-8080}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    container_name: agora-catalog-web
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      - api
+
+volumes:
+  agora-catalog-pgdata:
