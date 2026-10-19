@@ -1,6 +1,5 @@
 package com.agora.catalog.common.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,11 +8,7 @@ import java.util.List;
 public class PageResponse<T> {
 
     private final List<T> content;
-
-    @JsonProperty("total_elements")
     private final int totalElements;
-
-    @JsonProperty("total_pages")
     private final int totalPages;
 
     private final int page;

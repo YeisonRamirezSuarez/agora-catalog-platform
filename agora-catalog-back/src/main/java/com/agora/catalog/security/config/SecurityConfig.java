@@ -1,5 +1,6 @@
 package com.agora.catalog.security.config;
 
+import com.agora.catalog.auth.filter.JwtAuthFilter;
 import com.agora.catalog.security.filter.RateLimitFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,10 @@ import java.io.IOException;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_PATHS = {
-            "/auth/**",
+            // /auth/password no está: exige sesión.
+            "/auth/login",
+            "/auth/refresh",
+            "/auth/logout",
             // Catálogo público por link: sin login, por diseño.
             "/public/**",
             "/v3/api-docs/**",
@@ -32,9 +36,11 @@ public class SecurityConfig {
     };
 
     private final RateLimitFilter rateLimitFilter;
+    private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(RateLimitFilter rateLimitFilter) {
+    public SecurityConfig(RateLimitFilter rateLimitFilter, JwtAuthFilter jwtAuthFilter) {
         this.rateLimitFilter = rateLimitFilter;
+        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
@@ -50,6 +56,7 @@ public class SecurityConfig {
                 // 429 emitido antes saldría sin sus cabeceras. Se ancla en
                 // UsernamePasswordAuthenticationFilter porque un filtro propio no sirve de ancla.
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(PUBLIC_PATHS).permitAll();
                     auth.anyRequest().authenticated();

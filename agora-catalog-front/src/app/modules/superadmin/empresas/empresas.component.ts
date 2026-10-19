@@ -1,0 +1,250 @@
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {switchMap} from 'rxjs';
+
+import {apiMessage} from '@app/core/services/auth.service';
+import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
+import {AdminCreado, Administrador, Empresa, EmpresasService} from './empresas.service';
+
+/** Lo que se muestra una sola vez después de crear un administrador. */
+interface Credenciales extends AdminCreado {
+  empresa: string;
+}
+
+@Component({
+  selector: 'app-empresas',
+  imports: [PanelShellComponent, ReactiveFormsModule],
+  template: `
+    <app-panel-shell subtitle="Super admin" [links]="[{label: 'Empresas', path: '/superadmin'}]">
+      <header class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 class="page-title">Empresas</h1>
+          <p class="mt-1 text-muted">{{ resumen() }}</p>
+        </div>
+        @if (!formAbierto()) {
+          <button type="button" class="btn btn-dark" (click)="abrirNueva()">+ Nueva empresa</button>
+        }
+      </header>
+
+      @if (error()) {
+        <p class="alert-error mt-6" role="alert">{{ error() }}</p>
+      }
+
+      @if (credenciales(); as c) {
+        <section class="card mt-6 grid gap-3 border-ok/30 p-5" aria-live="polite">
+          <h2 class="text-lg font-semibold">Administrador de {{ c.empresa }} creado</h2>
+          <p class="text-sm text-muted">
+            Envíale estos datos. La contraseña temporal se muestra solo esta vez y se le pedirá cambiarla al entrar.
+          </p>
+          <dl class="grid gap-2 rounded-[10px] bg-wash p-4 text-sm sm:grid-cols-[140px_1fr]">
+            <dt class="text-muted">Correo</dt><dd class="font-semibold">{{ c.email }}</dd>
+            <dt class="text-muted">Contraseña temporal</dt><dd class="font-mono text-base font-semibold">{{ c.passwordTemporal }}</dd>
+          </dl>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="btn" (click)="copiar(c)">{{ copiado() ? 'Copiado' : 'Copiar datos' }}</button>
+            <button type="button" class="btn-link" (click)="credenciales.set(null)">Cerrar</button>
+          </div>
+        </section>
+      }
+
+      @if (formAbierto()) {
+        <form [formGroup]="form" (ngSubmit)="guardar()" novalidate class="card mt-6 grid gap-5 p-5 sm:p-6">
+          <h2 class="text-lg font-semibold">{{ empresaParaAdmin() ? 'Administrador de ' + empresaParaAdmin()!.nombre : 'Nueva empresa' }}</h2>
+          @if (!empresaParaAdmin()) {
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="field">
+                <label for="f-nombre">Nombre del negocio</label>
+                <input class="input" id="f-nombre" formControlName="nombre" maxlength="120" placeholder="Panadería La Espiga">
+              </div>
+              <div class="field">
+                <label for="f-slug">Slug del link <span class="font-normal text-muted">(opcional)</span></label>
+                <input class="input" id="f-slug" formControlName="slug" maxlength="80" placeholder="panaderia-la-espiga"
+                       aria-describedby="h-slug">
+                <p class="hint" id="h-slug">Si lo dejas vacío, sale del nombre. Se puede cambiar después sin romper el link.</p>
+              </div>
+            </div>
+          }
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="field">
+              <label for="f-admin">Nombre del administrador</label>
+              <input class="input" id="f-admin" formControlName="adminNombre" maxlength="120" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="f-email">Correo del administrador</label>
+              <input class="input" id="f-email" type="email" formControlName="adminEmail" maxlength="160" autocomplete="off">
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn btn-dark" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Crear' }}</button>
+            <button type="button" class="btn" (click)="cerrarForm()">Cancelar</button>
+          </div>
+        </form>
+      }
+
+      <div class="card mt-6 overflow-x-auto">
+        <table class="table min-w-[760px]">
+          <thead>
+            <tr><th>Empresa</th><th>Link público</th><th class="text-right">Productos</th><th>Administradores</th><th>Activa</th></tr>
+          </thead>
+          <tbody>
+            @for (e of empresas(); track e.id) {
+              <tr>
+                <td class="font-semibold">{{ e.nombre }}</td>
+                <td class="text-muted">{{ e.linkPublico }}</td>
+                <td class="text-right tabular-nums">{{ e.productos }}</td>
+                <td>
+                  <ul class="grid gap-1.5">
+                    @for (a of e.administradores; track a.id) {
+                      <li class="flex flex-wrap items-center gap-2">
+                        <span [class.text-faint]="!a.activo" [class.line-through]="!a.activo">{{ a.email }}</span>
+                        @if (a.debeCambiarPassword && a.activo) {
+                          <span class="badge bg-warn-soft text-warn-ink">Contraseña temporal</span>
+                        }
+                        <button type="button" class="btn-link text-xs" (click)="toggleAdmin(a)">
+                          {{ a.activo ? 'Desactivar' : 'Activar' }}
+                        </button>
+                      </li>
+                    } @empty {
+                      <li class="text-faint">Sin administrador</li>
+                    }
+                  </ul>
+                  <button type="button" class="btn-link mt-1.5 text-xs" (click)="abrirAdmin(e)">+ Agregar administrador</button>
+                </td>
+                <td>
+                  <input type="checkbox" class="switch" role="switch" [checked]="e.activa"
+                         [attr.aria-label]="e.nombre + ' activa'" (change)="toggleEmpresa(e, $event)">
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="py-10 text-center text-muted">{{ cargando() ? 'Cargando…' : 'Todavía no hay empresas.' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="hint mt-3">
+        Al desactivar una empresa, su catálogo deja de estar disponible y sus administradores pierden el acceso en menos de 15 minutos.
+      </p>
+    </app-panel-shell>
+  `
+})
+export class EmpresasComponent implements OnInit {
+
+  private readonly api = inject(EmpresasService);
+
+  readonly empresas = signal<Empresa[]>([]);
+  readonly cargando = signal(true);
+  readonly error = signal('');
+  readonly formAbierto = signal(false);
+  readonly empresaParaAdmin = signal<Empresa | null>(null);
+  readonly guardando = signal(false);
+  readonly credenciales = signal<Credenciales | null>(null);
+  readonly copiado = signal(false);
+
+  readonly resumen = computed(() => {
+    const total = this.empresas().length;
+    const activas = this.empresas().filter(e => e.activa).length;
+    return `${total} ${total === 1 ? 'empresa' : 'empresas'}, ${activas} ${activas === 1 ? 'activa' : 'activas'}.`;
+  });
+
+  readonly form = inject(FormBuilder).nonNullable.group({
+    nombre: [''],
+    slug: [''],
+    adminNombre: ['', Validators.required],
+    adminEmail: ['', [Validators.required, Validators.email]]
+  });
+
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  abrirNueva(): void {
+    this.empresaParaAdmin.set(null);
+    this.form.reset();
+    this.formAbierto.set(true);
+  }
+
+  abrirAdmin(empresa: Empresa): void {
+    this.empresaParaAdmin.set(empresa);
+    this.form.reset();
+    this.formAbierto.set(true);
+  }
+
+  cerrarForm(): void {
+    this.formAbierto.set(false);
+    this.empresaParaAdmin.set(null);
+  }
+
+  guardar(): void {
+    const {nombre, slug, adminNombre, adminEmail} = this.form.getRawValue();
+    const destino = this.empresaParaAdmin();
+    if (!destino && !nombre.trim()) {
+      this.error.set('Escribe el nombre del negocio');
+      return;
+    }
+    if (this.form.invalid) {
+      this.error.set(this.form.controls.adminEmail.hasError('email')
+        ? 'El correo del administrador no es válido'
+        : 'Escribe el nombre y el correo del administrador');
+      return;
+    }
+    this.guardando.set(true);
+    this.error.set('');
+    // Primero la empresa (si es nueva) y después su administrador.
+    const empresa$ = destino
+      ? this.api.createAdmin(destino.id, adminNombre, adminEmail)
+      : this.api.create(nombre, slug.trim()).pipe(
+          switchMap(e => this.api.createAdmin(e.id, adminNombre, adminEmail)));
+    empresa$.subscribe({
+      next: admin => {
+        this.credenciales.set({...admin, empresa: destino?.nombre ?? nombre.trim()});
+        this.copiado.set(false);
+        this.guardando.set(false);
+        this.cerrarForm();
+        this.cargar();
+      },
+      error: err => {
+        this.error.set(apiMessage(err));
+        this.guardando.set(false);
+        // Si la empresa alcanzó a crearse, queda en la lista para agregarle el administrador.
+        this.cargar();
+      }
+    });
+  }
+
+  toggleEmpresa(empresa: Empresa, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const activa = input.checked;
+    this.api.setActiva(empresa.id, activa).subscribe({
+      next: () => this.empresas.update(list => list.map(e => e.id === empresa.id ? {...e, activa} : e)),
+      error: err => {
+        input.checked = !activa;
+        this.error.set(apiMessage(err));
+      }
+    });
+  }
+
+  toggleAdmin(admin: Administrador): void {
+    this.api.setUsuarioActivo(admin.id, !admin.activo).subscribe({
+      next: () => this.cargar(),
+      error: err => this.error.set(apiMessage(err))
+    });
+  }
+
+  copiar(c: Credenciales): void {
+    const texto = `Agorá Catalog\nCorreo: ${c.email}\nContraseña temporal: ${c.passwordTemporal}`;
+    navigator.clipboard?.writeText(texto).then(() => this.copiado.set(true), () => this.copiado.set(false));
+  }
+
+  private cargar(): void {
+    this.api.list().subscribe({
+      next: list => {
+        this.empresas.set(list);
+        this.cargando.set(false);
+      },
+      error: err => {
+        this.error.set(apiMessage(err));
+        this.cargando.set(false);
+      }
+    });
+  }
+}

@@ -41,7 +41,23 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+config:
+  jwt:
+    # Clave de firma HMAC, en base64. El algoritmo lo deriva jjwt del largo de la clave
+    # decodificada (>=32 bytes HS256, >=64 HS512). Generar: openssl rand -base64 64
+    secret: ${JWT_SECRET}
+    # Corto a propósito: desactivar una empresa o un usuario corta su acceso en este tiempo.
+    access-minutes: 15
+    refresh-days: 7
+
 settings:
+  # Usuario SUPER_ADMIN que se crea al arrancar si su correo no existe (SuperAdminBootstrap).
+  # Sin correo o sin contraseña no se crea nada. Se le pide cambiar la contraseña al entrar.
+  superadmin:
+    nombre: ${SUPERADMIN_NAME:}
+    email: ${SUPERADMIN_EMAIL:}
+    password: ${SUPERADMIN_PASSWORD:}
+
   # Zona horaria del proyecto (nombre IANA). TimeZoneEnvironmentPostProcessor la pone como zona de
   # la JVM al arrancar: fechas del backend (oferta vigente, producto nuevo) y sesión de cada
   # conexión a PostgreSQL.
@@ -55,6 +71,8 @@ settings:
     # 0 si el navegador habla directo con el backend; 1 detrás de Caddy.
     # Un valor mayor al real permite falsificar la IP del cliente (y saltar el rate limit).
     trusted-proxy-count: ${TRUSTED_PROXY_COUNT:0}
+    # Límite de peticiones por IP a /auth y /public (RateLimitFilter). Solo las pruebas lo apagan.
+    rate-limit-enabled: true
 
   # De dónde salen los secretos. 'env' lee el archivo .env del directorio de trabajo.
   secrets:
@@ -66,6 +84,8 @@ settings:
     # SOLO en local: aplica una migración con versión menor a la última registrada. En un
     # ambiente compartido esconde el problema y el esquema deja de ser reproducible.
     out-of-order: false
+    # Aplica además db/seed (empresa, productos y usuarios de prueba). Solo local y docker-compose.
+    seed: ${FLYWAY_SEED:false}
 
 springdoc:
   swagger-ui:

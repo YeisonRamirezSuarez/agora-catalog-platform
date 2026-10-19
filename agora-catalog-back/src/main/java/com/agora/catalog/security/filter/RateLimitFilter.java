@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -54,11 +55,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final int MAX_TRACKED_IDENTITIES = 50_000;
 
     private final ClientIpResolver clientIpResolver;
+    private final boolean enabled;
 
     private final Map<String, Window> windows = new ConcurrentHashMap<>();
 
-    public RateLimitFilter(ClientIpResolver clientIpResolver) {
+    public RateLimitFilter(ClientIpResolver clientIpResolver,
+                           @Value("${settings.security.rate-limit-enabled:true}") boolean enabled) {
         this.clientIpResolver = clientIpResolver;
+        this.enabled = enabled;
     }
 
     /** El cupo que le toca a la ruta, o null si la ruta no se limita (ya exige token). */
@@ -72,7 +76,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // El preflight de CORS no lo manda una persona: contarlo gastaría el cupo del navegador
         // antes de la petición real.
-        return "OPTIONS".equalsIgnoreCase(request.getMethod()) || quotaFor(pathOf(request)) == null;
+        return !enabled || "OPTIONS".equalsIgnoreCase(request.getMethod()) || quotaFor(pathOf(request)) == null;
     }
 
     @Override

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RateLimitFilterTest {
 
-    private final RateLimitFilter filter = new RateLimitFilter(new ClientIpResolver(0));
+    private final RateLimitFilter filter = new RateLimitFilter(new ClientIpResolver(0), true);
 
     private int call(String path) throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api" + path);

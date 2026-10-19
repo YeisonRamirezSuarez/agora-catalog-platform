@@ -30,13 +30,20 @@ public class FlywayConfig {
     @Value("${settings.flyway.out-of-order:false}")
     private boolean outOfOrder;
 
+    /** Datos de prueba de {@code db/seed}: solo en local y docker-compose, nunca en un ambiente desplegado. */
+    @Value("${settings.flyway.seed:false}")
+    private boolean seed;
+
     @Bean(initMethod = "migrate")
     public Flyway flyway() {
+        String[] locations = seed
+                ? new String[]{"classpath:db/migration", "classpath:db/seed"}
+                : new String[]{"classpath:db/migration"};
         return Flyway.configure()
                 .dataSource(url, username, password)
                 .schemas("main")
                 .defaultSchema("main")
-                .locations("classpath:db/migration")
+                .locations(locations)
                 .baselineOnMigrate(true)
                 .baselineVersion("0")
                 .outOfOrder(outOfOrder)

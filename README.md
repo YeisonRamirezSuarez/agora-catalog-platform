@@ -75,6 +75,15 @@ docker compose down            # detener (los datos quedan en el volumen)
 
 Si el 8080 o el 5433 están ocupados: `WEB_PORT=8081 DB_PORT=5434 docker compose up -d --build`.
 
+## Usuarios
+
+- **Super admin**: se crea al arrancar con `SUPERADMIN_NAME`, `SUPERADMIN_EMAIL` y `SUPERADMIN_PASSWORD`
+  del `.env` (o del entorno en Docker), si ese correo todavía no existe. Al entrar se le pide cambiar
+  la contraseña. Desde **Empresas** crea cada negocio con su administrador, que recibe una contraseña
+  temporal.
+- **Datos de prueba** (solo perfil local y Docker): la empresa Salsamentaria Javier con 25 productos y
+  su administrador `javier@agora.local` / `Agora123*`.
+
 ## Verificación
 
 ```bash

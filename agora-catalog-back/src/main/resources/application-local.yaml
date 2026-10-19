@@ -8,6 +8,8 @@ settings:
     # Cómodo en local al traer migraciones de otros después de haber probado las
     # propias. Nunca en un ambiente compartido.
     out-of-order: true
+    # Datos de prueba de db/seed (ver R__semilla_local.sql).
+    seed: ${FLYWAY_SEED:true}
 
 logging:
   level:
