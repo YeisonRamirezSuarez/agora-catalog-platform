@@ -1,4 +1,4 @@
-import {Filtros, Producto, UnidadVenta} from './catalogo.models';
+import {Filtros, Horario, Producto, UnidadVenta} from './catalogo.models';
 
 export const UNIDADES: Record<UnidadVenta, string> = {
   UNIDAD: 'unidad', LIBRA: 'libra', KILO: 'kilo', GRAMOS: 'gramos', PAQUETE: 'paquete', CAJA: 'caja'
@@ -49,6 +49,52 @@ export function mensajePedido(lineasPedido: LineaPedido[], precios: boolean, nom
     nombre ? `Nombre: ${nombre}` : '',
     entrega ? `Entrega: ${entrega}` : ''
   ].filter(Boolean).join('\n');
+}
+
+const DIAS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+
+/** "07:00" -> "7:00 a. m."; "19:30" -> "7:30 p. m." */
+export function hora(hhmm: string): string {
+  const [h, m] = hhmm.split(':');
+  return `${+h % 12 || 12}:${m} ${+h < 12 ? 'a. m.' : 'p. m.'}`;
+}
+
+/** Día (1 = lunes) y "HH:mm" de este momento en la zona del negocio. */
+function enZona(ahora: Date, zona: string): {dia: number; hhmm: string} {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US',
+    {timeZone: zona, weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'})
+    .formatToParts(ahora).map(x => [x.type, x.value]));
+  return {dia: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(p['weekday']) + 1, hhmm: `${p['hour']}:${p['minute']}`};
+}
+
+/** Abierto ("cierra 7:00 p. m.") o cerrado ("abre mañana 7:00 a. m."); null si el negocio no puso horario. */
+export function estadoHorario(semana: Horario[], zona: string, ahora: Date): {abierto: boolean; texto: string} | null {
+  if (!semana.length) return null;
+  const {dia, hhmm} = enZona(ahora, zona);
+  const hoy = semana.find(h => h.dia === dia);
+  if (hoy && hoy.abre <= hhmm && hhmm < hoy.cierra) return {abierto: true, texto: `cierra ${hora(hoy.cierra)}`};
+  // El próximo día que abre; i = 7 es el mismo día de la semana que viene.
+  for (let i = 0; i <= 7; i++) {
+    const d = (dia - 1 + i) % 7 + 1, h = semana.find(x => x.dia === d);
+    if (h && (i > 0 || hhmm < h.abre)) {
+      return {abierto: false, texto: `abre ${i === 0 ? 'hoy' : i === 1 ? 'mañana' : 'el ' + DIAS[d - 1]} ${hora(h.abre)}`};
+    }
+  }
+  return null;
+}
+
+/** "Lunes a sábado: 7:00 a. m. – 7:00 p. m.", juntando los días seguidos con el mismo horario. */
+export function resumenHorario(semana: Horario[]): string[] {
+  const grupos: {desde: number; hasta: number; h: Horario}[] = [];
+  for (const h of [...semana].sort((a, b) => a.dia - b.dia)) {
+    const g = grupos.at(-1);
+    if (g && g.hasta === h.dia - 1 && g.h.abre === h.abre && g.h.cierra === h.cierra) g.hasta = h.dia;
+    else grupos.push({desde: h.dia, hasta: h.dia, h});
+  }
+  return grupos.map(({desde, hasta, h}) => {
+    const dias = desde === hasta ? DIAS[desde - 1] : `${DIAS[desde - 1]} ${hasta - desde === 1 ? 'y' : 'a'} ${DIAS[hasta - 1]}`;
+    return `${dias[0].toUpperCase()}${dias.slice(1)}: ${hora(h.abre)} – ${hora(h.cierra)}`;
+  });
 }
 
 export const FILTROS_VACIOS: Filtros = {

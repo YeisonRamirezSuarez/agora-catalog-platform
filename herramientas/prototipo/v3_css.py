@@ -170,6 +170,9 @@ html{touch-action:manipulation}
 .v-item dt{color:color-mix(in srgb,var(--accent) 52%,#3A2706);font:italic 600 19px/1.2 var(--serif)}
 .v-item dd span{text-wrap:balance}
 .v-item dd{display:grid;justify-items:center;gap:8px;margin:0;text-wrap:pretty;color:var(--c-ink-2);font-size:15px;line-height:1.45}
+.v-estado{display:inline-flex;align-items:center;gap:7px;color:var(--c-ink);font-size:14px;font-weight:700}
+.v-estado::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c-muted)}
+.v-estado.on::before{background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
 .v-link{display:inline-flex;align-items:center;gap:6px;color:var(--c-ink);font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent) 70%,transparent);text-decoration-thickness:2px;text-underline-offset:4px}
 .v-link svg{width:15px;height:15px;transition:transform .2s var(--ease)}
 .v-link:hover svg{transform:translateX(3px)}
@@ -291,6 +294,7 @@ html{touch-action:manipulation}
 .o-form{display:grid;gap:10px}
 .o-fields{display:grid;gap:8px}
 .o-fields label{display:grid;gap:4px;color:var(--c-ink-2);font-size:13px;font-weight:600}
+.o-aviso{margin:0;padding:9px 12px;border-radius:10px;background:var(--warn-soft);color:var(--warn-ink);font-size:13px;line-height:1.4}
 .o-form .btn-brand{min-height:52px;border-radius:14px;font-size:16px;font-weight:700}
 .o-form .link{justify-self:center}
 body:has(.sheet-bg) #toast{top:calc(16px + env(safe-area-inset-top));bottom:auto} /* con una hoja abierta el aviso no tapa sus botones */

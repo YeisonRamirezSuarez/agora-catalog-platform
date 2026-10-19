@@ -3,6 +3,9 @@ export interface CatalogoPublico {
   negocio: Negocio;
   whatsapps: Whatsapp[];
   sellos: Sello[];
+  horario: Horario[];
+  /** Zona del negocio: "abierto ahora" se calcula con su hora, no con la del visitante. */
+  zonaHoraria: string;
   categorias: Categoria[];
   franja: Franja | null;
   colecciones: Coleccion[];
@@ -53,6 +56,13 @@ export interface Whatsapp {
 export interface Sello {
   icono: IconoSello;
   texto: string;
+}
+
+/** dia 1 = lunes ... 7 = domingo; horas "HH:mm". El día que no viene, no abre. */
+export interface Horario {
+  dia: number;
+  abre: string;
+  cierra: string;
 }
 
 export interface Categoria {

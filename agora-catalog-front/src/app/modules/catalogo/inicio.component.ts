@@ -4,7 +4,7 @@ import {Router, RouterLink} from '@angular/router';
 
 import {IconoSello} from './catalogo.models';
 import {CatalogoStore} from './catalogo.store';
-import {lineas, MSG_GENERAL, phone, porRelevancia, waHref} from './catalogo.util';
+import {lineas, MSG_GENERAL, phone, porRelevancia, resumenHorario, waHref} from './catalogo.util';
 import {fachadaSvg, FLECHA_NOTA, OLA, selloSvg} from './fachadas';
 import {IconoComponent, NombreIcono} from './icono.component';
 import {FotoComponent, TarjetaComponent} from './piezas.component';
@@ -146,8 +146,12 @@ type Pestana = string; // 'todos' | 'ofertas' | 'mas' | 'c<id>'
             <div class="v-item"><dt>Dirección</dt><dd><span>{{ n.direccion }}</span>
               <a class="v-link" [href]="mapa()" target="_blank" rel="noopener">Cómo llegar<svg catIcono="arrow"></svg></a></dd></div>
           }
-          @if (n.horario) {
-            <div class="v-item"><dt>Horario</dt><dd><span>@for (l of frases(n.horario); track $index) { @if (!$first) {<br>}{{ l }} }</span></dd></div>
+          @if (resumenHorario().length || n.horario) {
+            <div class="v-item"><dt>Horario</dt><dd>
+              @if (store.horarioAhora(); as e) { <span class="v-estado" [class.on]="e.abierto">{{ e.abierto ? 'Abierto' : 'Cerrado' }} · {{ e.texto }}</span> }
+              @if (resumenHorario().length) { <span>@for (l of resumenHorario(); track $index) { @if (!$first) {<br>}{{ l }} }</span> }
+              @if (n.horario) { <span>@for (l of frases(n.horario); track $index) { @if (!$first) {<br>}{{ l }} }</span> }
+            </dd></div>
           }
           @if (n.infoDomicilios) {
             <div class="v-item"><dt>Domicilios</dt><dd><span>@for (l of frases(n.infoDomicilios); track $index) { @if (!$first) {<br>}{{ l }} }</span></dd></div>
@@ -227,6 +231,8 @@ export class InicioComponent {
     const k = this.pestana();
     return k === 'ofertas' ? {promo: '1'} : k === 'mas' ? {mas: '1'} : k.startsWith('c') ? {cat: k.slice(1)} : {};
   });
+
+  readonly resumenHorario = computed(() => resumenHorario(this.store.data()!.horario));
 
   readonly mapa = computed(() => {
     const n = this.store.negocio();

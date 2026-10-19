@@ -1,6 +1,8 @@
 package com.agora.catalog.empresa.dto;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -33,6 +35,19 @@ public final class ConfiguracionDtos {
     ) {
     }
 
+    /** Un día de atención: {@code dia} 1 = lunes ... 7 = domingo; horas "HH:mm". El día que no viene, no abre. */
+    public record HorarioDto(
+            @Min(value = 1, message = "El día del horario no es válido") @Max(value = 7, message = "El día del horario no es válido")
+            int dia,
+            @NotBlank(message = "Escribe la hora de abrir") @Pattern(regexp = HORA, message = "La hora de abrir no es válida")
+            String abre,
+            @NotBlank(message = "Escribe la hora de cerrar") @Pattern(regexp = HORA, message = "La hora de cerrar no es válida")
+            String cierra
+    ) {
+    }
+
+    private static final String HORA = "^([01][0-9]|2[0-3]):[0-5][0-9]$";
+
     public record ConfiguracionRequest(
             @NotBlank(message = "Escribe el nombre del negocio") @Size(max = 120, message = "El nombre puede tener hasta 120 caracteres") String nombre,
             @NotBlank(message = "Escribe el slug del link") @Size(max = 80, message = "El slug puede tener hasta 80 caracteres")
@@ -61,7 +76,8 @@ public final class ConfiguracionDtos {
             @NotBlank(message = "Elige el color de botones") @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "El color de botones no es válido") String colorPrimario,
             @NotBlank(message = "Elige el color de acento") @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "El color de acento no es válido") String colorSecundario,
             @NotNull(message = "Faltan los números de WhatsApp") @Size(max = 3, message = "Puedes tener hasta 3 números de WhatsApp") List<@Valid WhatsappDto> whatsapps,
-            @NotNull(message = "Faltan los sellos") @Size(max = 4, message = "Puedes tener hasta 4 sellos") List<@Valid SelloDto> sellos
+            @NotNull(message = "Faltan los sellos") @Size(max = 4, message = "Puedes tener hasta 4 sellos") List<@Valid SelloDto> sellos,
+            @NotNull(message = "Falta el horario") @Size(max = 7, message = "El horario tiene hasta 7 días") List<@Valid HorarioDto> horarioSemana
     ) {
     }
 
@@ -83,7 +99,7 @@ public final class ConfiguracionDtos {
             String direccion, String horario, String infoDomicilios,
             boolean mostrarPrecios, boolean pedidosWhatsapp, boolean mostrarAgotados,
             String colorPrimario, String colorSecundario,
-            List<WhatsappDto> whatsapps, List<SelloDto> sellos
+            List<WhatsappDto> whatsapps, List<SelloDto> sellos, List<HorarioDto> horarioSemana
     ) {
     }
 }

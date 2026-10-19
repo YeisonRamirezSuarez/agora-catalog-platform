@@ -101,11 +101,13 @@ Implementación: columna `usuario.rol` y `@PreAuthorize("hasRole('ADMIN_EMPRESA'
 - `fachada` (enum `SALSAMENTARIA`, `PANADERIA`, `FRUTERIA`, `CAFETERIA`, `MINIMERCADO`, `FERRETERIA`; null → sin dibujo): dibujo en línea de un local, con el nombre del negocio en el letrero, arriba de la sección de contacto. Los dibujos son SVG del front; la base solo guarda cuál.
 - `adornos` (default true): hojas de laurel y perejil recortadas junto a los títulos (solo computador).
 - En todos los textos que admiten saltos de línea, el dueño los pone con Enter; se guardan como `\n`.
-- `direccion`, `horario`, `info_domicilios`
+- `direccion`, `horario` (aclaraciones del horario, ej. festivos), `info_domicilios`
 - `mostrar_precios` (default true)
 - `pedidos_whatsapp` (default true): el catálogo permite armar un pedido y enviarlo por WhatsApp. En false, cada producto muestra un botón "Preguntar" que abre WhatsApp con el nombre del producto.
 - `mostrar_agotados` (default true → se muestran con etiqueta "Agotado"; false → se ocultan)
 - `activa` (default true), `created_at`, `updated_at`
+
+**empresa_horario**: `empresa_id`, `dia` (1 = lunes ... 7 = domingo), `abre`, `cierra`. Un tramo por día, sin pasar de medianoche; el día sin fila no abre y sin filas el horario no está configurado. Con él, el catálogo dice si el negocio está abierto ahora (con la hora de `APP_TIME_ZONE`, no la del visitante).
 
 **empresa_sello**: `id`, `empresa_id`, `icono` (enum: `CALIDAD`, `DOMICILIO`, `WHATSAPP`, `PRECIO`, `TRADICION`, `HORARIO`), `texto` (≤ 48), `orden`. Máximo 4 por empresa. Son las frases cortas con ícono debajo de la portada. Van en `GET/PUT /admin/empresa` como lista `sellos`.
 
@@ -255,7 +257,7 @@ Diseño pedido por el cliente: portada fotográfica oscura con titular serif gra
 
 **Pedido por WhatsApp** (`pedidos_whatsapp = true`)
 - Al agregar, el contador y el total del encabezado se actualizan con una animación corta y un aviso breve. No hay barra inferior: el carrito del encabezado abre el pedido en celular y computador.
-- "Mi pedido": hoja (celular) o panel lateral (computador) con cada línea, cantidad editable (el − con una unidad quita la línea), total, nombre y dirección opcionales, "Enviar pedido por WhatsApp" y "Vaciar pedido".
+- "Mi pedido": hoja (celular) o panel lateral (computador) con cada línea, cantidad editable (el − con una unidad quita la línea), total, nombre y dirección opcionales, "Enviar pedido por WhatsApp" y "Vaciar pedido". Fuera de horario avisa que el negocio está cerrado y cuándo abre, sin impedir el envío.
 - El mensaje: `Hola, quiero hacer este pedido:` + una línea por producto (`• 2 × Queso campesino (Bloque): $24.000`) + `Total:` + nombre y entrega si se escribieron. Sin precios visibles, sin montos.
 - La lista vive en `localStorage` por negocio (`ec-pedido-{public_hash}`); los productos que dejaron de estar disponibles se quitan al cargar. Sin almacenamiento (modo privado), el pedido dura mientras la página esté abierta.
 - Con un solo número, los botones abren WhatsApp directo. Con varios, abren primero una hoja "¿A qué número le escribes?" con un botón por número (nombre opcional + número); el mensaje se conserva. Sin JavaScript, el enlace va al primer número.

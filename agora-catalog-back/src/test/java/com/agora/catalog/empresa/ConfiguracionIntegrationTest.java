@@ -71,7 +71,23 @@ class ConfiguracionIntegrationTest {
                 .andExpect(jsonPath("$.negocio.nombreCorto").value("Tienda"))
                 .andExpect(jsonPath("$.negocio.fachada").value("PANADERIA"))
                 .andExpect(jsonPath("$.whatsapps[0].nombre").value("Pedidos"))
-                .andExpect(jsonPath("$.sellos[0].icono").value("DOMICILIO"));
+                .andExpect(jsonPath("$.sellos[0].icono").value("DOMICILIO"))
+                .andExpect(jsonPath("$.horario", hasSize(2)))
+                .andExpect(jsonPath("$.horario[1].dia").value(7))
+                .andExpect(jsonPath("$.horario[1].cierra").value("13:00"))
+                .andExpect(jsonPath("$.zonaHoraria").value("America/Bogota"));
+    }
+
+    @Test
+    void elHorarioNoAceptaDiasRepetidosNiCierreAntesDeAbrir() throws Exception {
+        String base = config("#24331F", "#DDB06C", "[]");
+        guardar(base.replace("{\"dia\":7,\"abre\":\"08:00\"", "{\"dia\":1,\"abre\":\"08:00\""))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value(containsString("repetido")));
+        guardar(base.replace("\"cierra\":\"13:00\"", "\"cierra\":\"08:00\""))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value(containsString("cerrar")));
+        guardar(base.replace("\"cierra\":\"13:00\"", "\"cierra\":\"25:00\"")).andExpect(status().isBadRequest());
+        guardar(base.replace("\"horarioSemana\":[{\"dia\":1,\"abre\":\"07:00\",\"cierra\":\"19:00\"},", "\"horarioSemana\":["))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.horarioSemana", hasSize(1)));
     }
 
     @Test
@@ -129,7 +145,8 @@ class ConfiguracionIntegrationTest {
                  "catalogoSubtitulo":null,"visitaNota":null,"fachada":"PANADERIA","adornos":true,"direccion":"Calle 1",
                  "horario":null,"infoDomicilios":null,"mostrarPrecios":true,"pedidosWhatsapp":true,"mostrarAgotados":true,
                  "colorPrimario":"%2$s","colorSecundario":"%3$s","whatsapps":%4$s,
-                 "sellos":[{"icono":"DOMICILIO","texto":"Domicilios en el barrio"}]}
+                 "sellos":[{"icono":"DOMICILIO","texto":"Domicilios en el barrio"}],
+                 "horarioSemana":[{"dia":1,"abre":"07:00","cierra":"19:00"},{"dia":7,"abre":"08:00","cierra":"13:00"}]}
                 """.formatted(sufijo, primario, acento, whatsapps);
     }
 

@@ -147,6 +147,8 @@ export interface Configuracion {
   colorSecundario: string;
   whatsapps: {numero: string; nombre: string | null}[];
   sellos: {icono: IconoSello; texto: string}[];
+  /** dia 1 = lunes ... 7 = domingo; horas "HH:mm". El día que no viene, no abre. */
+  horarioSemana: {dia: number; abre: string; cierra: string}[];
 }
 
 export interface Coleccion {

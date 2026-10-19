@@ -1,9 +1,9 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
+import {computed, DestroyRef, inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 
 import {CatalogoPublico, Filtros, Hoja, Producto} from './catalogo.models';
-import {efectivo, FILTROS_VACIOS, filtrosAQuery, LineaPedido, MSG_GENERAL, norm, porRelevancia, waHref} from './catalogo.util';
+import {efectivo, estadoHorario, FILTROS_VACIOS, filtrosAQuery, LineaPedido, MSG_GENERAL, norm, porRelevancia, waHref} from './catalogo.util';
 
 type Estado = 'cargando' | 'listo' | 'no-disponible' | 'error';
 /** Lo que el catálogo cuenta para las estadísticas del negocio (sin datos de quien visita). */
@@ -30,6 +30,11 @@ export class CatalogoStore {
   readonly animarCarrito = signal(0);
   private avisoTimer?: ReturnType<typeof setTimeout>;
 
+  constructor() {
+    const reloj = setInterval(() => this.ahora.set(new Date()), 60_000);
+    inject(DestroyRef).onDestroy(() => clearInterval(reloj));
+  }
+
   readonly negocio = computed(() => this.data()!.negocio);
   readonly precios = computed(() => this.negocio().mostrarPrecios);
   readonly pedidos = computed(() => this.negocio().pedidosWhatsapp);
@@ -46,6 +51,13 @@ export class CatalogoStore {
     return f && cat ? {...f, categoria: cat} : null;
   });
   readonly enOferta = computed(() => this.productos().filter(p => p.ofertaVigente && p.disponible));
+
+  /** Cambia solo cada minuto: "abierto ahora" se actualiza sin recargar la página. */
+  private readonly ahora = signal(new Date());
+  readonly horarioAhora = computed(() => {
+    const d = this.data();
+    return d ? estadoHorario(d.horario, d.zonaHoraria, this.ahora()) : null;
+  });
 
   readonly lineas = computed<LineaPedido[]>(() => Object.entries(this.pedido())
     .map(([id, cantidad]) => ({producto: this.porId().get(+id)!, cantidad}))

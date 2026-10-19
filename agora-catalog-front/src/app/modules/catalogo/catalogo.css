@@ -251,6 +251,9 @@ html{touch-action:manipulation}
 .cat-root .v-item dt{color:color-mix(in srgb,var(--accent) 52%,#3A2706);font:italic 600 19px/1.2 var(--serif)}
 .cat-root .v-item dd span{text-wrap:balance}
 .cat-root .v-item dd{display:grid;justify-items:center;gap:8px;margin:0;text-wrap:pretty;color:var(--c-ink-2);font-size:15px;line-height:1.45}
+.cat-root .v-estado{display:inline-flex;align-items:center;gap:7px;color:var(--c-ink);font-size:14px;font-weight:700}
+.cat-root .v-estado::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c-muted)}
+.cat-root .v-estado.on::before{background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
 .cat-root .v-link{display:inline-flex;align-items:center;gap:6px;color:var(--c-ink);font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent) 70%,transparent);text-decoration-thickness:2px;text-underline-offset:4px}
 .cat-root .v-link svg{width:15px;height:15px;transition:transform .2s var(--ease)}
 .cat-root .v-link:hover svg{transform:translateX(3px)}
@@ -370,6 +373,7 @@ html{touch-action:manipulation}
 .cat-root .o-form{display:grid;gap:10px}
 .cat-root .o-fields{display:grid;gap:8px}
 .cat-root .o-fields label{display:grid;gap:4px;color:var(--c-ink-2);font-size:13px;font-weight:600}
+.cat-root .o-aviso{margin:0;padding:9px 12px;border-radius:10px;background:var(--warn-soft);color:var(--warn-ink);font-size:13px;line-height:1.4}
 .cat-root .o-form .btn-brand{min-height:52px;border-radius:14px;font-size:16px;font-weight:700}
 .cat-root .o-form .link{justify-self:center}
 .cat-root:has(.sheet-bg) #toast{top:calc(16px + env(safe-area-inset-top));bottom:auto}

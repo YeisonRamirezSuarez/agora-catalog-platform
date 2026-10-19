@@ -2,6 +2,7 @@ package com.agora.catalog.empresa.repository;
 
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.ConfiguracionRequest;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.ConfiguracionResponse;
+import com.agora.catalog.empresa.dto.ConfiguracionDtos.HorarioDto;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.Recorte;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.SelloDto;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.WhatsappDto;
@@ -35,6 +36,10 @@ public class ConfiguracionRepository {
         List<SelloDto> sellos = jdbc.query(
                 "SELECT icono, texto FROM main.empresa_sello WHERE empresa_id = ? ORDER BY orden, id",
                 (rs, i) -> new SelloDto(rs.getString("icono"), rs.getString("texto")), empresaId);
+        List<HorarioDto> horario = jdbc.query("""
+                SELECT dia, to_char(abre, 'HH24:MI') AS abre, to_char(cierra, 'HH24:MI') AS cierra
+                  FROM main.empresa_horario WHERE empresa_id = ? ORDER BY dia
+                """, (rs, i) -> new HorarioDto(rs.getInt("dia"), rs.getString("abre"), rs.getString("cierra")), empresaId);
         return jdbc.query("SELECT * FROM main.empresa WHERE id = ?", (rs, i) -> new ConfiguracionResponse(
                 rs.getLong("id"), rs.getString("nombre"), rs.getString("slug"), rs.getString("public_hash"),
                 "/c/" + rs.getString("slug") + "-" + rs.getString("public_hash"),
@@ -49,7 +54,7 @@ public class ConfiguracionRepository {
                 rs.getString("visita_nota"), rs.getString("fachada"), rs.getBoolean("adornos"),
                 rs.getString("direccion"), rs.getString("horario"), rs.getString("info_domicilios"),
                 rs.getBoolean("mostrar_precios"), rs.getBoolean("pedidos_whatsapp"), rs.getBoolean("mostrar_agotados"),
-                rs.getString("color_primario"), rs.getString("color_secundario"), whatsapps, sellos), empresaId)
+                rs.getString("color_primario"), rs.getString("color_secundario"), whatsapps, sellos, horario), empresaId)
                 .stream().findFirst();
     }
 
@@ -80,6 +85,11 @@ public class ConfiguracionRepository {
             SelloDto s = r.sellos().get(i);
             jdbc.update("INSERT INTO main.empresa_sello (empresa_id, icono, texto, orden) VALUES (?, ?, ?, ?)",
                     empresaId, s.icono(), s.texto().trim(), i + 1);
+        }
+        jdbc.update("DELETE FROM main.empresa_horario WHERE empresa_id = ?", empresaId);
+        for (HorarioDto h : r.horarioSemana()) {
+            jdbc.update("INSERT INTO main.empresa_horario (empresa_id, dia, abre, cierra) VALUES (?, ?, ?::time, ?::time)",
+                    empresaId, h.dia(), h.abre(), h.cierra());
         }
     }
 

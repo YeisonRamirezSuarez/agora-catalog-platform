@@ -101,6 +101,9 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
                     } @else {
                       <p class="hint">{{ store.negocio().nombre }} te confirma precios y domicilio por WhatsApp.</p>
                     }
+                    @if (store.horarioAhora(); as e) {
+                      @if (!e.abierto) { <p class="o-aviso">Ahora está cerrado: puedes enviar tu pedido y te responden cuando abran ({{ e.texto }}).</p> }
+                    }
                   </div>
                   <form class="o-form" id="o-form" novalidate (submit)="enviar($event, nombre.value, entrega.value)">
                     <div class="o-fields">

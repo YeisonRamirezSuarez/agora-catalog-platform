@@ -4,6 +4,7 @@ import com.agora.catalog.common.exception.DuplicateResourceException;
 import com.agora.catalog.common.exception.ResourceNotFoundException;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.ConfiguracionRequest;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.ConfiguracionResponse;
+import com.agora.catalog.empresa.dto.ConfiguracionDtos.HorarioDto;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.Recorte;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.WhatsappDto;
 import com.agora.catalog.empresa.repository.ConfiguracionRepository;
@@ -57,6 +58,14 @@ public class ConfiguracionService {
         var numeros = new HashSet<String>();
         for (WhatsappDto w : r.whatsapps()) {
             if (!numeros.add(w.numero())) throw new IllegalArgumentException("El WhatsApp " + w.numero() + " está repetido");
+        }
+        var dias = new HashSet<Integer>();
+        for (HorarioDto h : r.horarioSemana()) {
+            if (!dias.add(h.dia())) throw new IllegalArgumentException("Un día está repetido en el horario");
+            // "HH:mm" se compara bien como texto.
+            if (h.abre().compareTo(h.cierra()) >= 0) {
+                throw new IllegalArgumentException("En el horario, la hora de cerrar va después de la de abrir");
+            }
         }
         if (empresas.existsBySlug(r.slug(), empresaId)) {
             throw new DuplicateResourceException("El slug " + r.slug() + " ya lo usa otro negocio");

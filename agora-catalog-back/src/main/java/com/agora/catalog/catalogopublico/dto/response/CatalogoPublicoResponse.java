@@ -10,6 +10,9 @@ public record CatalogoPublicoResponse(
         Negocio negocio,
         List<Whatsapp> whatsapps,
         List<Sello> sellos,
+        List<Horario> horario,
+        // Zona del horario: el catálogo calcula "abierto ahora" con la hora del negocio, no la del visitante.
+        String zonaHoraria,
         List<Categoria> categorias,
         Franja franja,
         List<Coleccion> colecciones,
@@ -53,6 +56,10 @@ public record CatalogoPublicoResponse(
     }
 
     public record Sello(String icono, String texto) {
+    }
+
+    /** {@code dia} 1 = lunes ... 7 = domingo; horas "HH:mm". El día que no viene, no abre. */
+    public record Horario(int dia, String abre, String cierra) {
     }
 
     public record Categoria(long id, String nombre, String imagenUrl) {

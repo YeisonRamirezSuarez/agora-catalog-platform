@@ -47,6 +47,23 @@ test.describe('panel del negocio', () => {
     await expect(page.locator('section img')).toHaveAttribute('src', /\/api\/uploads\//);
   });
 
+  test('horario: el catálogo dice si el negocio está abierto', async ({page}, info) => {
+    test.skip(info.project.name !== 'computador', 'una vez basta: cambia el horario del negocio');
+    await irEnElPanel(page, 'Configuración');
+    // Todo el día, todos los días: siempre abierto, sin depender de la hora en que corra la prueba.
+    for (const dia of ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']) {
+      await page.getByRole('switch', {name: dia}).check();
+      await page.getByLabel(`${dia}: abre a las`).fill('00:00');
+      await page.getByLabel(`${dia}: cierra a las`).fill('23:59');
+    }
+    await page.getByRole('button', {name: 'Guardar cambios'}).click();
+    await expect(page.getByText('Cambios guardados')).toBeVisible();
+
+    await page.goto(CATALOGO + '/contacto');
+    await expect(page.locator('.v-estado')).toHaveText('Abierto · cierra 11:59 p. m.');
+    await expect(page.getByText('Lunes a domingo: 12:00 a. m. – 11:59 p. m.')).toBeVisible();
+  });
+
   test('logo: el editor de recorte cabe en una pantalla baja y guarda', async ({page, isMobile}) => {
     test.skip(isMobile, 'la pantalla baja es la de un portátil');
     await page.setViewportSize({width: 1280, height: 720});

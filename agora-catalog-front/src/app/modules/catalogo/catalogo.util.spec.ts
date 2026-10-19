@@ -1,5 +1,5 @@
 import {Producto} from './catalogo.models';
-import {cop, filtrosAQuery, leerFiltros, mensajePedido, norm, phone} from './catalogo.util';
+import {cop, estadoHorario, filtrosAQuery, leerFiltros, mensajePedido, norm, phone, resumenHorario} from './catalogo.util';
 
 const queso = {
   id: 1, categoriaId: 3, nombre: 'Queso campesino', descripcion: null, presentacion: 'Bloque', unidadVenta: 'LIBRA',
@@ -21,6 +21,29 @@ describe('catalogo.util', () => {
       .toBe('Hola, quiero hacer este pedido:\n• 2 × Queso campesino (Bloque): $24.000\nTotal: $24.000\nNombre: Ana');
     expect(mensajePedido([{producto: queso, cantidad: 2}], false))
       .toBe('Hola, quiero hacer este pedido:\n• 2 × Queso campesino (Bloque)');
+  });
+
+  it('dice si el negocio está abierto con su hora, no con la del visitante', () => {
+    const semana = [1, 2, 3, 4, 5, 6].map(dia => ({dia, abre: '07:00', cierra: '19:00'}));
+    const zona = 'America/Bogota';
+    // 2026-10-19 es lunes; Bogotá es UTC-5.
+    const en = (iso: string) => estadoHorario(semana, zona, new Date(iso));
+    expect(en('2026-10-19T15:00:00Z')).toEqual({abierto: true, texto: 'cierra 7:00 p. m.'});
+    expect(en('2026-10-19T11:59:00Z')).toEqual({abierto: false, texto: 'abre hoy 7:00 a. m.'});
+    expect(en('2026-10-20T00:00:00Z')).toEqual({abierto: false, texto: 'abre mañana 7:00 a. m.'});
+    // Sábado 7:00 p. m. en Bogotá: el domingo no abre.
+    expect(en('2026-10-25T00:00:00Z')).toEqual({abierto: false, texto: 'abre el lunes 7:00 a. m.'});
+    expect(estadoHorario([{dia: 1, abre: '08:00', cierra: '12:00'}], zona, new Date('2026-10-19T18:00:00Z')))
+      .toEqual({abierto: false, texto: 'abre el lunes 8:00 a. m.'});
+    expect(estadoHorario([], zona, new Date())).toBeNull();
+  });
+
+  it('resume el horario juntando los días iguales', () => {
+    expect(resumenHorario([
+      ...[1, 2, 3, 4, 5, 6].map(dia => ({dia, abre: '07:00', cierra: '19:00'})), {dia: 7, abre: '08:00', cierra: '13:00'}
+    ])).toEqual(['Lunes a sábado: 7:00 a. m. – 7:00 p. m.', 'Domingo: 8:00 a. m. – 1:00 p. m.']);
+    expect(resumenHorario([{dia: 6, abre: '09:00', cierra: '12:30'}, {dia: 7, abre: '09:00', cierra: '12:30'}]))
+      .toEqual(['Sábado y domingo: 9:00 a. m. – 12:30 p. m.']);
   });
 
   it('los filtros van y vuelven de la URL', () => {

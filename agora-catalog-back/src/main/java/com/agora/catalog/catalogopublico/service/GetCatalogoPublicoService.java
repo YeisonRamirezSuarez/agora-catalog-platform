@@ -53,6 +53,8 @@ public class GetCatalogoPublicoService {
                 empresa.negocio(),
                 repository.findWhatsapps(empresa.id()),
                 repository.findSellos(empresa.id()),
+                repository.findHorario(empresa.id()),
+                clock.getZone().getId(),
                 repository.findCategoriasActivas(empresa.id()),
                 repository.findFranja(empresa.id()).orElse(null),
                 colecciones(repository.findColeccionesVisibles(empresa.id()), publicados),

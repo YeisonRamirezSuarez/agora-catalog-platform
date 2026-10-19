@@ -21,6 +21,8 @@ const ICONOS: {valor: IconoSello; texto: string}[] = [
   {valor: 'PRECIO', texto: 'Precio'}, {valor: 'TRADICION', texto: 'Tradición'}, {valor: 'HORARIO', texto: 'Horario'},
 ];
 
+const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
 interface Edicion {
   tipo: 'logo' | 'portada';
   src: string;
@@ -83,8 +85,29 @@ interface Edicion {
               <p class="hint">Va grande en el encabezado y en «Nos vemos en…».</p></div>
             <div class="field"><label for="c-lema">Lema</label><input class="input" id="c-lema" name="lema" [(ngModel)]="c.lema" maxlength="32"></div>
             <div class="field sm:col-span-2"><label for="c-dir">Dirección</label><input class="input" id="c-dir" name="direccion" [(ngModel)]="c.direccion" maxlength="200"></div>
-            <div class="field"><label for="c-hor">Horario</label><textarea class="input py-2" id="c-hor" name="horario" rows="2" [(ngModel)]="c.horario" maxlength="300"></textarea></div>
-            <div class="field"><label for="c-dom">Domicilios</label><textarea class="input py-2" id="c-dom" name="infoDomicilios" rows="2" [(ngModel)]="c.infoDomicilios" maxlength="300"></textarea></div>
+            <div class="field sm:col-span-2"><label for="c-dom">Domicilios</label><textarea class="input py-2" id="c-dom" name="infoDomicilios" rows="2" [(ngModel)]="c.infoDomicilios" maxlength="300"></textarea></div>
+          </section>
+
+          <section class="card grid gap-3 p-5">
+            <h2 class="text-lg font-semibold">Horario de atención</h2>
+            <p class="text-sm text-muted">Con el horario, tu catálogo dice si estás abierto y avisa a quien pide cuando estás cerrado.</p>
+            <div class="grid gap-3">
+              @for (d of semana; track $index; let i = $index) {
+                <div class="grid gap-2 sm:grid-cols-[9rem_1fr] sm:items-center">
+                  <label class="inline-flex min-h-11 items-center gap-3"><input type="checkbox" class="switch" role="switch" [name]="'h-abre-' + i" [(ngModel)]="d.abre"> {{ dias[i] }}</label>
+                  @if (d.abre) {
+                    <div class="flex items-center gap-2 sm:max-w-sm">
+                      <input class="input min-w-0 flex-1" type="time" [name]="'h-desde-' + i" [(ngModel)]="d.desde" required [attr.aria-label]="dias[i] + ': abre a las'">
+                      <span class="text-muted">a</span>
+                      <input class="input min-w-0 flex-1" type="time" [name]="'h-hasta-' + i" [(ngModel)]="d.hasta" required [attr.aria-label]="dias[i] + ': cierra a las'">
+                    </div>
+                  } @else {
+                    <span class="hidden text-sm text-muted sm:block">Cerrado</span>
+                  }
+                </div>
+              }
+            </div>
+            <div class="field"><label for="c-hor">Aclaraciones (opcional)</label><textarea class="input py-2" id="c-hor" name="horario" rows="2" [(ngModel)]="c.horario" maxlength="300" placeholder="Festivos de 8:00 a. m. a 1:00 p. m."></textarea></div>
           </section>
 
           <section class="card grid gap-3 p-5">
@@ -215,6 +238,9 @@ export class ConfiguracionComponent implements OnInit {
 
   readonly empresa = computed(() => this.auth.usuario()?.empresaNombre ?? 'Panel del negocio');
   cfg: Configuracion | null = null;
+  readonly dias = DIAS;
+  /** Los 7 días para editar; un día cerrado conserva sus horas por si se vuelve a abrir. */
+  semana: {abre: boolean; desde: string; hasta: string}[] = [];
   readonly error = signal('');
   readonly aviso = signal('');
   readonly guardando = signal(false);
@@ -223,8 +249,16 @@ export class ConfiguracionComponent implements OnInit {
 
   ngOnInit(): void {
     this.api.configuracion().subscribe({
-      next: c => this.cfg = {...c, whatsapps: c.whatsapps.map(w => ({...w})), sellos: c.sellos.map(s => ({...s}))},
+      next: c => this.usar(c),
       error: err => this.error.set(apiMessage(err))
+    });
+  }
+
+  private usar(c: Configuracion): void {
+    this.cfg = {...c, whatsapps: c.whatsapps.map(w => ({...w})), sellos: c.sellos.map(s => ({...s}))};
+    this.semana = DIAS.map((_, i) => {
+      const h = c.horarioSemana.find(x => x.dia === i + 1);
+      return {abre: !!h, desde: h?.abre ?? '08:00', hasta: h?.cierra ?? '18:00'};
     });
   }
 
@@ -256,12 +290,13 @@ export class ConfiguracionComponent implements OnInit {
     const whatsapps = c.whatsapps.map(w => ({numero: w.numero.replace(/\D/g, ''), nombre: w.nombre?.trim() || null}))
       .filter(w => w.numero);
     const sellos = c.sellos.filter(s => s.texto.trim());
+    const horarioSemana = this.semana.flatMap((d, i) => d.abre ? [{dia: i + 1, abre: d.desde, cierra: d.hasta}] : []);
     this.guardando.set(true);
     this.error.set('');
     this.aviso.set('');
-    this.api.guardarConfiguracion({...c, whatsapps, sellos}).subscribe({
+    this.api.guardarConfiguracion({...c, whatsapps, sellos, horarioSemana}).subscribe({
       next: nueva => {
-        this.cfg = {...nueva, whatsapps: nueva.whatsapps.map(w => ({...w})), sellos: nueva.sellos.map(s => ({...s}))};
+        this.usar(nueva);
         this.negocio.actualizar(nueva);
         this.guardando.set(false);
         this.aviso.set('Cambios guardados. Ya se ven en tu catálogo.');

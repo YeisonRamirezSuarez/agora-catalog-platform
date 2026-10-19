@@ -2,6 +2,7 @@ package com.agora.catalog.catalogopublico.repository;
 
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Categoria;
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Franja;
+import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Horario;
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Negocio;
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Sello;
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Whatsapp;
@@ -66,6 +67,13 @@ public class CatalogoPublicoRepository {
     public List<Sello> findSellos(long empresaId) {
         return jdbc.query("SELECT icono, texto FROM main.empresa_sello WHERE empresa_id = ? ORDER BY orden, id",
                 (rs, i) -> new Sello(rs.getString("icono"), rs.getString("texto")), empresaId);
+    }
+
+    public List<Horario> findHorario(long empresaId) {
+        return jdbc.query("""
+                SELECT dia, to_char(abre, 'HH24:MI') AS abre, to_char(cierra, 'HH24:MI') AS cierra
+                  FROM main.empresa_horario WHERE empresa_id = ? ORDER BY dia
+                """, (rs, i) -> new Horario(rs.getInt("dia"), rs.getString("abre"), rs.getString("cierra")), empresaId);
     }
 
     public List<Categoria> findCategoriasActivas(long empresaId) {
