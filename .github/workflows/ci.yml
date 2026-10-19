@@ -97,7 +97,6 @@ jobs:
       # Todas las pruebas salen de la misma IP: sin límite de peticiones.
       SETTINGS_SECURITY_RATE_LIMIT_ENABLED: 'false'
       FRONT_INDEX_PATH: ${{ github.workspace }}/agora-catalog-front/dist/agora-catalog-front/browser/index.html
-      STORAGE_PATH: ${{ runner.temp }}/uploads
       # Super admin descartable para la prueba del super admin (le cambia la contraseña).
       SUPERADMIN_NAME: Super E2E
       SUPERADMIN_EMAIL: super-e2e@prueba.local
@@ -123,6 +122,9 @@ jobs:
         working-directory: agora-catalog-front
         run: npm ci && npm run build
       - name: Levantar la API y la app (puerto 4300)
+        # El contexto runner solo existe en los pasos, no en el env del job.
+        env:
+          STORAGE_PATH: ${{ runner.temp }}/uploads
         run: |
           JAR=$(ls agora-catalog-back/build/libs/*.jar | grep -v plain)
           nohup java -jar "$JAR" > api.log 2>&1 &
