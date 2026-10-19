@@ -147,13 +147,15 @@ html{touch-action:manipulation}
 .v-in h2{margin-top:6px;font:600 40px/1.04 var(--serif);letter-spacing:-.015em}
 .v-in h2 em{color:color-mix(in srgb,var(--accent) 58%,#3A2706);font-style:italic}
 .v-sub{max-width:40ch;margin-top:12px;text-wrap:balance;color:var(--c-ink-2);font-size:16px;line-height:1.5}
-.v-was{display:grid;gap:10px;width:100%;margin-top:24px}
-.v-wa{display:flex;align-items:center;gap:14px;min-height:64px;padding:10px 20px 10px 10px;border-radius:14px;background:var(--brand);color:#fff;text-align:left;text-decoration:none;box-shadow:0 16px 26px -20px rgba(20,30,15,.9);transition:transform .2s var(--ease),filter .15s}
+/* Los números de WhatsApp van siempre lado a lado (dos en un celular de 360 px); se achican con la pantalla. */
+.v-was{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;width:100%;max-width:640px;margin-top:24px}
+.v-wa{display:flex;align-items:center;gap:clamp(7px,2vw,14px);min-width:0;min-height:58px;padding:8px clamp(8px,2.4vw,20px) 8px 8px;border-radius:14px;background:var(--brand);color:#fff;text-align:left;text-decoration:none;box-shadow:0 16px 26px -20px rgba(20,30,15,.9);transition:transform .2s var(--ease),filter .15s}
 .v-wa:hover{filter:brightness(1.15);transform:translateY(-2px)}
-.v-wa-ic{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14)}
-.v-wa-ic svg{width:22px;height:22px}
-.v-wa small{display:block;color:rgba(255,255,255,.78);font-size:12.5px}
-.v-wa b{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap}
+.v-wa-ic{display:grid;place-items:center;flex:none;width:clamp(26px,7vw,44px);height:clamp(26px,7vw,44px);border-radius:50%;background:rgba(255,255,255,.14)}
+.v-wa-ic svg{width:clamp(16px,4.4vw,22px);height:clamp(16px,4.4vw,22px)}
+.v-wa>span:last-child{min-width:0}
+.v-wa small{display:block;color:rgba(255,255,255,.78);font-size:clamp(11px,3vw,12.5px)}
+.v-wa b{display:block;overflow:hidden;font-size:clamp(11px,3.1vw,18px);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap;text-overflow:ellipsis}
 .v-info{display:grid;width:100%;max-width:900px;margin:30px 0 0}
 .v-item{display:grid;align-content:start;gap:6px;padding:18px 8px;border-top:1px solid var(--c-line)}
 .v-item:first-child{border-top:0}
