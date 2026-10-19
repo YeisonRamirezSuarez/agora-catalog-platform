@@ -117,8 +117,13 @@ export class CatalogoShellComponent {
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     const antes = meta?.content;
     if (meta) meta.content = NOCHE;
-    // Cada página nueva empieza arriba (salvo Contáctanos, que baja sola a su sección).
-    const sub = this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
+    // Cada página nueva empieza arriba (salvo Contáctanos, que baja sola a su sección). Solo si cambia la
+    // ruta: los filtros viven en el query string y moverlos (precio, categorías) no debe subir la página.
+    let ruta = '';
+    const sub = this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(e => {
+      const nueva = e.urlAfterRedirects.split(/[?#]/)[0];
+      if (nueva === ruta) return;
+      ruta = nueva;
       if (this.pagina() !== 'contacto' && !this.store.hoja()) window.scrollTo({top: 0});
     });
     inject(DestroyRef).onDestroy(() => {
