@@ -44,6 +44,8 @@ public class FlywayConfig {
                 .schemas("main")
                 .defaultSchema("main")
                 .locations(locations)
+                // Una base que ya recibió la semilla (R__) puede arrancar después sin ella (perfil prod).
+                .ignoreMigrationPatterns("repeatable:missing")
                 .baselineOnMigrate(true)
                 .baselineVersion("0")
                 .outOfOrder(outOfOrder)

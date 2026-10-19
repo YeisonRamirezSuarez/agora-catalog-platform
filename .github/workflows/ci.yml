@@ -39,6 +39,7 @@ jobs:
       DB_PASSWORD: postgres
       # Secreto descartable: solo existe durante la corrida.
       JWT_SECRET: Y2ktZGVzY2FydGFibGUtc29sby1wYXJhLWxhcy1wcnVlYmFzLWRlLWludGVncmFjaW9uLTEyMzQ1Njc4OTA=
+      AES_KEY: ci-descartable
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4

@@ -51,6 +51,15 @@ config:
     refresh-days: 7
 
 settings:
+  # URL pública del front. Arma los enlaces de los correos (ingresar al panel).
+  frontend-url: ${FRONTEND_URL:http://localhost:4251}
+
+  encryption:
+    aes:
+      # Cifra en la base la contraseña del proveedor de correo. Cualquier largo (se deriva con
+      # SHA-256). Si se cambia, lo ya cifrado deja de leerse. Generar: openssl rand -hex 32
+      key: ${AES_KEY}
+
   # Usuario SUPER_ADMIN que se crea al arrancar si su correo no existe (SuperAdminBootstrap).
   # Sin correo o sin contraseña no se crea nada. Se le pide cambiar la contraseña al entrar.
   superadmin:

@@ -12,6 +12,9 @@ public record AdminEmpresaRequest(
         @NotBlank(message = "Escribe el correo del administrador")
         @Email(message = "El correo no es válido")
         @Size(max = 160, message = "El correo puede tener hasta 160 caracteres")
-        String email
+        String email,
+
+        // Enviarle por correo su usuario y contraseña temporal. Null = no.
+        Boolean enviarCorreo
 ) {
 }

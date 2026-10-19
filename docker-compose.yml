@@ -38,6 +38,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       # Solo local: este compose no se usa para desplegar. Para cambiarlo: JWT_SECRET=... docker compose up
       JWT_SECRET: ${JWT_SECRET:-bG9jYWwtc29sby1wYXJhLWRvY2tlci1jb21wb3NlLW5vLXVzYXItZW4tcHJvZHVjY2lvbi0xMjM0NTY3ODkw}
+      AES_KEY: ${AES_KEY:-local-solo-para-docker-compose}
+      FRONTEND_URL: http://localhost:${WEB_PORT:-8080}
       # Datos de prueba (empresa, productos y su administrador javier@agora.local / Agora123*).
       FLYWAY_SEED: "true"
       # Super admin propio: SUPERADMIN_EMAIL=... SUPERADMIN_PASSWORD=... docker compose up

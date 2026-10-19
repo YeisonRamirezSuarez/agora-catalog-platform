@@ -24,6 +24,12 @@ export const routes: Routes = [
     loadComponent: () => import('@app/modules/superadmin/empresas/empresas.component').then(c => c.EmpresasComponent)
   },
   {
+    path: 'superadmin/correo',
+    canActivate: [rolGuard('SUPER_ADMIN')],
+    title: 'Correo · Agorá Catalog',
+    loadComponent: () => import('@app/modules/superadmin/correo/correo.component').then(c => c.CorreoComponent)
+  },
+  {
     path: 'admin',
     canActivate: [rolGuard('ADMIN_EMPRESA')],
     title: 'Panel · Agorá Catalog',

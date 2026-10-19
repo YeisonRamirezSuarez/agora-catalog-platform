@@ -26,6 +26,8 @@ export interface AdminCreado {
   nombre: string;
   email: string;
   passwordTemporal: string;
+  correoEnviado: boolean;
+  correoError: string | null;
 }
 
 @Injectable({providedIn: 'root'})
@@ -45,8 +47,8 @@ export class EmpresasService {
     return this.http.patch<void>(`/superadmin/empresas/${id}/activa`, {activo});
   }
 
-  createAdmin(empresaId: number, nombre: string, email: string): Observable<AdminCreado> {
-    return this.http.post<AdminCreado>(`/superadmin/empresas/${empresaId}/usuarios`, {nombre, email});
+  createAdmin(empresaId: number, nombre: string, email: string, enviarCorreo: boolean): Observable<AdminCreado> {
+    return this.http.post<AdminCreado>(`/superadmin/empresas/${empresaId}/usuarios`, {nombre, email, enviarCorreo});
   }
 
   setUsuarioActivo(id: number, activo: boolean): Observable<void> {

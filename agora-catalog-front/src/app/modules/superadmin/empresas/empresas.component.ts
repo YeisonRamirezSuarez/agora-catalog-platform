@@ -1,9 +1,12 @@
 import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {RouterLink} from '@angular/router';
 import {switchMap} from 'rxjs';
 
 import {apiMessage} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
+import {CorreoService} from '../correo/correo.service';
+import {SUPERADMIN_LINKS} from '../superadmin-links';
 import {AdminCreado, Administrador, Empresa, EmpresasService} from './empresas.service';
 
 /** Lo que se muestra una sola vez después de crear un administrador. */
@@ -13,9 +16,9 @@ interface Credenciales extends AdminCreado {
 
 @Component({
   selector: 'app-empresas',
-  imports: [PanelShellComponent, ReactiveFormsModule],
+  imports: [PanelShellComponent, ReactiveFormsModule, RouterLink],
   template: `
-    <app-panel-shell subtitle="Super admin" [links]="[{label: 'Empresas', path: '/superadmin'}]">
+    <app-panel-shell subtitle="Super admin" [links]="links">
       <header class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 class="page-title">Empresas</h1>
@@ -33,8 +36,13 @@ interface Credenciales extends AdminCreado {
       @if (credenciales(); as c) {
         <section class="card mt-6 grid gap-3 border-ok/30 p-5" aria-live="polite">
           <h2 class="text-lg font-semibold">Administrador de {{ c.empresa }} creado</h2>
+          @if (c.correoEnviado) {
+            <p class="alert-ok">Le enviamos estos datos a {{ c.email }}.</p>
+          } @else if (c.correoError) {
+            <p class="alert-error">No salió el correo: {{ c.correoError }} Entrégale los datos tú mismo.</p>
+          }
           <p class="text-sm text-muted">
-            Envíale estos datos. La contraseña temporal se muestra solo esta vez y se le pedirá cambiarla al entrar.
+            La contraseña temporal se muestra solo esta vez y se le pedirá cambiarla al entrar.
           </p>
           <dl class="grid gap-2 rounded-[10px] bg-wash p-4 text-sm sm:grid-cols-[140px_1fr]">
             <dt class="text-muted">Correo</dt><dd class="font-semibold">{{ c.email }}</dd>
@@ -73,6 +81,15 @@ interface Credenciales extends AdminCreado {
               <label for="f-email">Correo del administrador</label>
               <input class="input" id="f-email" type="email" formControlName="adminEmail" maxlength="160" autocomplete="off">
             </div>
+          </div>
+          <div>
+            <label class="inline-flex items-center gap-3 font-semibold" [class.opacity-50]="!correoActivo()">
+              <input type="checkbox" class="size-5 accent-[#1C1814]" formControlName="enviarCorreo">
+              Enviarle su usuario y contraseña por correo
+            </label>
+            @if (!correoActivo()) {
+              <p class="hint mt-1">Para enviarlo, configura primero el <a routerLink="/superadmin/correo" class="font-semibold text-ink underline">proveedor de correo</a>.</p>
+            }
           </div>
           <div class="flex flex-wrap gap-2">
             <button class="btn btn-dark" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Crear' }}</button>
@@ -130,6 +147,9 @@ interface Credenciales extends AdminCreado {
 export class EmpresasComponent implements OnInit {
 
   private readonly api = inject(EmpresasService);
+  private readonly correo = inject(CorreoService);
+  readonly links = SUPERADMIN_LINKS;
+  readonly correoActivo = signal(false);
 
   readonly empresas = signal<Empresa[]>([]);
   readonly cargando = signal(true);
@@ -150,22 +170,34 @@ export class EmpresasComponent implements OnInit {
     nombre: [''],
     slug: [''],
     adminNombre: ['', Validators.required],
-    adminEmail: ['', [Validators.required, Validators.email]]
+    adminEmail: ['', [Validators.required, Validators.email]],
+    enviarCorreo: [{value: false, disabled: true}]
   });
 
   ngOnInit(): void {
     this.cargar();
+    this.correo.get().subscribe({
+      next: p => {
+        this.correoActivo.set(!!p?.activo);
+        if (p?.activo) this.form.controls.enviarCorreo.enable();
+      },
+      error: () => undefined
+    });
   }
 
   abrirNueva(): void {
     this.empresaParaAdmin.set(null);
-    this.form.reset();
-    this.formAbierto.set(true);
+    this.resetForm();
   }
 
   abrirAdmin(empresa: Empresa): void {
     this.empresaParaAdmin.set(empresa);
-    this.form.reset();
+    this.resetForm();
+  }
+
+  /** Con el correo activo, enviar los datos viene marcado: es lo que se hace casi siempre. */
+  private resetForm(): void {
+    this.form.reset({enviarCorreo: this.correoActivo()});
     this.formAbierto.set(true);
   }
 
@@ -175,7 +207,8 @@ export class EmpresasComponent implements OnInit {
   }
 
   guardar(): void {
-    const {nombre, slug, adminNombre, adminEmail} = this.form.getRawValue();
+    const {nombre, slug, adminNombre, adminEmail, enviarCorreo} = this.form.getRawValue();
+    const enviar = this.correoActivo() && enviarCorreo;
     const destino = this.empresaParaAdmin();
     if (!destino && !nombre.trim()) {
       this.error.set('Escribe el nombre del negocio');
@@ -191,9 +224,9 @@ export class EmpresasComponent implements OnInit {
     this.error.set('');
     // Primero la empresa (si es nueva) y después su administrador.
     const empresa$ = destino
-      ? this.api.createAdmin(destino.id, adminNombre, adminEmail)
+      ? this.api.createAdmin(destino.id, adminNombre, adminEmail, enviar)
       : this.api.create(nombre, slug.trim()).pipe(
-          switchMap(e => this.api.createAdmin(e.id, adminNombre, adminEmail)));
+          switchMap(e => this.api.createAdmin(e.id, adminNombre, adminEmail, enviar)));
     empresa$.subscribe({
       next: admin => {
         this.credenciales.set({...admin, empresa: destino?.nombre ?? nombre.trim()});

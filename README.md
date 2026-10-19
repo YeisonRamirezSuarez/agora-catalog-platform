@@ -75,6 +75,18 @@ docker compose down            # detener (los datos quedan en el volumen)
 
 Si el 8080 o el 5433 están ocupados: `WEB_PORT=8081 DB_PORT=5434 docker compose up -d --build`.
 
+### Publicar desde esta máquina
+
+`herramientas/servidor/serve_app.py` sirve el front compilado y reenvía `/api` al backend en un solo
+puerto, por HTTP y HTTPS (con certificado). Solo usa la biblioteca estándar de Python.
+
+```bash
+cd agora-catalog-front && npm run build
+cd ../agora-catalog-back && bash gradlew bootJar
+SPRING_PROFILES_ACTIVE=prod TRUSTED_PROXY_COUNT=1 java -jar build/libs/agora-catalog-back-0.1.0.jar   # escucha solo en 127.0.0.1:9092
+python herramientas/servidor/serve_app.py agora-catalog-front/dist/agora-catalog-front/browser 2020 cert.crt cert.key
+```
+
 ## Usuarios
 
 - **Super admin**: se crea al arrancar con `SUPERADMIN_NAME`, `SUPERADMIN_EMAIL` y `SUPERADMIN_PASSWORD`

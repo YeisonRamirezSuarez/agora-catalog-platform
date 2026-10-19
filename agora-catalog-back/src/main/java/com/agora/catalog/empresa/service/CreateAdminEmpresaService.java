@@ -34,6 +34,6 @@ public class CreateAdminEmpresaService {
         String password = RandomCodes.temporaryPassword();
         long id = usuarioRepository.insert(empresaId, nombre, email, passwordEncoder.encode(password),
                 Rol.ADMIN_EMPRESA, true);
-        return new AdminCreadoResponse(id, nombre.trim(), email.trim(), password);
+        return new AdminCreadoResponse(id, nombre.trim(), email.trim(), password, false, null);
     }
 }

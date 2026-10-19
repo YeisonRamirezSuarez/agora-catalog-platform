@@ -1,6 +1,8 @@
 package com.agora.catalog.empresa.controller;
 
 import com.agora.catalog.common.dto.ActivoRequest;
+import com.agora.catalog.correo.service.EnviarCorreoService;
+import com.agora.catalog.correo.service.PlantillasCorreo;
 import com.agora.catalog.empresa.dto.request.AdminEmpresaRequest;
 import com.agora.catalog.empresa.dto.request.EmpresaRequest;
 import com.agora.catalog.empresa.dto.response.AdminCreadoResponse;
@@ -33,14 +35,19 @@ public class SuperAdminEmpresaController {
     private final SaveEmpresaService saveEmpresaService;
     private final SetEmpresaActivaService setEmpresaActivaService;
     private final CreateAdminEmpresaService createAdminEmpresaService;
+    private final EnviarCorreoService enviarCorreoService;
+    private final PlantillasCorreo plantillas;
 
     public SuperAdminEmpresaController(ListEmpresasService listEmpresasService, SaveEmpresaService saveEmpresaService,
                                        SetEmpresaActivaService setEmpresaActivaService,
-                                       CreateAdminEmpresaService createAdminEmpresaService) {
+                                       CreateAdminEmpresaService createAdminEmpresaService,
+                                       EnviarCorreoService enviarCorreoService, PlantillasCorreo plantillas) {
         this.listEmpresasService = listEmpresasService;
         this.saveEmpresaService = saveEmpresaService;
         this.setEmpresaActivaService = setEmpresaActivaService;
         this.createAdminEmpresaService = createAdminEmpresaService;
+        this.enviarCorreoService = enviarCorreoService;
+        this.plantillas = plantillas;
     }
 
     @GetMapping
@@ -74,6 +81,16 @@ public class SuperAdminEmpresaController {
     @PostMapping("/{id}/usuarios")
     @ResponseStatus(HttpStatus.CREATED)
     public AdminCreadoResponse createAdmin(@PathVariable long id, @Valid @RequestBody AdminEmpresaRequest request) {
-        return createAdminEmpresaService.create(id, request.nombre(), request.email());
+        AdminCreadoResponse admin = createAdminEmpresaService.create(id, request.nombre(), request.email());
+        if (!Boolean.TRUE.equals(request.enviarCorreo())) {
+            return admin;
+        }
+        // Después de guardar, fuera de la transacción: si el correo falla, el administrador igual
+        // queda creado y la pantalla muestra la contraseña para entregarla a mano.
+        PlantillasCorreo.Correo correo = plantillas.bienvenida(admin.nombre(),
+                listEmpresasService.get(id).nombre(), admin.email(), admin.passwordTemporal());
+        EnviarCorreoService.Resultado resultado = enviarCorreoService.enviar(id, "BIENVENIDA", admin.email(),
+                correo.asunto(), correo.html());
+        return admin.withCorreo(resultado.enviado(), resultado.error());
     }
 }
