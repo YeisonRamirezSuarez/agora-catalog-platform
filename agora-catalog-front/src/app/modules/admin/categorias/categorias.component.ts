@@ -4,9 +4,9 @@ import {FormsModule} from '@angular/forms';
 
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
+import {prepararFoto} from '@app/shared/utils/foto';
 import {ADMIN_LINKS, AdminService, Categoria} from '../admin.service';
 
-const MAX_FOTO = 5 * 1024 * 1024;
 
 /** Categorías: agregar, renombrar, ocultar, ordenar arrastrando y elegir la franja grande del inicio. */
 @Component({
@@ -65,6 +65,7 @@ const MAX_FOTO = 5 * 1024 * 1024;
               {{ previaFranja() || c.bannerUrl ? 'Cambiar foto' : 'Elegir foto' }}
               <input type="file" class="sr-only" accept="image/jpeg,image/png,image/webp" (change)="elegirFoto($event)">
             </label>
+            @if (errorFranja()) { <p class="alert-error" role="alert">{{ errorFranja() }}</p> }
             <div class="field"><label for="f-tit">Título</label><textarea class="input py-2" id="f-tit" name="titulo" rows="2" maxlength="40" [(ngModel)]="datos.titulo" placeholder="Combos de la casa"></textarea></div>
             <div class="field"><label for="f-fra">Frase</label><input class="input" id="f-fra" name="frase" maxlength="80" [(ngModel)]="datos.frase"></div>
             <div class="field"><label for="f-not">Nota escrita a mano</label><input class="input" id="f-not" name="nota" maxlength="32" [(ngModel)]="datos.nota" placeholder="Listos para disfrutar"></div>
@@ -92,6 +93,8 @@ export class CategoriasComponent implements OnInit {
   readonly aviso = signal('');
   readonly guardando = signal(false);
   readonly franja = signal<Categoria | null>(null);
+  /** Errores de la franja: dentro del modal, porque el de la página queda tapado. */
+  readonly errorFranja = signal('');
   readonly previaFranja = signal('');
   nueva = '';
   datos = {titulo: '', frase: '', nota: ''};
@@ -168,6 +171,7 @@ export class CategoriasComponent implements OnInit {
     this.fotoFranja = null;
     this.previaFranja.set('');
     this.error.set('');
+    this.errorFranja.set('');
     this.franja.set(c);
   }
 
@@ -175,14 +179,18 @@ export class CategoriasComponent implements OnInit {
     return this.categorias().find(x => x.bannerActivo && x.id !== c.id)?.nombre ?? null;
   }
 
-  elegirFoto(e: Event): void {
-    const input = e.target as HTMLInputElement, f = input.files?.[0];
+  async elegirFoto(e: Event): Promise<void> {
+    const input = e.target as HTMLInputElement, elegida = input.files?.[0];
     input.value = '';
-    if (!f) return;
-    if (f.size > MAX_FOTO) {
-      this.error.set('La foto pesa más de 5 MB. Elige una más liviana.');
+    if (!elegida) return;
+    let f: File;
+    try {
+      f = await prepararFoto(elegida);
+    } catch (err) {
+      this.errorFranja.set((err as Error).message);
       return;
     }
+    this.errorFranja.set('');
     this.fotoFranja = f;
     this.previaFranja.set(URL.createObjectURL(f));
   }
@@ -198,8 +206,7 @@ export class CategoriasComponent implements OnInit {
       },
       error: err => {
         this.guardando.set(false);
-        this.franja.set(null);
-        this.error.set(apiMessage(err));
+        this.errorFranja.set(apiMessage(err));
       }
     });
   }
@@ -211,7 +218,7 @@ export class CategoriasComponent implements OnInit {
         this.franja.set(null);
         this.avisar('Franja quitada.');
       },
-      error: err => this.error.set(apiMessage(err))
+      error: err => this.errorFranja.set(apiMessage(err))
     });
   }
 

@@ -4,10 +4,10 @@ import {FormsModule} from '@angular/forms';
 
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
+import {prepararFoto} from '@app/shared/utils/foto';
 import {ADMIN_LINKS, AdminService, Coleccion, Producto} from '../admin.service';
 
 const MAXIMO = 6;
-const MAX_FOTO = 5 * 1024 * 1024;
 
 interface Borrador {
   id?: number;
@@ -165,14 +165,18 @@ export class ColeccionesComponent implements OnInit {
     b.productos = b.productos.includes(id) ? b.productos.filter(x => x !== id) : [...b.productos, id];
   }
 
-  elegirFoto(e: Event): void {
-    const input = e.target as HTMLInputElement, f = input.files?.[0];
+  async elegirFoto(e: Event): Promise<void> {
+    const input = e.target as HTMLInputElement, elegida = input.files?.[0];
     input.value = '';
-    if (!f) return;
-    if (f.size > MAX_FOTO) {
-      this.error.set('La foto pesa más de 5 MB. Elige una más liviana.');
+    if (!elegida) return;
+    let f: File;
+    try {
+      f = await prepararFoto(elegida);
+    } catch (err) {
+      this.error.set((err as Error).message);
       return;
     }
+    this.error.set('');
     this.foto = f;
     this.previa.set(URL.createObjectURL(f));
   }

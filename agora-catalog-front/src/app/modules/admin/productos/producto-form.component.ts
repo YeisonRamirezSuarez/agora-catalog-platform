@@ -4,9 +4,9 @@ import {Router, RouterLink} from '@angular/router';
 
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
+import {prepararFoto} from '@app/shared/utils/foto';
 import {ADMIN_LINKS, AdminService, Categoria, Producto, ProductoForm, UNIDADES, UnidadVenta} from '../admin.service';
 
-const MAX_FOTO = 5 * 1024 * 1024;
 
 /** Crear o editar un producto, con su foto. */
 @Component({
@@ -165,12 +165,15 @@ export class ProductoFormComponent implements OnInit {
     }
   }
 
-  elegirFoto(e: Event): void {
-    const input = e.target as HTMLInputElement, f = input.files?.[0];
+  async elegirFoto(e: Event): Promise<void> {
+    const input = e.target as HTMLInputElement, elegida = input.files?.[0];
     input.value = '';
-    if (!f) return;
-    if (f.size > MAX_FOTO) {
-      this.error.set('La foto pesa más de 5 MB. Elige una más liviana.');
+    if (!elegida) return;
+    let f: File;
+    try {
+      f = await prepararFoto(elegida);
+    } catch (err) {
+      this.error.set((err as Error).message);
       return;
     }
     this.error.set('');

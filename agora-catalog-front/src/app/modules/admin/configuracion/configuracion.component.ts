@@ -6,10 +6,10 @@ import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {NegocioService} from '@app/core/services/negocio.service';
 import {fachadaSvg} from '@app/modules/catalogo/fachadas';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
+import {prepararFoto} from '@app/shared/utils/foto';
 import {ADMIN_LINKS, AdminService, Configuracion, contraste, Fachada, IconoSello, Recorte} from '../admin.service';
 import {RecorteComponent} from './recorte.component';
 
-const MAX_FOTO = 5 * 1024 * 1024;
 const NOCHE = '#15120D';
 
 const FACHADAS: {valor: Fachada; texto: string}[] = [
@@ -289,14 +289,18 @@ export class ConfiguracionComponent implements OnInit {
     this.archivoInput()?.nativeElement.click();
   }
 
-  elegida(e: Event): void {
-    const input = e.target as HTMLInputElement, f = input.files?.[0];
+  async elegida(e: Event): Promise<void> {
+    const input = e.target as HTMLInputElement, elegida = input.files?.[0];
     input.value = '';
-    if (!f) return;
-    if (f.size > MAX_FOTO) {
-      this.error.set('La foto pesa más de 5 MB. Elige una más liviana.');
+    if (!elegida) return;
+    let f: File;
+    try {
+      f = await prepararFoto(elegida);
+    } catch (err) {
+      this.error.set((err as Error).message);
       return;
     }
+    this.error.set('');
     this.edicion.set({tipo: this.tipoPendiente, src: URL.createObjectURL(f), archivo: f, inicial: null});
   }
 
