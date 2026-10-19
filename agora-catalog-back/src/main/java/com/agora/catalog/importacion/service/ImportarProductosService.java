@@ -173,7 +173,8 @@ public class ImportarProductosService {
                 fecha(row, col, "oferta_desde", errores),
                 fecha(row, col, "oferta_hasta", errores),
                 siNo(row, col, "disponible", true, errores),
-                siNo(row, col, "destacado", false, errores));
+                siNo(row, col, "destacado", false, errores),
+                null); // el Excel no trae otras presentaciones: las del producto se conservan
 
         validator.validate(r).stream()
                 .sorted((a, b) -> Integer.compare(orden(a), orden(b)))
@@ -296,7 +297,7 @@ public class ImportarProductosService {
 
     private static ProductoRequest conCategoria(ProductoRequest r, long categoriaId) {
         return new ProductoRequest(r.codigo(), categoriaId, r.nombre(), r.descripcion(), r.presentacion(), r.unidadVenta(),
-                r.precio(), r.precioOferta(), r.ofertaDesde(), r.ofertaHasta(), r.disponible(), r.destacado());
+                r.precio(), r.precioOferta(), r.ofertaDesde(), r.ofertaHasta(), r.disponible(), r.destacado(), null);
     }
 
     static String clave(String s) {

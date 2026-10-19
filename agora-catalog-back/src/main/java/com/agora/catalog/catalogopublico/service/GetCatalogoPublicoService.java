@@ -2,10 +2,12 @@ package com.agora.catalog.catalogopublico.service;
 
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse;
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Coleccion;
+import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Presentacion;
 import com.agora.catalog.catalogopublico.dto.response.CatalogoPublicoResponse.Producto;
 import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository;
 import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository.ColeccionFila;
 import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository.EmpresaPublica;
+import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository.PresentacionFila;
 import com.agora.catalog.catalogopublico.repository.CatalogoPublicoRepository.ProductoFila;
 import com.agora.catalog.common.exception.ResourceNotFoundException;
 import com.agora.catalog.producto.service.ReglasProducto;
@@ -44,8 +46,10 @@ public class GetCatalogoPublicoService {
         LocalDate hoy = LocalDate.now(clock);
         Instant ahora = clock.instant();
 
+        Map<Long, List<PresentacionFila>> presentaciones = repository.findPresentaciones(empresa.id()).stream()
+                .collect(Collectors.groupingBy(PresentacionFila::productoId));
         List<Producto> productos = repository.findProductos(empresa.id(), empresa.mostrarAgotados()).stream()
-                .map(p -> producto(p, precios, hoy, ahora))
+                .map(p -> producto(p, presentaciones.getOrDefault(p.id(), List.of()), precios, hoy, ahora))
                 .toList();
         Set<Long> publicados = productos.stream().map(Producto::id).collect(Collectors.toSet());
 
@@ -61,8 +65,18 @@ public class GetCatalogoPublicoService {
                 productos);
     }
 
-    private static Producto producto(ProductoFila p, boolean precios, LocalDate hoy, Instant ahora) {
+    private static Producto producto(ProductoFila p, List<PresentacionFila> otras, boolean precios, LocalDate hoy, Instant ahora) {
         boolean vigente = ReglasProducto.ofertaVigente(p.precioOferta(), p.ofertaDesde(), p.ofertaHasta(), hoy);
+        // Cada presentación tiene su precio de oferta, con las fechas de oferta del producto.
+        List<Presentacion> presentaciones = otras.stream().map(v -> {
+            boolean enOferta = ReglasProducto.ofertaVigente(v.precioOferta(), p.ofertaDesde(), p.ofertaHasta(), hoy);
+            return new Presentacion(v.nombre(),
+                    precios ? v.precio() : null,
+                    precios && enOferta ? v.precioOferta() : null,
+                    precios ? (enOferta ? v.precioOferta() : v.precio()) : null,
+                    precios ? enOferta : null,
+                    precios && enOferta ? ReglasProducto.descuento(v.precio(), v.precioOferta()) : null);
+        }).toList();
         return new Producto(p.id(), p.categoriaId(), p.nombre(), p.descripcion(), p.presentacion(), p.unidadVenta(),
                 precios ? p.precio() : null,
                 precios && vigente ? p.precioOferta() : null,
@@ -70,7 +84,7 @@ public class GetCatalogoPublicoService {
                 precios ? vigente : null,
                 precios && vigente ? ReglasProducto.descuento(p.precio(), p.precioOferta()) : null,
                 p.imagenUrl(), p.imagenThumbUrl(), p.disponible(), p.destacado(),
-                ReglasProducto.esNuevo(p.creadoEn(), ahora));
+                ReglasProducto.esNuevo(p.creadoEn(), ahora), presentaciones);
     }
 
     /** Solo los productos que el visitante puede ver; una colección sin ninguno no se muestra. */

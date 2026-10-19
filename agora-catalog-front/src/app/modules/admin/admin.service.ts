@@ -80,6 +80,14 @@ export interface Producto {
   disponible: boolean;
   destacado: boolean;
   orden: number;
+  presentaciones: Presentacion[];
+}
+
+/** Otra presentación del producto (la principal es presentacion + precio); la oferta usa las fechas del producto. */
+export interface Presentacion {
+  nombre: string;
+  precio: number;
+  precioOferta: number | null;
 }
 
 export interface ProductoForm {
@@ -95,6 +103,7 @@ export interface ProductoForm {
   ofertaHasta: string | null;
   disponible: boolean;
   destacado: boolean;
+  presentaciones: Presentacion[];
 }
 
 export type Fachada = 'SALSAMENTARIA' | 'PANADERIA' | 'FRUTERIA' | 'CAFETERIA' | 'MINIMERCADO' | 'FERRETERIA';

@@ -4,6 +4,7 @@ import com.agora.catalog.common.dto.PageResponse;
 import com.agora.catalog.common.exception.DuplicateResourceException;
 import com.agora.catalog.common.exception.ResourceNotFoundException;
 import com.agora.catalog.producto.dto.ProductoDtos.CambioPrecio;
+import com.agora.catalog.producto.dto.ProductoDtos.PresentacionDto;
 import com.agora.catalog.producto.dto.ProductoDtos.ProductoRequest;
 import com.agora.catalog.producto.dto.ProductoDtos.ProductoResponse;
 import com.agora.catalog.producto.repository.ProductoRepository;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /** Productos de la empresa del token. */
 @Service
@@ -36,19 +38,24 @@ public class ProductoService {
     public PageResponse<ProductoResponse> listar(long empresaId, ProductoRepository.Filtro filtro, int page, int size) {
         int pagina = Math.max(page, 0), tamano = Math.min(Math.max(size, 1), 100);
         LocalDate hoy = LocalDate.now(clock);
-        List<ProductoResponse> contenido = repository.page(empresaId, filtro, pagina, tamano).stream()
-                .map(f -> respuesta(f, hoy)).toList();
+        List<Fila> filas = repository.page(empresaId, filtro, pagina, tamano);
+        Map<Long, List<PresentacionDto>> presentaciones = repository.findPresentaciones(empresaId, filas.stream().map(Fila::id).toList());
+        List<ProductoResponse> contenido = filas.stream()
+                .map(f -> respuesta(f, hoy, presentaciones.getOrDefault(f.id(), List.of()))).toList();
         return PageResponse.of(contenido, repository.count(empresaId, filtro), pagina, tamano);
     }
 
     public ProductoResponse get(long empresaId, long id) {
-        return respuesta(fila(empresaId, id), LocalDate.now(clock));
+        return respuesta(fila(empresaId, id), LocalDate.now(clock),
+                repository.findPresentaciones(empresaId, List.of(id)).getOrDefault(id, List.of()));
     }
 
     @Transactional
     public ProductoResponse crear(long empresaId, ProductoRequest r) {
         validar(empresaId, r, null);
-        return get(empresaId, repository.insert(empresaId, r));
+        long id = repository.insert(empresaId, r);
+        if (r.presentaciones() != null) repository.replacePresentaciones(empresaId, id, r.presentaciones());
+        return get(empresaId, id);
     }
 
     @Transactional
@@ -56,6 +63,7 @@ public class ProductoService {
         fila(empresaId, id);
         validar(empresaId, r, id);
         repository.update(empresaId, id, r);
+        if (r.presentaciones() != null) repository.replacePresentaciones(empresaId, id, r.presentaciones());
         return get(empresaId, id);
     }
 
@@ -127,10 +135,10 @@ public class ProductoService {
         return new ResourceNotFoundException("El producto no existe");
     }
 
-    private static ProductoResponse respuesta(Fila f, LocalDate hoy) {
+    private static ProductoResponse respuesta(Fila f, LocalDate hoy, List<PresentacionDto> presentaciones) {
         return new ProductoResponse(f.id(), f.codigo(), f.categoriaId(), f.categoriaNombre(), f.nombre(), f.descripcion(),
                 f.presentacion(), f.unidadVenta(), f.precio(), f.precioOferta(), f.ofertaDesde(), f.ofertaHasta(),
                 ReglasProducto.ofertaVigente(f.precioOferta(), f.ofertaDesde(), f.ofertaHasta(), hoy),
-                f.imagenUrl(), f.imagenThumbUrl(), f.disponible(), f.destacado(), f.orden());
+                f.imagenUrl(), f.imagenThumbUrl(), f.disponible(), f.destacado(), f.orden(), presentaciones);
     }
 }

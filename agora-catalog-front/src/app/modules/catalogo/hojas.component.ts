@@ -2,7 +2,7 @@ import {afterRenderEffect, Component, computed, effect, ElementRef, inject, sign
 import {RouterLink} from '@angular/router';
 
 import {CatalogoStore} from './catalogo.store';
-import {cop, costoDomicilio, efectivo, mensajePedido, msgProducto, phone, plural, waHref} from './catalogo.util';
+import {conPresentacion, cop, costoDomicilio, efectivo, mensajePedido, msgProducto, phone, plural, waHref} from './catalogo.util';
 import {FiltrosComponent} from './catalogo-page.component';
 import {IconoComponent} from './icono.component';
 import {menuCatalogo} from './marco.component';
@@ -27,12 +27,18 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
               @if (producto(); as p) {
                 <span class="grab" aria-hidden="true"></span>
                 <div class="sheet-scroll">
-                  <span class="pc-badge"><cat-etiqueta [p]="p" /></span>
+                  <span class="pc-badge"><cat-etiqueta [p]="elegido()!" /></span>
                   <cat-foto clase="sheet-ph" [src]="p.imagenUrl ?? p.imagenThumbUrl" />
                   <div class="ps-body">
                     <h2>{{ p.nombre }}</h2>
-                    @if (p.presentacion) { <p class="muted">{{ p.presentacion }}</p> }
-                    @if (p.disponible) { <cat-precio [p]="p" clase="price big" /> }
+                    @if (opciones().length > 1) {
+                      <div class="ps-vars" role="radiogroup" aria-label="Presentación">
+                        @for (o of opciones(); track o.presentacion; let i = $index) {
+                          <label><input type="radio" name="presentacion" [checked]="i === variante()" (change)="variante.set(i)"><b>{{ o.presentacion }}</b>@if (store.precios()) {<small>{{ cop(o.precioFinal ?? 0) }}</small>}</label>
+                        }
+                      </div>
+                    } @else if (p.presentacion) { <p class="muted">{{ p.presentacion }}</p> }
+                    @if (p.disponible) { <cat-precio [p]="elegido()!" clase="price big" /> }
                     @if (p.descripcion) { <p class="ps-desc">{{ p.descripcion }}</p> }
                     <button type="button" class="ps-share" (click)="store.compartir(p)"><svg catIcono="share"></svg>Compartir este producto</button>
                   </div>
@@ -42,12 +48,12 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
                     @if (store.pedidos() && p.disponible) {
                       <div class="ps-buy">
                         <cat-cantidad clase="big" #cant />
-                        <button type="button" class="btn btn-brand" (click)="store.agregar(p, cant.n()); cerrar()"><svg catIcono="cart"></svg>Agregar al pedido</button>
+                        <button type="button" class="btn btn-brand" (click)="store.agregar(elegido()!, cant.n()); cerrar()"><svg catIcono="cart"></svg>Agregar al pedido</button>
                       </div>
                     }
                     @if (store.hayWhatsapp()) {
-                      <a [class]="store.pedidos() && p.disponible ? 'ps-ask' : 'btn btn-brand ps-ask-btn'" [href]="store.hrefWhatsapp(msgProducto(p))"
-                         target="_blank" rel="noopener" (click)="elegirNumero($event, msgProducto(p))">
+                      <a [class]="store.pedidos() && p.disponible ? 'ps-ask' : 'btn btn-brand ps-ask-btn'" [href]="store.hrefWhatsapp(msgProducto(elegido()!))"
+                         target="_blank" rel="noopener" (click)="elegirNumero($event, msgProducto(elegido()!))">
                         <svg catIcono="wa"></svg>{{ p.disponible ? 'Preguntar por WhatsApp' : 'Preguntar cuándo llega' }}
                       </a>
                     }
@@ -67,7 +73,7 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
                     </div>
                   } @else {
                     <ul class="olines">
-                      @for (l of store.lineas(); track l.producto.id) {
+                      @for (l of store.lineas(); track l.clave) {
                         <li class="oline">
                           <cat-foto [src]="l.producto.imagenThumbUrl ?? l.producto.imagenUrl" />
                           <div class="oline-txt">
@@ -79,12 +85,12 @@ import {CantidadComponent, EtiquetaComponent, FotoComponent, PrecioComponent} fr
                           </div>
                           <div class="qty sm" role="group" [attr.aria-label]="'Cantidad de ' + l.producto.nombre">
                             <button type="button" [attr.aria-label]="l.cantidad === 1 ? 'Quitar ' + l.producto.nombre : 'Uno menos'"
-                                    (click)="store.setCantidad(l.producto.id, l.cantidad - 1)">
+                                    (click)="store.setCantidad(l.clave, l.cantidad - 1)">
                               <svg [catIcono]="l.cantidad === 1 ? 'trash' : 'minus'"></svg>
                             </button>
                             <output>{{ l.cantidad }}</output>
                             <button type="button" aria-label="Uno más" [disabled]="l.cantidad >= 99"
-                                    (click)="store.setCantidad(l.producto.id, l.cantidad + 1)"><svg catIcono="plus"></svg></button>
+                                    (click)="store.setCantidad(l.clave, l.cantidad + 1)"><svg catIcono="plus"></svg></button>
                           </div>
                         </li>
                       }
@@ -222,6 +228,14 @@ export class HojasComponent {
     return h?.tipo === 'producto' ? this.store.porId().get(h.id) ?? null : null;
   });
 
+  /** La principal y las otras presentaciones; la elegida es la que se agrega y se pregunta. */
+  readonly variante = signal(0);
+  readonly opciones = computed(() => {
+    const p = this.producto();
+    return p ? [p, ...p.presentaciones.map(v => conPresentacion(p, v))] : [];
+  });
+  readonly elegido = computed(() => this.opciones()[this.variante()] ?? this.producto());
+
   readonly titulo = computed(() => {
     const h = this.store.hoja();
     return h?.tipo === 'producto' ? this.producto()?.nombre ?? '' : h?.tipo === 'pedido' ? 'Mi pedido'
@@ -232,6 +246,7 @@ export class HojasComponent {
     // Cada producto abierto cuenta para "los más vistos" del dueño (una vez por sesión).
     effect(() => {
       const h = this.store.hoja();
+      this.variante.set(0);
       if (h?.tipo === 'producto') this.store.registrar('PRODUCTO', h.id);
     });
     // Al abrir: el foco va a "Cerrar" y la página de atrás no se desplaza. Al cerrar: vuelve a donde estaba.

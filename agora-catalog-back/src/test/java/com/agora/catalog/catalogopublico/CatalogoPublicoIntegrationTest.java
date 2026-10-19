@@ -42,6 +42,11 @@ class CatalogoPublicoIntegrationTest {
         quesos = categoria("Quesos", true);
         long oculta = categoria("Oculta", false);
         ofertaId = producto(quesos, "Q-1", 10_000, 7_500, "current_date - 1", "current_date + 5", true);
+        // Otras presentaciones: usan las fechas de oferta del producto.
+        jdbc.update("""
+                INSERT INTO main.producto_presentacion (empresa_id, producto_id, nombre, precio, precio_oferta, orden)
+                VALUES (?, ?, 'Media libra', 5200, 4000, 1), (?, ?, 'Tajado', 3000, NULL, 2)
+                """, empresaId, ofertaId, empresaId, ofertaId);
         producto(quesos, "Q-2", 8_000, 6_000, "current_date + 3", "current_date + 9", true);
         agotadoId = producto(quesos, "Q-3", 5_000, null, "NULL", "NULL", false);
         producto(oculta, "O-1", 1_000, null, "NULL", "NULL", true);
@@ -66,6 +71,13 @@ class CatalogoPublicoIntegrationTest {
                 .andExpect(jsonPath("$.productos[0].precioFinal").value(7500))
                 .andExpect(jsonPath("$.productos[0].descuento").value(25))
                 .andExpect(jsonPath("$.productos[0].nuevo").value(true))
+                .andExpect(jsonPath("$.productos[0].presentaciones", hasSize(2)))
+                .andExpect(jsonPath("$.productos[0].presentaciones[0].nombre").value("Media libra"))
+                .andExpect(jsonPath("$.productos[0].presentaciones[0].precioFinal").value(4000))
+                .andExpect(jsonPath("$.productos[0].presentaciones[0].descuento").value(23))
+                .andExpect(jsonPath("$.productos[0].presentaciones[1].ofertaVigente").value(false))
+                .andExpect(jsonPath("$.productos[0].presentaciones[1].precioFinal").value(3000))
+                .andExpect(jsonPath("$.productos[1].presentaciones", hasSize(0)))
                 // La oferta del Q-2 todavía no empieza: precio normal y sin precio de oferta.
                 .andExpect(jsonPath("$.productos[1].ofertaVigente").value(false))
                 .andExpect(jsonPath("$.productos[1].precioFinal").value(8000))
@@ -84,7 +96,11 @@ class CatalogoPublicoIntegrationTest {
                 .andExpect(jsonPath("$.productos[0].precioOferta").doesNotExist())
                 .andExpect(jsonPath("$.productos[0].precioFinal").doesNotExist())
                 .andExpect(jsonPath("$.productos[0].ofertaVigente").doesNotExist())
-                .andExpect(jsonPath("$.productos[0].descuento").doesNotExist());
+                .andExpect(jsonPath("$.productos[0].descuento").doesNotExist())
+                .andExpect(jsonPath("$.productos[0].presentaciones[0].nombre").value("Media libra"))
+                .andExpect(jsonPath("$.productos[0].presentaciones[0].precio").doesNotExist())
+                .andExpect(jsonPath("$.productos[0].presentaciones[0].precioFinal").doesNotExist())
+                .andExpect(jsonPath("$.productos[0].presentaciones[0].ofertaVigente").doesNotExist());
     }
 
     @Test

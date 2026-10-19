@@ -40,7 +40,8 @@ export class PrecioComponent {
   readonly p = input.required<Producto>();
   readonly clase = input('price');
   readonly cop = cop;
-  readonly unidad = computed(() => this.p().unidadVenta === 'UNIDAD' ? '' : UNIDADES[this.p().unidadVenta]);
+  // La unidad es la de la presentación principal: "Media libra" no se vende "/ libra".
+  readonly unidad = computed(() => this.p().variante || this.p().unidadVenta === 'UNIDAD' ? '' : UNIDADES[this.p().unidadVenta]);
 }
 
 /** Una sola etiqueta, en este orden: Agotado > Promo > Más vendido > Nuevo. */
@@ -106,7 +107,7 @@ export class CantidadComponent {
         @if (p().descripcion) { <span class="pc-desc">{{ p().descripcion }}</span> } @else { <span></span> }
         <span class="pc-foot">
           <cat-precio [p]="p()" />
-          @if (p().presentacion) { <span class="pres">{{ p().presentacion }}</span> }
+          @if (p().presentacion) { <span class="pres">{{ p().presentacion }}@if (p().presentaciones.length) { y {{ p().presentaciones.length }} más}</span> }
         </span>
       </span>
     </button>
@@ -121,8 +122,8 @@ export class CantidadComponent {
     } @else if (p().disponible) {
       <div class="buy">
         <cat-cantidad #cant />
-        <button type="button" class="add" [attr.aria-label]="'Agregar ' + p().nombre + ' al pedido'"
-                (click)="store.agregar(p(), cant.n()); cant.n.set(1)">
+        <button type="button" class="add" [attr.aria-label]="(p().presentaciones.length ? 'Elegir la presentación de ' : 'Agregar ') + p().nombre + (p().presentaciones.length ? '' : ' al pedido')"
+                (click)="agregar(cant.n()); cant.n.set(1)">
           <svg catIcono="cart"></svg>
         </button>
       </div>
@@ -139,6 +140,12 @@ export class TarjetaComponent {
     const p = this.p();
     return !p.disponible || (this.store.precios() && !!p.ofertaVigente) || p.destacado || p.nuevo;
   });
+
+  /** Con otras presentaciones se abre su hoja para elegir cuál; si no, se agrega directo. */
+  agregar(n: number): void {
+    if (this.p().presentaciones.length) this.store.hoja.set({tipo: 'producto', id: this.p().id});
+    else this.store.agregar(this.p(), n);
+  }
 
   /** Con varios números, primero se elige a cuál escribir. */
   preguntar(e: Event): void {

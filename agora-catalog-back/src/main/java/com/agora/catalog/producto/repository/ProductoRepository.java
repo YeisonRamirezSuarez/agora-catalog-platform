@@ -1,5 +1,6 @@
 package com.agora.catalog.producto.repository;
 
+import com.agora.catalog.producto.dto.ProductoDtos.PresentacionDto;
 import com.agora.catalog.producto.dto.ProductoDtos.ProductoRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,7 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /** Toda consulta filtra por empresa: un producto de otra empresa no existe para quien pregunta. */
@@ -121,6 +124,33 @@ public class ProductoRepository {
                 """, r.categoriaId(), r.codigo().trim(), r.nombre().trim(), blank(r.descripcion()), blank(r.presentacion()),
                 r.unidadVenta(), r.precio(), r.precioOferta(), r.ofertaDesde(), r.ofertaHasta(), r.disponible(),
                 r.destacado(), empresaId, id);
+    }
+
+    /** Otras presentaciones de esos productos, en su orden, agrupadas por producto. */
+    public Map<Long, List<PresentacionDto>> findPresentaciones(long empresaId, List<Long> productoIds) {
+        Map<Long, List<PresentacionDto>> porProducto = new HashMap<>();
+        if (productoIds.isEmpty()) return porProducto;
+        jdbc.query("""
+                SELECT producto_id, nombre, precio, precio_oferta FROM main.producto_presentacion
+                 WHERE empresa_id = ? AND producto_id = ANY (?) ORDER BY producto_id, orden, id
+                """, rs -> {
+            BigDecimal oferta = rs.getBigDecimal("precio_oferta");
+            porProducto.computeIfAbsent(rs.getLong("producto_id"), k -> new ArrayList<>()).add(new PresentacionDto(
+                    rs.getString("nombre"), rs.getLong("precio"), oferta == null ? null : oferta.longValue()));
+        }, empresaId, productoIds.toArray(Long[]::new));
+        return porProducto;
+    }
+
+    /** Reemplaza las otras presentaciones del producto (el servicio ya validó que es de la empresa). */
+    public void replacePresentaciones(long empresaId, long productoId, List<PresentacionDto> presentaciones) {
+        jdbc.update("DELETE FROM main.producto_presentacion WHERE empresa_id = ? AND producto_id = ?", empresaId, productoId);
+        for (int i = 0; i < presentaciones.size(); i++) {
+            PresentacionDto v = presentaciones.get(i);
+            jdbc.update("""
+                    INSERT INTO main.producto_presentacion (empresa_id, producto_id, nombre, precio, precio_oferta, orden)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """, empresaId, productoId, v.nombre().trim(), v.precio(), v.precioOferta(), i + 1);
+        }
     }
 
     public int delete(long empresaId, long id) {

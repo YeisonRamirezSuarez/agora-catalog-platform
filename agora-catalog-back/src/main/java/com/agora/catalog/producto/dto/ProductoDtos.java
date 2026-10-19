@@ -58,7 +58,25 @@ public final class ProductoDtos {
             Boolean disponible,
 
             @NotNull(message = "Indica si es «Más vendido»")
-            Boolean destacado
+            Boolean destacado,
+
+            // Otras presentaciones además de la principal. null (Excel): no se tocan; lista: se reemplazan.
+            @Size(max = 6, message = "Un producto puede tener hasta 6 presentaciones más")
+            List<@Valid PresentacionDto> presentaciones
+    ) {
+    }
+
+    /** Otra presentación del producto, con su precio; la oferta usa las fechas de oferta del producto. */
+    public record PresentacionDto(
+            @NotBlank(message = "Escribe el nombre de cada presentación")
+            @Size(max = 60, message = "Cada presentación puede tener hasta 60 caracteres")
+            String nombre,
+            @NotNull(message = "Escribe el precio de cada presentación")
+            @Min(value = 0, message = "El precio no puede ser negativo")
+            @Max(value = 999_999_999, message = "El precio es demasiado alto")
+            Long precio,
+            @Min(value = 0, message = "El precio de oferta no puede ser negativo")
+            Long precioOferta
     ) {
     }
 
@@ -99,7 +117,8 @@ public final class ProductoDtos {
             String imagenThumbUrl,
             boolean disponible,
             boolean destacado,
-            int orden
+            int orden,
+            List<PresentacionDto> presentaciones
     ) {
     }
 

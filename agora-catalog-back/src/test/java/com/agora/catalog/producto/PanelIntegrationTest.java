@@ -98,6 +98,38 @@ class PanelIntegrationTest {
     }
 
     @Test
+    void otrasPresentacionesSeGuardanSeConservanSinListaYSeValidan() throws Exception {
+        String con = producto(catA, "Q-1", 18000, null).replace("\"destacado\":false}", "\"destacado\":false,\"presentaciones\":"
+                + "[{\"nombre\":\"Media libra\",\"precio\":9500,\"precioOferta\":9000},{\"nombre\":\"Tajado 250 g\",\"precio\":6000}]}");
+        long p = id(post("/admin/productos").header("Authorization", tokenA).contentType(MediaType.APPLICATION_JSON).content(con));
+        mvc.perform(get("/admin/productos/" + p).header("Authorization", tokenA))
+                .andExpect(jsonPath("$.presentaciones", hasSize(2)))
+                .andExpect(jsonPath("$.presentaciones[0].nombre").value("Media libra"))
+                .andExpect(jsonPath("$.presentaciones[0].precioOferta").value(9000));
+        mvc.perform(get("/admin/productos").header("Authorization", tokenA))
+                .andExpect(jsonPath("$.content[0].presentaciones", hasSize(2)));
+
+        // Sin la lista (como cada fila del Excel) se conservan; con la lista vacía se quitan.
+        guardar(p, producto(catA, "Q-1", 18000, null)).andExpect(status().isOk()).andExpect(jsonPath("$.presentaciones", hasSize(2)));
+        guardar(p, producto(catA, "Q-1", 18000, null).replace("\"destacado\":false}", "\"destacado\":false,\"presentaciones\":[]}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.presentaciones", hasSize(0)));
+
+        guardar(p, con.replace("Media libra", "bloque"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value(containsString("repetida")));
+        guardar(p, con.replace("\"precioOferta\":9000", "\"precioOferta\":9500"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value(containsString("menor que su precio")));
+        guardar(p, con.replace("\"presentacion\":\"Bloque\"", "\"presentacion\":null"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value(containsString("principal")));
+        // Otra empresa no le pone presentaciones a un producto ajeno.
+        mvc.perform(put("/admin/productos/" + p).header("Authorization", tokenB).contentType(MediaType.APPLICATION_JSON)
+                .content(con.replace("\"categoriaId\":" + catA, "\"categoriaId\":" + catB))).andExpect(status().isNotFound());
+    }
+
+    private ResultActions guardar(long id, String json) throws Exception {
+        return mvc.perform(put("/admin/productos/" + id).header("Authorization", tokenA).contentType(MediaType.APPLICATION_JSON).content(json));
+    }
+
+    @Test
     void preciosMasivosRespetanLaOferta() throws Exception {
         long conOferta = id(crearProducto(tokenA, catA, "Q-1", 10000, 8000L));
         long sinOferta = id(crearProducto(tokenA, catA, "Q-2", 5000, null));

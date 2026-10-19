@@ -5,8 +5,15 @@ import {Router, RouterLink} from '@angular/router';
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
 import {prepararFoto} from '@app/shared/utils/foto';
-import {ADMIN_LINKS, AdminService, Categoria, Producto, ProductoForm, UNIDADES, UnidadVenta} from '../admin.service';
+import {ADMIN_LINKS, AdminService, Categoria, Presentacion, Producto, ProductoForm, UNIDADES, UnidadVenta} from '../admin.service';
 
+/** Una fila de "Otras presentaciones". */
+const grupoPresentacion = (fb: FormBuilder, v?: Presentacion) => fb.group({
+  nombre: [v?.nombre ?? '', [Validators.required, Validators.maxLength(60)]],
+  precio: [v?.precio ?? null as number | null, [Validators.required, Validators.min(0)]],
+  precioOferta: [v?.precioOferta ?? null as number | null, Validators.min(0)],
+});
+type GrupoPresentacion = ReturnType<typeof grupoPresentacion>;
 
 /** Crear o editar un producto, con su foto. */
 @Component({
@@ -77,6 +84,25 @@ import {ADMIN_LINKS, AdminService, Categoria, Producto, ProductoForm, UNIDADES, 
             </div>
             <p class="hint sm:col-span-3">Sin fechas, la oferta queda activa hasta que borres el precio de oferta.</p>
           </fieldset>
+          <fieldset class="grid gap-3 rounded-xl border border-line p-4 sm:col-span-2" formArrayName="presentaciones">
+            <legend class="px-1 text-sm font-semibold">Otras presentaciones (opcional)</legend>
+            <p class="hint">La de arriba es la principal. Agrega otras con su precio, por ejemplo «Media libra». Su oferta usa las mismas fechas.</p>
+            @for (g of presentaciones.controls; track g; let i = $index) {
+              <div class="grid grid-cols-2 gap-2 sm:grid-cols-[minmax(0,1fr)_8rem_8rem_auto] sm:items-end" [formGroupName]="i">
+                <div class="field col-span-2 sm:col-span-1"><label [for]="'v-nom-' + i">Nombre</label>
+                  <input class="input" [id]="'v-nom-' + i" formControlName="nombre" maxlength="60" placeholder="Media libra"></div>
+                <div class="field"><label [for]="'v-pre-' + i">Precio</label>
+                  <input class="input" [id]="'v-pre-' + i" formControlName="precio" inputmode="numeric" type="number" min="0" step="50"></div>
+                <div class="field"><label [for]="'v-of-' + i">Oferta</label>
+                  <input class="input" [id]="'v-of-' + i" formControlName="precioOferta" inputmode="numeric" type="number" min="0" step="50"></div>
+                <button type="button" class="btn col-span-2 justify-self-start sm:col-span-1" (click)="presentaciones.removeAt(i)"
+                        [attr.aria-label]="'Quitar la presentación ' + (i + 1)">Quitar</button>
+              </div>
+            }
+            @if (presentaciones.length < 6) {
+              <button type="button" class="btn justify-self-start" (click)="agregarPresentacion()">+ Agregar presentación</button>
+            }
+          </fieldset>
           <div class="flex flex-wrap gap-6 sm:col-span-2">
             <label class="inline-flex items-center gap-3 font-semibold"><input type="checkbox" class="switch" role="switch" formControlName="disponible"> Disponible</label>
             <label class="inline-flex items-center gap-3 font-semibold"><input type="checkbox" class="switch" role="switch" formControlName="destacado"> Marcar como «Más vendido»</label>
@@ -130,7 +156,8 @@ export class ProductoFormComponent implements OnInit {
   readonly aviso = signal('');
   readonly guardando = signal(false);
 
-  readonly form = inject(FormBuilder).group({
+  private readonly fb = inject(FormBuilder);
+  readonly form = this.fb.group({
     codigo: ['', [Validators.required, Validators.maxLength(40)]],
     categoriaId: [null as number | null, Validators.required],
     nombre: ['', [Validators.required, Validators.maxLength(120)]],
@@ -143,7 +170,16 @@ export class ProductoFormComponent implements OnInit {
     ofertaHasta: [null as string | null],
     disponible: [true],
     destacado: [false],
+    presentaciones: this.fb.array<GrupoPresentacion>([]),
   });
+
+  get presentaciones() {
+    return this.form.controls.presentaciones;
+  }
+
+  agregarPresentacion(): void {
+    this.presentaciones.push(grupoPresentacion(this.fb));
+  }
 
   ngOnInit(): void {
     this.api.categorias().subscribe({
@@ -158,7 +194,10 @@ export class ProductoFormComponent implements OnInit {
       this.api.producto(id).subscribe({
         next: p => {
           this.producto.set(p);
-          this.form.patchValue({...p, descripcion: p.descripcion ?? '', presentacion: p.presentacion ?? ''});
+          const {presentaciones, ...resto} = p;
+          this.form.patchValue({...resto, descripcion: p.descripcion ?? '', presentacion: p.presentacion ?? ''});
+          this.presentaciones.clear();
+          presentaciones.forEach(v => this.presentaciones.push(grupoPresentacion(this.fb, v)));
         },
         error: err => this.error.set(apiMessage(err))
       });
@@ -186,6 +225,10 @@ export class ProductoFormComponent implements OnInit {
     this.aviso.set('');
     const v = this.form.getRawValue();
     const faltan = !v.codigo?.trim() || !v.nombre?.trim() || v.categoriaId === null || v.precio === null;
+    if (this.presentaciones.invalid) {
+      this.error.set('Completa el nombre y el precio de cada presentación, o quita las que no uses.');
+      return;
+    }
     if (faltan || this.form.invalid) {
       this.error.set('Completa código, categoría, nombre y precio.');
       return;
@@ -195,7 +238,11 @@ export class ProductoFormComponent implements OnInit {
       presentacion: v.presentacion ?? '', unidadVenta: v.unidadVenta!, precio: Math.round(v.precio!),
       precioOferta: v.precioOferta === null || (v.precioOferta as unknown) === '' ? null : Math.round(v.precioOferta),
       ofertaDesde: v.ofertaDesde || null, ofertaHasta: v.ofertaHasta || null,
-      disponible: !!v.disponible, destacado: !!v.destacado
+      disponible: !!v.disponible, destacado: !!v.destacado,
+      presentaciones: v.presentaciones.map(x => ({
+        nombre: x.nombre!.trim(), precio: Math.round(x.precio!),
+        precioOferta: x.precioOferta === null || (x.precioOferta as unknown) === '' ? null : Math.round(x.precioOferta)
+      }))
     };
     this.guardando.set(true);
     this.error.set('');

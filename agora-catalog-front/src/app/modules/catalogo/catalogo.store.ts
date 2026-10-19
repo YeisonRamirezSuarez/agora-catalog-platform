@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 
 import {CatalogoPublico, Filtros, Hoja, Producto} from './catalogo.models';
-import {efectivo, estadoHorario, FILTROS_VACIOS, filtrosAQuery, LineaPedido, MSG_GENERAL, norm, porRelevancia, waHref} from './catalogo.util';
+import {claveDe, deClave, efectivo, estadoHorario, FILTROS_VACIOS, filtrosAQuery, LineaPedido, MSG_GENERAL, norm, porRelevancia, waHref} from './catalogo.util';
 
 type Estado = 'cargando' | 'listo' | 'no-disponible' | 'error';
 /** Lo que el catálogo cuenta para las estadísticas del negocio (sin datos de quien visita). */
@@ -22,7 +22,7 @@ export class CatalogoStore {
 
   readonly estado = signal<Estado>('cargando');
   readonly data = signal<CatalogoPublico | null>(null);
-  readonly pedido = signal<Record<number, number>>({});
+  readonly pedido = signal<Record<string, number>>({});
   readonly favoritos = signal<ReadonlySet<number>>(new Set());
   readonly hoja = signal<Hoja | null>(null);
   readonly aviso = signal('');
@@ -59,8 +59,9 @@ export class CatalogoStore {
     return d ? estadoHorario(d.horario, d.zonaHoraria, this.ahora()) : null;
   });
 
+  /** Una línea por producto y presentación ("12" o "12|Media libra"). */
   readonly lineas = computed<LineaPedido[]>(() => Object.entries(this.pedido())
-    .map(([id, cantidad]) => ({producto: this.porId().get(+id)!, cantidad}))
+    .map(([clave, cantidad]) => ({clave, producto: deClave(clave, this.porId())!, cantidad}))
     .filter(l => l.producto));
   readonly unidades = computed(() => this.lineas().reduce((s, l) => s + l.cantidad, 0));
   readonly total = computed(() => this.lineas().reduce((s, l) => s + efectivo(l.producto) * l.cantidad, 0));
@@ -88,21 +89,23 @@ export class CatalogoStore {
 
   // ---------- Pedido ----------
 
-  cantidad(id: number): number {
-    return this.pedido()[id] ?? 0;
+  cantidad(clave: string): number {
+    return this.pedido()[clave] ?? 0;
   }
 
-  setCantidad(id: number, n: number): void {
+  setCantidad(clave: string, n: number): void {
     const next = {...this.pedido()};
-    if (n > 0) next[id] = Math.min(n, 99); else delete next[id];
+    if (n > 0) next[clave] = Math.min(n, 99); else delete next[clave];
     this.pedido.set(next);
     this.guardar('pedido', next);
   }
 
+  /** {@code p} puede venir en otra presentación (conPresentacion): cada una es su propia línea. */
   agregar(p: Producto, n: number): void {
-    this.setCantidad(p.id, this.cantidad(p.id) + n);
+    const clave = claveDe(p);
+    this.setCantidad(clave, this.cantidad(clave) + n);
     this.animarCarrito.update(v => v + 1);
-    this.avisar(`Agregado a tu pedido: ${n} × ${p.nombre}`);
+    this.avisar(`Agregado a tu pedido: ${n} × ${p.nombre}${p.variante ? ` (${p.variante})` : ''}`);
   }
 
   vaciar(): void {
@@ -160,7 +163,7 @@ export class CatalogoStore {
       (!f.cats.length || f.cats.includes(p.categoriaId))
       && (!f.promo || (precios && !!p.ofertaVigente)) && (!f.mas || p.destacado) && (!f.disp || p.disponible)
       && (!f.favs || this.favoritos().has(p.id)) && (!col || col.productos.includes(p.id))
-      && (!q || norm(`${p.nombre} ${p.presentacion ?? ''} ${p.descripcion ?? ''} ${cats.get(p.categoriaId) ?? ''}`).includes(q))
+      && (!q || norm(`${p.nombre} ${p.presentacion ?? ''} ${p.presentaciones.map(v => v.nombre).join(' ')} ${p.descripcion ?? ''} ${cats.get(p.categoriaId) ?? ''}`).includes(q))
       && (!precios || ((!f.min || efectivo(p) >= f.min) && (!f.max || efectivo(p) <= f.max))));
     if (f.orden === 'menor') return L.sort((a, b) => efectivo(a) - efectivo(b));
     if (f.orden === 'mayor') return L.sort((a, b) => efectivo(b) - efectivo(a));
@@ -251,10 +254,10 @@ export class CatalogoStore {
         return vacio;
       }
     };
-    // Los productos que ya no están disponibles salen del pedido al cargar.
-    const pedido: Record<number, number> = {};
-    for (const [id, n] of Object.entries(leer<Record<string, number>>('pedido', {}))) {
-      if (this.porId().get(+id)?.disponible && n > 0) pedido[+id] = Math.min(n, 99);
+    // Los productos (o presentaciones) que ya no están disponibles salen del pedido al cargar.
+    const pedido: Record<string, number> = {};
+    for (const [clave, n] of Object.entries(leer<Record<string, number>>('pedido', {}))) {
+      if (deClave(clave, this.porId())?.disponible && n > 0) pedido[clave] = Math.min(n, 99);
     }
     this.pedido.set(pedido);
     this.favoritos.set(new Set(leer<number[]>('favoritos', []).filter(id => this.porId().has(id))));

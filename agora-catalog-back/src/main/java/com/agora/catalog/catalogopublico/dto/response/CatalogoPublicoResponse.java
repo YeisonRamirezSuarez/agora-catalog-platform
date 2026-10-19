@@ -98,7 +98,21 @@ public record CatalogoPublicoResponse(
             String imagenThumbUrl,
             boolean disponible,
             boolean destacado,
-            boolean nuevo
+            boolean nuevo,
+            // Otras presentaciones además de la principal (presentacion y precio de arriba).
+            List<Presentacion> presentaciones
+    ) {
+    }
+
+    /** Con precios ocultos solo va el nombre, igual que en el producto. */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record Presentacion(
+            String nombre,
+            BigDecimal precio,
+            BigDecimal precioOferta,
+            BigDecimal precioFinal,
+            Boolean ofertaVigente,
+            Integer descuento
     ) {
     }
 }

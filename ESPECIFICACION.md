@@ -140,6 +140,8 @@ Reglas:
 - `precio_oferta` debe ser menor que `precio`.
 - Si existen las dos fechas, `oferta_desde` debe ser igual o anterior a `oferta_hasta`.
 - Un solo validador de producto, usado por el formulario y por la importación Excel.
+
+**producto_presentacion**: `id`, `empresa_id`, `producto_id`, `nombre` (≤ 60, único por producto sin importar mayúsculas), `precio`, `precio_oferta null` (menor que `precio`), `orden`. Hasta 6 por producto, además de la principal (`presentacion` + `precio` del producto, que pasa a ser obligatoria si hay otras). La oferta de cada una usa las fechas de oferta del producto. Filtros, orden por precio, etiquetas y el Excel siguen usando la principal; el Excel no toca las otras. En el catálogo, la hoja del producto deja elegir la presentación y cada una es su propia línea en el pedido; la tarjeta dice "Libra y 2 más" y su botón abre la hoja.
 - Precios en COP sin decimales; en la vista: `$12.500`.
 - Un producto es **nuevo** durante 30 días desde `created_at` (con el mismo `Clock`). No hay columna aparte.
 - Etiqueta de la tarjeta, una sola, en este orden: "Agotado" > "Promo -X%" (oferta vigente y precios visibles) > "Más vendido" (`destacado`) > "Nuevo".

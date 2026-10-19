@@ -109,6 +109,20 @@ export interface Producto {
   disponible: boolean;
   destacado: boolean;
   nuevo: boolean;
+  /** Otras presentaciones además de la principal (presentacion y precio de arriba). */
+  presentaciones: Presentacion[];
+  /** Solo en el producto visto en otra presentación (conPresentacion): su nombre, que la identifica en el pedido. */
+  variante?: string;
+}
+
+/** Con precios ocultos solo llega el nombre. */
+export interface Presentacion {
+  nombre: string;
+  precio?: number;
+  precioOferta?: number;
+  precioFinal?: number;
+  ofertaVigente?: boolean;
+  descuento?: number;
 }
 
 /** Una hoja (modal) del catálogo abierta. */

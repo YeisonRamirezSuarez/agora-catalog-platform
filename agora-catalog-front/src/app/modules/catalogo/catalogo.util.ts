@@ -1,4 +1,4 @@
-import {Filtros, Horario, Negocio, Producto, UnidadVenta} from './catalogo.models';
+import {Filtros, Horario, Negocio, Presentacion, Producto, UnidadVenta} from './catalogo.models';
 
 export const UNIDADES: Record<UnidadVenta, string> = {
   UNIDAD: 'unidad', LIBRA: 'libra', KILO: 'kilo', GRAMOS: 'gramos', PAQUETE: 'paquete', CAJA: 'caja'
@@ -33,7 +33,25 @@ export function porRelevancia(lista: Producto[]): Producto[] {
   return lista.map((p, i) => [p, i] as const).sort((a, b) => peso(a[0]) - peso(b[0]) || a[1] - b[1]).map(x => x[0]);
 }
 
+/** El producto visto en otra de sus presentaciones: su nombre y sus precios reemplazan a los de la principal. */
+export const conPresentacion = (p: Producto, v: Presentacion): Producto => ({
+  ...p, presentacion: v.nombre, precio: v.precio, precioOferta: v.precioOferta, precioFinal: v.precioFinal,
+  ofertaVigente: v.ofertaVigente, descuento: v.descuento, variante: v.nombre
+});
+
+/** Clave del producto en el pedido: "12", o "12|Media libra" en otra presentación. */
+export const claveDe = (p: Producto): string => p.variante ? `${p.id}|${p.variante}` : String(p.id);
+
+/** La clave del pedido de vuelta al producto (en su presentación); null si ya no existe. */
+export function deClave(clave: string, porId: Map<number, Producto>): Producto | null {
+  const corte = clave.indexOf('|'), p = porId.get(+(corte < 0 ? clave : clave.slice(0, corte)));
+  if (!p || corte < 0) return p ?? null;
+  const v = p.presentaciones.find(x => x.nombre === clave.slice(corte + 1));
+  return v ? conPresentacion(p, v) : null;
+}
+
 export interface LineaPedido {
+  clave: string;
   producto: Producto;
   cantidad: number;
 }
@@ -43,7 +61,7 @@ export interface LineaPedido {
  * línea de domicilio (recoge en la tienda o el negocio no configuró domicilio); null, el negocio
  * confirma el costo; 0, gratis.
  */
-export function mensajePedido(lineasPedido: LineaPedido[], precios: boolean,
+export function mensajePedido(lineasPedido: Omit<LineaPedido, 'clave'>[], precios: boolean,
                               datos: {nombre?: string; entrega?: string; envio?: number | null} = {}): string {
   const total = lineasPedido.reduce((s, l) => s + efectivo(l.producto) * l.cantidad, 0);
   const {nombre, entrega, envio} = datos, conEnvio = precios && envio !== undefined;

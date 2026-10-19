@@ -258,6 +258,13 @@ html{touch-action:manipulation}
 .cat-sheet .sheet-cta .btn{border-radius:14px}
 .ps-body{display:grid;gap:6px;padding:18px 20px 10px}
 .ps-body h2{font:700 28px/1.1 var(--serif);letter-spacing:-.01em}
+.ps-vars{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+.ps-vars label{position:relative;display:grid;gap:1px;min-height:48px;align-content:center;padding:6px 14px;border:1px solid var(--c-line);border-radius:12px;background:var(--paper);cursor:pointer}
+.ps-vars b{font-size:14px;font-weight:700}
+.ps-vars small{color:var(--c-muted);font-size:13px;font-variant-numeric:tabular-nums}
+.ps-vars input{position:absolute;opacity:0;pointer-events:none}
+.ps-vars label:has(input:checked){border-color:var(--c-ink);box-shadow:inset 0 0 0 1px var(--c-ink)}
+.ps-vars label:has(input:focus-visible){outline:2px solid var(--c-ink);outline-offset:2px}
 .price.big{margin-top:6px;font-size:26px}
 .price.big s{font-size:16px}
 .ps-desc{margin-top:6px;color:var(--c-ink-2);line-height:1.55}

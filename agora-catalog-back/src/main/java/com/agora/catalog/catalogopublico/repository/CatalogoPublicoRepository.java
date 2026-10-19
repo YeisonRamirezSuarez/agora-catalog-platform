@@ -35,6 +35,9 @@ public class CatalogoPublicoRepository {
     public record ColeccionFila(long id, String nombre, String descripcion, String imagenUrl, Long productoId) {
     }
 
+    public record PresentacionFila(long productoId, String nombre, BigDecimal precio, BigDecimal precioOferta) {
+    }
+
     private final JdbcTemplate jdbc;
 
     public CatalogoPublicoRepository(JdbcTemplate jdbc) {
@@ -109,6 +112,15 @@ public class CatalogoPublicoRepository {
                  WHERE p.empresa_id = ? AND (p.disponible OR ?)
                  ORDER BY c.orden, p.orden, lower(p.nombre)
                 """, PRODUCTO, empresaId, incluirAgotados);
+    }
+
+    /** Otras presentaciones de todos los productos de la empresa, en su orden. */
+    public List<PresentacionFila> findPresentaciones(long empresaId) {
+        return jdbc.query("""
+                SELECT producto_id, nombre, precio, precio_oferta FROM main.producto_presentacion
+                 WHERE empresa_id = ? ORDER BY producto_id, orden, id
+                """, (rs, i) -> new PresentacionFila(rs.getLong("producto_id"), rs.getString("nombre"),
+                rs.getBigDecimal("precio"), rs.getBigDecimal("precio_oferta")), empresaId);
     }
 
     /** Un producto tal como lo ve el catálogo público (categoría activa; agotado solo si se muestran). */

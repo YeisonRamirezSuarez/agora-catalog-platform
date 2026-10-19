@@ -98,6 +98,33 @@ test.describe('panel del negocio', () => {
     }
   });
 
+  test('presentaciones: se eligen en la hoja del producto y van al pedido', async ({page}, info) => {
+    test.skip(info.project.name !== 'computador', 'una vez basta: crea un producto');
+    await irEnElPanel(page, 'Productos');
+    await page.getByRole('link', {name: '+ Nuevo producto'}).click();
+    await page.getByLabel('Código').fill(`E2E-VAR-${Date.now() % 100000}`);
+    await page.locator('#p-cat').selectOption({index: 1});
+    await page.getByLabel('Nombre', {exact: true}).fill('Queso e2e por libra');
+    await page.getByLabel('Presentación', {exact: true}).fill('Libra');
+    await page.locator('#p-precio').fill('18000');
+    await page.getByRole('button', {name: '+ Agregar presentación'}).click();
+    await page.locator('#v-nom-0').fill('Media libra');
+    await page.locator('#v-pre-0').fill('9500');
+    await page.locator('form button.btn-dark').click();
+    await expect(page).toHaveURL(/\/admin\/productos\/\d+$/);
+
+    await sinWhatsapp(page);
+    await page.goto(`${CATALOGO}/catalogo?p=${page.url().split('/').pop()}`);
+    const hoja = page.getByRole('dialog', {name: 'Queso e2e por libra'});
+    await expect(hoja.locator('.price.big')).toContainText('$18.000');
+    await hoja.getByText('Media libra').click();
+    await expect(hoja.locator('.price.big')).toHaveText('$9.500');
+    await hoja.getByRole('button', {name: 'Agregar al pedido'}).click();
+    await page.locator('.cart-btn').click();
+    await expect(page.getByRole('dialog', {name: 'Mi pedido'}).locator('.oline').filter({hasText: 'Queso e2e por libra'}))
+      .toContainText('Media libra');
+  });
+
   test('logo: el editor de recorte cabe en una pantalla baja y guarda', async ({page, isMobile}) => {
     test.skip(isMobile, 'la pantalla baja es la de un portátil');
     await page.setViewportSize({width: 1280, height: 720});
