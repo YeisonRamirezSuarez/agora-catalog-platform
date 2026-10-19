@@ -29,6 +29,11 @@ Alias de importación: `@app/*` → `src/app/*`, `@env/*` → `src/environments/
 - Tipografías: Playfair Display (`font-display`), Ms Madi (`font-hand`), Onest (`font-sans`).
 - Texto para el usuario en español neutro con tuteo. Precios en COP sin decimales: `$12.500`.
 - Mobile-first: el catálogo se usa sobre todo en celulares de gama media con datos móviles.
+- **Sin `styles: [...]` en línea en los componentes**: en Windows dejan colgado el proceso de esbuild y
+  `ng build` termina el bundle pero nunca sale. Para `:host{display:contents}` usar
+  `host: {style: 'display:contents'}`; para estilos de verdad, `styleUrl` a un archivo.
+- El catálogo público (`modules/catalogo/`) usa el CSS del prototipo tal cual, encerrado bajo `.cat-root`:
+  `catalogo.css` se genera con `herramientas/prototipo/exportar_css_catalogo.py`, no se edita a mano.
 
 ## Verificación
 

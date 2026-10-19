@@ -1,6 +1,6 @@
 # Sirve Agorá Catalog desde esta máquina: el front compilado (dist) y la API, en un solo puerto,
 # por HTTP y, si se le da certificado, también por HTTPS. Mira el primer byte de cada conexión
-# (0x16 = inicio de TLS) y solo cifra las que llegan con TLS.
+# (0x16 = inicio de TLS) y solo cifra las que llegan con TLS; con certificado, HTTP redirige a HTTPS.
 #
 #   python serve_app.py <carpeta_dist_browser> <puerto> [cert.pem key.pem] [--api http://127.0.0.1:9092]
 #
@@ -13,6 +13,7 @@ import http.client
 import http.server
 import json
 import os
+import re
 import socket
 import ssl
 import sys
@@ -31,6 +32,8 @@ if len(args) > 3:
 HOP = {'connection', 'keep-alive', 'proxy-connection', 'transfer-encoding', 'te', 'trailer', 'upgrade',
        'host', 'x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host', 'content-length'}
 MAX_BODY = 60 * 1024 * 1024  # el ZIP de imágenes más grande que acepta la API (50 MB) con margen
+# Archivos del build con hash en el nombre (main-MHK27EH5.js): nunca cambian, se cachean un año.
+HASHED = re.compile(r'-[A-Z0-9]{8}\.(js|css)$')
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -39,6 +42,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def log_request(self, code='-', size='-'):
         self.log_message('"%s" %s ip=%s ua="%s"', self.requestline, code, self.client_address[0],
                          self.headers.get('User-Agent', '-') if self.headers else '-')
+
+    def _tls(self):
+        return isinstance(self.connection, ssl.SSLSocket)
+
+    def _redirect_https(self):
+        # Con certificado, HTTP solo redirige: la contraseña del login no viaja sin cifrar.
+        if ctx is None or self._tls():
+            return False
+        host = self.headers.get('Host') or f'localhost:{port}'
+        self.send_response(301)
+        self.send_header('Location', f'https://{host}{self.path}')
+        self.send_header('Content-Length', '0')
+        self.end_headers()
+        return True
 
     def end_headers(self):
         self.send_header('X-Content-Type-Options', 'nosniff')
@@ -53,7 +70,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         body = self.rfile.read(length) if length else None
         headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP}
         headers['X-Forwarded-For'] = self.client_address[0]
-        headers['X-Forwarded-Proto'] = 'https' if isinstance(self.connection, ssl.SSLSocket) else 'http'
+        headers['X-Forwarded-Proto'] = 'https' if self._tls() else 'http'
         headers['X-Forwarded-Host'] = self.headers.get('Host', '')
         if body is not None:
             headers['Content-Length'] = str(len(body))
@@ -88,26 +105,34 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     # ---------- Front ----------
     def send_head(self):
         path = self.translate_path(self.path)
-        # Nada fuera de la carpeta, ni listados de carpetas: lo que no es un archivo es una ruta de Angular.
-        if not os.path.isfile(path) or not os.path.realpath(path).startswith(folder):
+        inside = os.path.realpath(path).startswith(folder)
+        if not os.path.isfile(path) or not inside:
+            # Un archivo que no existe (un chunk de un build viejo) es 404; una ruta sin extensión es de Angular.
+            if inside and os.path.splitext(self.path.split('?')[0])[1]:
+                self.send_error(404)
+                return None
+            # Nada fuera de la carpeta ni listados de carpetas.
             self.path = '/index.html'
         return super().send_head()
 
     def send_response(self, code, message=None):
         super().send_response(code, message)
-        if not self._is_api():
-            # index.html siempre fresco (apunta a los archivos nuevos tras cada build); el resto lleva hash en el nombre.
-            self.send_header('Cache-Control', 'no-cache' if self.path.endswith('index.html') or self.path == '/'
-                             else 'public, max-age=31536000, immutable')
+        if not self._is_api() and code < 300:
+            # Los del build con hash, un año; el resto (index.html, logo, favicon) se revalida para ver los cambios.
+            self.send_header('Cache-Control', 'public, max-age=31536000, immutable' if HASHED.search(self.path)
+                             else 'no-cache')
 
     def do_GET(self):
-        self._proxy() if self._is_api() else super().do_GET()
+        if not self._redirect_https():
+            self._proxy() if self._is_api() else super().do_GET()
 
     def do_HEAD(self):
-        self._proxy() if self._is_api() else super().do_HEAD()
+        if not self._redirect_https():
+            self._proxy() if self._is_api() else super().do_HEAD()
 
     def _api_only(self):
-        self._proxy() if self._is_api() else self._json(405, 'Método no permitido', 'Ruta no disponible.')
+        if not self._redirect_https():
+            self._proxy() if self._is_api() else self._json(405, 'Método no permitido', 'Ruta no disponible.')
 
     do_POST = do_PUT = do_PATCH = do_DELETE = do_OPTIONS = _api_only
 

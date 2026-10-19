@@ -1,6 +1,6 @@
 # Perfil `prod`: producción.
 #
-# Igual que `dev` (detrás de Caddy), con lo que se cierra en producción:
+# Igual que `dev` (detrás de un proxy: Caddy o herramientas/servidor/serve_app.py), con lo que se cierra en producción:
 #   - escucha SOLO en loopback, sin variable que lo cambie: Caddy es el único punto de entrada.
 #   - la documentación de la API (Swagger / OpenAPI) queda apagada en la aplicación.
 #

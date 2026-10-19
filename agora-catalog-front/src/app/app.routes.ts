@@ -36,6 +36,16 @@ export const routes: Routes = [
     loadComponent: () => import('@app/modules/admin/inicio/inicio.component').then(c => c.InicioComponent)
   },
   {
+    // Catálogo público: /c/:publicId, /c/:publicId/catalogo y /c/:publicId/contacto (un solo componente).
+    path: 'c/:publicId',
+    loadComponent: () => import('@app/modules/catalogo/catalogo-shell.component').then(c => c.CatalogoShellComponent),
+    children: [
+      {path: '', children: []},
+      {path: 'catalogo', children: []},
+      {path: 'contacto', children: []},
+    ]
+  },
+  {
     path: '**',
     loadComponent: () => import('@app/shared/components/not-found/not-found.component')
       .then(c => c.NotFoundComponent)
