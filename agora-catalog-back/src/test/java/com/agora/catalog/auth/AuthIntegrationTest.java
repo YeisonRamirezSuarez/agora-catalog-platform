@@ -144,6 +144,27 @@ class AuthIntegrationTest {
     }
 
     @Test
+    void restablecerLaContrasenaCierraSusSesionesYPideCambiarla() throws Exception {
+        String refresh = JsonPath.read(body(login(emailAdminA, CLAVE)), "$.refreshToken");
+
+        mvc.perform(post("/superadmin/usuarios/" + adminA + "/password").header("Authorization", bearer(emailAdminB)))
+                .andExpect(status().isForbidden());
+        String r = body(mvc.perform(post("/superadmin/usuarios/" + adminA + "/password").header("Authorization", bearer(emailSuper)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.correoEnviado").value(false)));
+        String temporal = JsonPath.read(r, "$.passwordTemporal");
+
+        refresh(refresh).andExpect(status().isUnauthorized());
+        login(emailAdminA, CLAVE).andExpect(status().isUnauthorized());
+        login(emailAdminA, temporal).andExpect(jsonPath("$.usuario.debeCambiarPassword").value(true));
+
+        long idSuper = jdbc.queryForObject("SELECT id FROM main.usuario WHERE email = ?", Long.class, emailSuper);
+        mvc.perform(post("/superadmin/usuarios/" + idSuper + "/password").header("Authorization", bearer(emailSuper)))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/superadmin/usuarios/999999999/password").header("Authorization", bearer(emailSuper)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void empresaNuevaConAdminQueCambiaLaContrasenaTemporal() throws Exception {
         String creada = body(mvc.perform(post("/superadmin/empresas").header("Authorization", bearer(emailSuper))
                         .contentType(MediaType.APPLICATION_JSON)

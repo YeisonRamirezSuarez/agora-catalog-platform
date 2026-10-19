@@ -68,6 +68,12 @@ public class UsuarioRepository {
                 passwordHash, id);
     }
 
+    /** Contraseña temporal puesta por el super admin: se pide cambiarla al entrar. */
+    public void setPasswordTemporal(long id, String passwordHash) {
+        jdbc.update("UPDATE main.usuario SET password_hash = ?, debe_cambiar_password = TRUE WHERE id = ?",
+                passwordHash, id);
+    }
+
     public int setActivo(long id, boolean activo) {
         return jdbc.update("UPDATE main.usuario SET activo = ? WHERE id = ?", activo, id);
     }

@@ -43,12 +43,21 @@ export class EmpresasService {
     return this.http.post<Empresa>('/superadmin/empresas', {nombre, slug});
   }
 
+  update(id: number, nombre: string, slug: string): Observable<Empresa> {
+    return this.http.put<Empresa>(`/superadmin/empresas/${id}`, {nombre, slug});
+  }
+
   setActiva(id: number, activo: boolean): Observable<void> {
     return this.http.patch<void>(`/superadmin/empresas/${id}/activa`, {activo});
   }
 
   createAdmin(empresaId: number, nombre: string, email: string, enviarCorreo: boolean): Observable<AdminCreado> {
     return this.http.post<AdminCreado>(`/superadmin/empresas/${empresaId}/usuarios`, {nombre, email, enviarCorreo});
+  }
+
+  /** Contraseña temporal nueva para un administrador que olvidó la suya. */
+  restablecerPassword(id: number, enviarCorreo: boolean): Observable<AdminCreado> {
+    return this.http.post<AdminCreado>(`/superadmin/usuarios/${id}/password`, {enviarCorreo});
   }
 
   setUsuarioActivo(id: number, activo: boolean): Observable<void> {

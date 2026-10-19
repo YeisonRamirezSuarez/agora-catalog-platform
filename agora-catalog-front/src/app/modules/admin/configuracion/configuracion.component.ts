@@ -3,6 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
 
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
+import {NegocioService} from '@app/core/services/negocio.service';
 import {fachadaSvg} from '@app/modules/catalogo/fachadas';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
 import {ADMIN_LINKS, AdminService, Configuracion, contraste, Fachada, IconoSello, Recorte} from '../admin.service';
@@ -205,6 +206,7 @@ export class ConfiguracionComponent implements OnInit {
 
   private readonly api = inject(AdminService);
   private readonly auth = inject(AuthService);
+  private readonly negocio = inject(NegocioService);
   private readonly sanitizer = inject(DomSanitizer);
   readonly links = ADMIN_LINKS;
   readonly fachadas = FACHADAS;
@@ -260,6 +262,7 @@ export class ConfiguracionComponent implements OnInit {
     this.api.guardarConfiguracion({...c, whatsapps, sellos}).subscribe({
       next: nueva => {
         this.cfg = {...nueva, whatsapps: nueva.whatsapps.map(w => ({...w})), sellos: nueva.sellos.map(s => ({...s}))};
+        this.negocio.actualizar(nueva);
         this.guardando.set(false);
         this.aviso.set('Cambios guardados. Ya se ven en tu catálogo.');
       },
@@ -323,6 +326,7 @@ export class ConfiguracionComponent implements OnInit {
 
   /** Solo las fotos: lo que el dueño esté escribiendo en el formulario no se pierde. */
   private actualizarFotos(c: Configuracion): void {
+    this.negocio.actualizar({...c, nombre: this.negocio.negocio()?.nombre ?? c.nombre});
     if (!this.cfg) return;
     Object.assign(this.cfg, {
       logoUrl: c.logoUrl, logoOriginalUrl: c.logoOriginalUrl, logoRecorte: c.logoRecorte,

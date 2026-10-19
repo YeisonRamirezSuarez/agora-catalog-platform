@@ -11,7 +11,7 @@ import {AdminCreado, Administrador, Empresa, EmpresasService} from './empresas.s
 
 /** Lo que se muestra una sola vez después de crear un administrador. */
 interface Credenciales extends AdminCreado {
-  empresa: string;
+  titulo: string;
 }
 
 @Component({
@@ -35,7 +35,7 @@ interface Credenciales extends AdminCreado {
 
       @if (credenciales(); as c) {
         <section class="card mt-6 grid gap-3 border-ok/30 p-5" aria-live="polite">
-          <h2 class="text-lg font-semibold">Administrador de {{ c.empresa }} creado</h2>
+          <h2 class="text-lg font-semibold">{{ c.titulo }}</h2>
           @if (c.correoEnviado) {
             <p class="alert-ok">Le enviamos estos datos a {{ c.email }}.</p>
           } @else if (c.correoError) {
@@ -53,6 +53,27 @@ interface Credenciales extends AdminCreado {
             <button type="button" class="btn-link" (click)="credenciales.set(null)">Cerrar</button>
           </div>
         </section>
+      }
+
+      @if (editando(); as e) {
+        <form [formGroup]="editForm" (ngSubmit)="guardarEdicion(e)" novalidate class="card mt-6 grid gap-5 p-5 sm:p-6">
+          <h2 class="text-lg font-semibold">Editar {{ e.nombre }}</h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="field">
+              <label for="e-nombre">Nombre del negocio</label>
+              <input class="input" id="e-nombre" formControlName="nombre" maxlength="120">
+            </div>
+            <div class="field">
+              <label for="e-slug">Slug del link</label>
+              <input class="input" id="e-slug" formControlName="slug" maxlength="80" aria-describedby="h-eslug">
+              <p class="hint" id="h-eslug">El link sigue funcionando: lo que lo identifica es el código del final ({{ e.publicHash }}).</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn btn-dark" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Guardar' }}</button>
+            <button type="button" class="btn" (click)="editando.set(null)">Cancelar</button>
+          </div>
+        </form>
       }
 
       @if (formAbierto()) {
@@ -106,8 +127,11 @@ interface Credenciales extends AdminCreado {
           <tbody>
             @for (e of empresas(); track e.id) {
               <tr>
-                <td class="font-semibold">{{ e.nombre }}</td>
-                <td class="text-muted">{{ e.linkPublico }}</td>
+                <td>
+                  <span class="font-semibold">{{ e.nombre }}</span>
+                  <button type="button" class="btn-link ml-2 text-xs" (click)="abrirEdicion(e)">Editar</button>
+                </td>
+                <td><a class="text-muted underline-offset-2 hover:text-ink" [href]="e.linkPublico" target="_blank" rel="noopener">{{ e.linkPublico }}</a></td>
                 <td class="text-right tabular-nums">{{ e.productos }}</td>
                 <td>
                   <ul class="grid gap-1.5">
@@ -120,6 +144,15 @@ interface Credenciales extends AdminCreado {
                         <button type="button" class="btn-link text-xs" (click)="toggleAdmin(a)">
                           {{ a.activo ? 'Desactivar' : 'Activar' }}
                         </button>
+                        @if (porRestablecer() === a.id) {
+                          <span class="inline-flex flex-wrap items-center gap-2 text-xs">
+                            ¿Cambiarle la contraseña? Se cierran sus sesiones.
+                            <button type="button" class="btn-link text-xs text-danger" (click)="restablecer(a, e)">Sí, cambiar</button>
+                            <button type="button" class="btn-link text-xs" (click)="porRestablecer.set(null)">No</button>
+                          </span>
+                        } @else if (a.activo) {
+                          <button type="button" class="btn-link text-xs" (click)="porRestablecer.set(a.id)">Nueva contraseña</button>
+                        }
                       </li>
                     } @empty {
                       <li class="text-faint">Sin administrador</li>
@@ -159,6 +192,8 @@ export class EmpresasComponent implements OnInit {
   readonly guardando = signal(false);
   readonly credenciales = signal<Credenciales | null>(null);
   readonly copiado = signal(false);
+  readonly editando = signal<Empresa | null>(null);
+  readonly porRestablecer = signal<number | null>(null);
 
   readonly resumen = computed(() => {
     const total = this.empresas().length;
@@ -174,6 +209,11 @@ export class EmpresasComponent implements OnInit {
     enviarCorreo: [{value: false, disabled: true}]
   });
 
+  readonly editForm = inject(FormBuilder).nonNullable.group({
+    nombre: ['', Validators.required],
+    slug: ['']
+  });
+
   ngOnInit(): void {
     this.cargar();
     this.correo.get().subscribe({
@@ -186,11 +226,13 @@ export class EmpresasComponent implements OnInit {
   }
 
   abrirNueva(): void {
+    this.editando.set(null);
     this.empresaParaAdmin.set(null);
     this.resetForm();
   }
 
   abrirAdmin(empresa: Empresa): void {
+    this.editando.set(null);
     this.empresaParaAdmin.set(empresa);
     this.resetForm();
   }
@@ -229,7 +271,7 @@ export class EmpresasComponent implements OnInit {
           switchMap(e => this.api.createAdmin(e.id, adminNombre, adminEmail, enviar)));
     empresa$.subscribe({
       next: admin => {
-        this.credenciales.set({...admin, empresa: destino?.nombre ?? nombre.trim()});
+        this.credenciales.set({...admin, titulo: `Administrador de ${destino?.nombre ?? nombre.trim()} creado`});
         this.copiado.set(false);
         this.guardando.set(false);
         this.cerrarForm();
@@ -241,6 +283,40 @@ export class EmpresasComponent implements OnInit {
         // Si la empresa alcanzó a crearse, queda en la lista para agregarle el administrador.
         this.cargar();
       }
+    });
+  }
+
+  abrirEdicion(e: Empresa): void {
+    this.cerrarForm();
+    this.editForm.reset({nombre: e.nombre, slug: e.slug});
+    this.editando.set(e);
+  }
+
+  guardarEdicion(e: Empresa): void {
+    const {nombre, slug} = this.editForm.getRawValue();
+    if (!nombre.trim()) {
+      this.error.set('Escribe el nombre del negocio');
+      return;
+    }
+    this.guardando.set(true);
+    this.error.set('');
+    this.api.update(e.id, nombre.trim(), slug.trim()).subscribe({
+      next: () => { this.guardando.set(false); this.editando.set(null); this.cargar(); },
+      error: err => { this.guardando.set(false); this.error.set(apiMessage(err)); }
+    });
+  }
+
+  /** Con el correo activo, la contraseña nueva le llega por correo; si no, se muestra para entregarla. */
+  restablecer(admin: Administrador, empresa: Empresa): void {
+    this.porRestablecer.set(null);
+    this.error.set('');
+    this.api.restablecerPassword(admin.id, this.correoActivo()).subscribe({
+      next: r => {
+        this.credenciales.set({...r, titulo: `Contraseña nueva para ${r.email} (${empresa.nombre})`});
+        this.copiado.set(false);
+        this.cargar();
+      },
+      error: err => this.error.set(apiMessage(err))
     });
   }
 
