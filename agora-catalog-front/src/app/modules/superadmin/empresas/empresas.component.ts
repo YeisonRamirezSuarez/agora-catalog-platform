@@ -7,7 +7,7 @@ import {apiMessage} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
 import {CorreoService} from '../correo/correo.service';
 import {SUPERADMIN_LINKS} from '../superadmin-links';
-import {AdminCreado, Administrador, Empresa, EmpresasService} from './empresas.service';
+import {AdminCreado, Administrador, Empresa, EmpresasService, ModuloEmpresa} from './empresas.service';
 
 /** Lo que se muestra una sola vez después de crear un administrador. */
 interface Credenciales extends AdminCreado {
@@ -130,6 +130,7 @@ interface Credenciales extends AdminCreado {
                 <td>
                   <span class="font-semibold">{{ e.nombre }}</span>
                   <button type="button" class="btn-link ml-2 text-xs" (click)="abrirEdicion(e)">Editar</button>
+                  <button type="button" class="btn-link ml-2 text-xs" (click)="abrirModulos(e)">Módulos</button>
                 </td>
                 <td><a class="text-muted underline-offset-2 hover:text-ink" [href]="e.linkPublico" target="_blank" rel="noopener">{{ e.linkPublico }}</a></td>
                 <td class="text-right tabular-nums">{{ e.productos }}</td>
@@ -174,6 +175,40 @@ interface Credenciales extends AdminCreado {
       <p class="hint mt-3">
         Al desactivar una empresa, su catálogo deja de estar disponible y sus administradores pierden el acceso en menos de 15 minutos.
       </p>
+
+      @if (modulosDe(); as e) {
+        <div class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-start sm:p-4 sm:pt-[8vh]" (click)="$event.target === $event.currentTarget ? modulosDe.set(null) : null">
+          <section class="card grid max-h-[92dvh] w-full max-w-lg gap-4 overflow-y-auto rounded-b-none p-5 sm:rounded-b-2xl sm:p-6"
+                   role="dialog" aria-modal="true" [attr.aria-label]="'Módulos de ' + e.nombre">
+            <div>
+              <h2 class="text-xl font-semibold">Módulos de {{ e.nombre }}</h2>
+              <p class="mt-1 text-sm text-muted">
+                El catálogo (productos, categorías, configuración y link público) lo tienen todos. Lo demás se enciende por negocio.
+                Apagar un módulo lo oculta y lo bloquea al instante, pero no borra nada: al encenderlo vuelve con sus datos.
+              </p>
+            </div>
+            @if (errorModulos()) { <p class="alert-error" role="alert">{{ errorModulos() }}</p> }
+            <ul class="grid gap-2">
+              @for (m of modulos(); track m.modulo) {
+                <li>
+                  <label class="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-line p-3 hover:bg-wash">
+                    <span>
+                      <span class="block font-semibold">{{ m.nombre }}</span>
+                      <span class="block text-sm text-muted">{{ m.descripcion }}</span>
+                    </span>
+                    <input type="checkbox" class="switch mt-1 shrink-0" role="switch" [checked]="m.activo"
+                           [disabled]="cambiandoModulo() === m.modulo" [attr.aria-label]="m.nombre"
+                           (change)="toggleModulo(e, m, $event)">
+                  </label>
+                </li>
+              } @empty {
+                <li class="py-6 text-center text-muted">Cargando…</li>
+              }
+            </ul>
+            <button type="button" class="btn justify-self-start" (click)="modulosDe.set(null)">Listo</button>
+          </section>
+        </div>
+      }
     </app-panel-shell>
   `
 })
@@ -194,6 +229,38 @@ export class EmpresasComponent implements OnInit {
   readonly copiado = signal(false);
   readonly editando = signal<Empresa | null>(null);
   readonly porRestablecer = signal<number | null>(null);
+  readonly modulosDe = signal<Empresa | null>(null);
+  readonly modulos = signal<ModuloEmpresa[]>([]);
+  readonly cambiandoModulo = signal<string | null>(null);
+  readonly errorModulos = signal('');
+
+  abrirModulos(e: Empresa): void {
+    this.modulos.set([]);
+    this.errorModulos.set('');
+    this.modulosDe.set(e);
+    this.api.modulos(e.id).subscribe({
+      next: m => this.modulos.set(m),
+      error: err => this.errorModulos.set(apiMessage(err))
+    });
+  }
+
+  /** Se guarda al tocar el interruptor; si falla, vuelve a como estaba. */
+  toggleModulo(e: Empresa, m: ModuloEmpresa, ev: Event): void {
+    const input = ev.target as HTMLInputElement, valor = input.checked;
+    this.cambiandoModulo.set(m.modulo);
+    this.errorModulos.set('');
+    this.api.setModulo(e.id, m.modulo, valor).subscribe({
+      next: lista => {
+        this.modulos.set(lista);
+        this.cambiandoModulo.set(null);
+      },
+      error: err => {
+        input.checked = !valor;
+        this.cambiandoModulo.set(null);
+        this.errorModulos.set(apiMessage(err));
+      }
+    });
+  }
 
   readonly resumen = computed(() => {
     const total = this.empresas().length;

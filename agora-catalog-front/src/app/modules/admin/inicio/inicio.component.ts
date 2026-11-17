@@ -2,6 +2,7 @@ import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import QRCode from 'qrcode';
 
+import {NegocioService} from '@app/core/services/negocio.service';
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
 import {ADMIN_LINKS, AdminService, Dashboard, Estadisticas} from '../admin.service';
@@ -112,6 +113,7 @@ export class InicioComponent implements OnInit {
 
   private readonly api = inject(AdminService);
   private readonly auth = inject(AuthService);
+  private readonly negocio = inject(NegocioService);
   readonly links = ADMIN_LINKS;
   readonly d = signal<Dashboard | null>(null);
   readonly est = signal<Estadisticas | null>(null);
@@ -143,7 +145,12 @@ export class InicioComponent implements OnInit {
       error: err => this.error.set(apiMessage(err))
     });
     // Si fallan, el inicio sigue sirviendo sin ellas.
-    this.api.estadisticas(30).subscribe({next: e => this.est.set(e), error: () => undefined});
+    this.negocio.cargarModulos().subscribe({
+      next: m => {
+        if (m.has('ESTADISTICAS')) this.api.estadisticas(30).subscribe({next: e => this.est.set(e), error: () => undefined});
+      },
+      error: () => undefined
+    });
   }
 
   /** "2026-10-19" -> "19 oct". */

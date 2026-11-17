@@ -6,6 +6,8 @@ import com.agora.catalog.importacion.dto.ImportacionDtos.ReporteImportacion;
 import com.agora.catalog.importacion.service.ExcelProductos;
 import com.agora.catalog.importacion.service.FotosZipService;
 import com.agora.catalog.importacion.service.ImportarProductosService;
+import com.agora.catalog.modulo.model.Modulo;
+import com.agora.catalog.modulo.web.RequiereModulo;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/admin/importacion")
 @PreAuthorize("hasRole('ADMIN_EMPRESA')")
+@RequiereModulo(Modulo.IMPORTAR_EXCEL)
 public class AdminImportacionController {
 
     private static final MediaType XLSX =

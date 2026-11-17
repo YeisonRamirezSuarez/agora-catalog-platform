@@ -153,6 +153,22 @@ public class ProductoRepository {
         }
     }
 
+    /** Nombres de los carros de venta en ruta que llevan este producto ahora mismo. */
+    public List<String> carrosQueLoLlevan(long empresaId, long id) {
+        return jdbc.queryForList("""
+                SELECT DISTINCT c.nombre FROM main.carro_stock s JOIN main.carro c ON c.id = s.carro_id
+                 WHERE s.empresa_id = ? AND s.producto_id = ? ORDER BY c.nombre
+                """, String.class, empresaId, id);
+    }
+
+    /** Otras presentaciones de este producto que van cargadas en algún carro, con el nombre del carro. */
+    public List<String[]> presentacionesEnCarros(long empresaId, long id) {
+        return jdbc.query("""
+                SELECT DISTINCT s.presentacion, c.nombre FROM main.carro_stock s JOIN main.carro c ON c.id = s.carro_id
+                 WHERE s.empresa_id = ? AND s.producto_id = ? AND s.presentacion IS NOT NULL ORDER BY 1, 2
+                """, (rs, i) -> new String[]{rs.getString(1), rs.getString(2)}, empresaId, id);
+    }
+
     public int delete(long empresaId, long id) {
         return jdbc.update("DELETE FROM main.producto WHERE empresa_id = ? AND id = ?", empresaId, id);
     }

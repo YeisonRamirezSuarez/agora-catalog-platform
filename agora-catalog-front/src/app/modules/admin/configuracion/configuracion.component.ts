@@ -197,7 +197,10 @@ interface Edicion {
           <section class="card grid gap-3 p-5">
             <h2 class="text-lg font-semibold">Qué muestra el catálogo</h2>
             <label class="inline-flex items-center gap-3"><input type="checkbox" class="switch" role="switch" name="mostrarPrecios" [(ngModel)]="c.mostrarPrecios"> Mostrar precios <span class="text-sm text-muted">(apagado, tampoco se ven las ofertas)</span></label>
-            <label class="inline-flex items-center gap-3"><input type="checkbox" class="switch" role="switch" name="pedidosWhatsapp" [(ngModel)]="c.pedidosWhatsapp"> Pedido por WhatsApp <span class="text-sm text-muted">(apagado, cada producto tiene «Preguntar»)</span></label>
+            <!-- Sin el módulo, el catálogo no tiene carrito aunque este interruptor quede encendido. -->
+            @if (negocio.tiene('PEDIDO_WHATSAPP')) {
+              <label class="inline-flex items-center gap-3"><input type="checkbox" class="switch" role="switch" name="pedidosWhatsapp" [(ngModel)]="c.pedidosWhatsapp"> Pedido por WhatsApp <span class="text-sm text-muted">(apagado, cada producto tiene «Preguntar»)</span></label>
+            }
             <label class="inline-flex items-center gap-3"><input type="checkbox" class="switch" role="switch" name="mostrarAgotados" [(ngModel)]="c.mostrarAgotados"> Mostrar agotados con la etiqueta «Agotado»</label>
             <label class="inline-flex items-center gap-3"><input type="checkbox" class="switch" role="switch" name="adornos" [(ngModel)]="c.adornos"> Hojas de adorno junto a los títulos <span class="text-sm text-muted">(solo computador)</span></label>
           </section>
@@ -243,7 +246,7 @@ export class ConfiguracionComponent implements OnInit {
 
   private readonly api = inject(AdminService);
   private readonly auth = inject(AuthService);
-  private readonly negocio = inject(NegocioService);
+  readonly negocio = inject(NegocioService);
   private readonly sanitizer = inject(DomSanitizer);
   readonly links = ADMIN_LINKS;
   readonly fachadas = FACHADAS;

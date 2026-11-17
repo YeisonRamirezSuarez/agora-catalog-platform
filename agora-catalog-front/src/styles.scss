@@ -56,3 +56,14 @@ body {
 
   .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold; }
 }
+
+/*
+ * Al imprimir (el comprobante de un pedido a tienda), sin margen de página: así el navegador no
+ * tiene dónde poner su encabezado y su pie (título, fecha, dirección localhost, número de página).
+ * El margen en blanco lo pone el propio comprobante con print:p-[14mm].
+ */
+@media print {
+  @page {
+    margin: 0;
+  }
+}

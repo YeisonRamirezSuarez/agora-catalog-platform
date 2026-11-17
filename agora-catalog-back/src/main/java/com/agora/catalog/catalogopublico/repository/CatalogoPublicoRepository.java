@@ -22,7 +22,8 @@ import java.util.Optional;
 public class CatalogoPublicoRepository {
 
     /** Empresa activa encontrada por su hash, con lo que el servicio necesita para decidir. */
-    public record EmpresaPublica(long id, Negocio negocio, boolean mostrarAgotados) {
+    /** {@code colecciones}: la empresa tiene el módulo de colecciones (si no, el catálogo no las muestra). */
+    public record EmpresaPublica(long id, Negocio negocio, boolean mostrarAgotados, boolean colecciones) {
     }
 
     /** Producto tal como está en la base; el servicio calcula oferta, precio final y "nuevo". */
@@ -45,7 +46,16 @@ public class CatalogoPublicoRepository {
     }
 
     public Optional<EmpresaPublica> findEmpresaActiva(String publicHash) {
-        return jdbc.query("SELECT * FROM main.empresa WHERE public_hash = ? AND activa", (rs, i) -> new EmpresaPublica(
+        // Los módulos contratados recortan lo que el negocio configuró: sin el de pedido por WhatsApp no
+        // hay carrito aunque el interruptor de Configuración esté encendido.
+        return jdbc.query("""
+                SELECT e.*,
+                       EXISTS (SELECT 1 FROM main.empresa_modulo m WHERE m.empresa_id = e.id AND m.activo
+                                  AND m.modulo = 'PEDIDO_WHATSAPP') AS modulo_pedido,
+                       EXISTS (SELECT 1 FROM main.empresa_modulo m WHERE m.empresa_id = e.id AND m.activo
+                                  AND m.modulo = 'COLECCIONES') AS modulo_colecciones
+                  FROM main.empresa e WHERE e.public_hash = ? AND e.activa
+                """, (rs, i) -> new EmpresaPublica(
                 rs.getLong("id"),
                 new Negocio(rs.getString("nombre"), rs.getString("nombre_corto"), rs.getString("lema"),
                         rs.getString("slug"), rs.getString("public_hash"), rs.getString("logo_url"),
@@ -60,8 +70,8 @@ public class CatalogoPublicoRepository {
                         rs.getString("direccion"), rs.getString("horario"), rs.getString("info_domicilios"),
                         rs.getBoolean("domicilio_activo"), rs.getBigDecimal("domicilio_costo"),
                         rs.getBigDecimal("domicilio_minimo"), rs.getBigDecimal("domicilio_gratis_desde"),
-                        rs.getBoolean("mostrar_precios"), rs.getBoolean("pedidos_whatsapp")),
-                rs.getBoolean("mostrar_agotados")), publicHash).stream().findFirst();
+                        rs.getBoolean("mostrar_precios"), rs.getBoolean("pedidos_whatsapp") && rs.getBoolean("modulo_pedido")),
+                rs.getBoolean("mostrar_agotados"), rs.getBoolean("modulo_colecciones")), publicHash).stream().findFirst();
     }
 
     public List<Whatsapp> findWhatsapps(long empresaId) {

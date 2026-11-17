@@ -30,13 +30,27 @@ describe('NegocioService', () => {
     negocio.cargar();
     negocio.cargar();
     backend.expectOne('/admin/empresa').flush({nombre: 'Javier', logoUrl: null, linkPublico: '/c/javier-x', otro: 1});
+    backend.expectOne('/admin/modulos').flush([]);
     expect(negocio.negocio()).toEqual({nombre: 'Javier', logoUrl: null, linkPublico: '/c/javier-x'});
   });
 
-  it('el super admin no tiene negocio', () => {
+  it('pide los módulos una vez y responde si el negocio tiene uno', () => {
+    const negocio = iniciar(sesion(1, 'ADMIN_EMPRESA'));
+    expect(negocio.tiene('VENTA_RUTA')).toBe(false);
+    let recibidos: Set<string> | null = null;
+    negocio.cargarModulos().subscribe(m => recibidos = m);
+    negocio.cargarModulos().subscribe();
+    backend.expectOne('/admin/modulos').flush(['VENTA_RUTA', 'COLECCIONES']);
+    expect(recibidos).toEqual(new Set(['VENTA_RUTA', 'COLECCIONES']));
+    expect(negocio.tiene('VENTA_RUTA')).toBe(true);
+    expect(negocio.tiene('IMPORTAR_EXCEL')).toBe(false);
+  });
+
+  it('el super admin no tiene negocio ni módulos', () => {
     const negocio = iniciar(sesion(2, 'SUPER_ADMIN'));
     negocio.cargar();
     backend.expectNone('/admin/empresa');
+    backend.expectNone('/admin/modulos');
     expect(negocio.negocio()).toBeNull();
   });
 });

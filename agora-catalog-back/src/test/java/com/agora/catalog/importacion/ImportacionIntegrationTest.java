@@ -1,5 +1,6 @@
 package com.agora.catalog.importacion;
 
+import com.agora.catalog.testing.Modulos;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -167,6 +168,7 @@ class ImportacionIntegrationTest {
     private String admin(String letra) throws Exception {
         long empresa = jdbc.queryForObject("INSERT INTO main.empresa (nombre, slug, public_hash) VALUES (?, ?, ?) RETURNING id",
                 Long.class, "Empresa " + letra, "empresa-" + letra + "-" + sufijo, letra + sufijo.substring(1));
+        Modulos.todos(jdbc, empresa);
         String email = letra + "-" + sufijo + "@prueba.local";
         jdbc.update("INSERT INTO main.usuario (empresa_id, nombre, email, password_hash, rol) VALUES (?, 'P', ?, ?, 'ADMIN_EMPRESA')",
                 empresa, email, passwordEncoder.encode(CLAVE));

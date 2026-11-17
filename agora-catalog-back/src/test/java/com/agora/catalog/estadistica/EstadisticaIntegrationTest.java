@@ -1,5 +1,6 @@
 package com.agora.catalog.estadistica;
 
+import com.agora.catalog.testing.Modulos;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -103,8 +104,10 @@ class EstadisticaIntegrationTest {
     }
 
     private long empresa(String letra) {
-        return jdbc.queryForObject("INSERT INTO main.empresa (nombre, slug, public_hash) VALUES (?, ?, ?) RETURNING id",
+        long id = jdbc.queryForObject("INSERT INTO main.empresa (nombre, slug, public_hash) VALUES (?, ?, ?) RETURNING id",
                 Long.class, "Empresa " + letra, "empresa-" + letra + "-" + sufijo, letra + sufijo);
+        Modulos.todos(jdbc, id);
+        return id;
     }
 
     private long producto(long empresa, String nombre) {

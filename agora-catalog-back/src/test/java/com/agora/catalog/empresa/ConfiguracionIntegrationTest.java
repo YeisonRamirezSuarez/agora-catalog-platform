@@ -1,5 +1,6 @@
 package com.agora.catalog.empresa;
 
+import com.agora.catalog.testing.Modulos;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,7 @@ class ConfiguracionIntegrationTest {
         hash = "c" + sufijo.substring(1);
         long empresa = jdbc.queryForObject("INSERT INTO main.empresa (nombre, slug, public_hash) VALUES (?, ?, ?) RETURNING id",
                 Long.class, "Tienda " + sufijo, "tienda-" + sufijo, hash);
+        Modulos.todos(jdbc, empresa);
         String email = "c-" + sufijo + "@prueba.local";
         jdbc.update("INSERT INTO main.usuario (empresa_id, nombre, email, password_hash, rol) VALUES (?, 'P', ?, ?, 'ADMIN_EMPRESA')",
                 empresa, email, passwordEncoder.encode("Clave1234"));

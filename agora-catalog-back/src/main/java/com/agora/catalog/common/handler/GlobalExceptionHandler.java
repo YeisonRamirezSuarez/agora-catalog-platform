@@ -4,6 +4,7 @@ import com.agora.catalog.common.dto.ErrorResponse;
 import com.agora.catalog.common.exception.DuplicateResourceException;
 import com.agora.catalog.common.exception.ResourceInUseException;
 import com.agora.catalog.common.exception.ResourceNotFoundException;
+import com.agora.catalog.modulo.web.ModuloInactivoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -132,6 +133,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleAuthorizationDenied(AuthorizationDeniedException ex) {
         return ErrorResponse.of("Acceso denegado", "No tienes permiso para realizar esta acción");
+    }
+
+    /** La empresa no tiene contratado el módulo de esa ruta. */
+    @ExceptionHandler(ModuloInactivoException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleModuloInactivo(ModuloInactivoException ex) {
+        return ErrorResponse.of("Módulo no incluido", ex.getMessage());
     }
 
     /**
