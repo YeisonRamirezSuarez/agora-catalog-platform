@@ -2,7 +2,7 @@
 -- R — semilla de desarrollo local (ESPECIFICACION.md §9)
 -- ============================================================
 -- QUE HACE:    INSERT con ON CONFLICT DO NOTHING: 1 empresa con sus sellos y WhatsApp, 6 categorías,
---              25 productos, 3 colecciones y su administrador de prueba
+--              25 productos, 3 colecciones, su administrador de prueba y todos los módulos
 -- DESTRUCTIVO: NO (nunca pisa filas que ya existan)
 -- TIPOS:       no cambia el tipo de ninguna columna
 -- POR QUE:     tener un catálogo realista para desarrollar sin cargar datos a mano
@@ -133,3 +133,11 @@ SELECT e.id, 'Javier Barón', 'javier@agora.local',
   FROM main.empresa e
  WHERE e.slug = 'salsamentaria-javier'
 ON CONFLICT ((lower(email))) DO NOTHING;
+
+-- La empresa de prueba tiene todos los módulos (V8 no la alcanza en una base nueva: esta semilla corre después).
+INSERT INTO main.empresa_modulo (empresa_id, modulo)
+SELECT e.id, m.modulo
+  FROM main.empresa e
+ CROSS JOIN (VALUES ('PEDIDO_WHATSAPP'), ('IMPORTAR_EXCEL'), ('COLECCIONES'), ('ESTADISTICAS'), ('VENTA_RUTA')) AS m (modulo)
+ WHERE e.slug = 'salsamentaria-javier'
+ON CONFLICT (empresa_id, modulo) DO NOTHING;

@@ -2,6 +2,7 @@ package com.agora.catalog.producto.service;
 
 import com.agora.catalog.common.dto.PageResponse;
 import com.agora.catalog.common.exception.DuplicateResourceException;
+import com.agora.catalog.common.exception.ResourceInUseException;
 import com.agora.catalog.common.exception.ResourceNotFoundException;
 import com.agora.catalog.producto.dto.ProductoDtos.CambioPrecio;
 import com.agora.catalog.producto.dto.ProductoDtos.PresentacionDto;
@@ -62,14 +63,34 @@ public class ProductoService {
     public ProductoResponse actualizar(long empresaId, long id, ProductoRequest r) {
         fila(empresaId, id);
         validar(empresaId, r, id);
+        if (r.presentaciones() != null) presentacionesCargadasSeConservan(empresaId, id, r.presentaciones());
         repository.update(empresaId, id, r);
         if (r.presentaciones() != null) repository.replacePresentaciones(empresaId, id, r.presentaciones());
         return get(empresaId, id);
     }
 
+    /**
+     * El stock de los carros apunta a la presentación por su nombre: quitarla o renombrarla dejaría
+     * esa mercancía sin presentación. Se descarga del carro primero.
+     */
+    private void presentacionesCargadasSeConservan(long empresaId, long id, List<PresentacionDto> nuevas) {
+        for (String[] enCarro : repository.presentacionesEnCarros(empresaId, id)) {
+            boolean sigue = nuevas.stream().anyMatch(n -> n.nombre() != null && n.nombre().trim().equalsIgnoreCase(enCarro[0]));
+            if (!sigue) {
+                throw new ResourceInUseException("La presentación «" + enCarro[0] + "» va cargada en " + enCarro[1]
+                        + ". Descárgala del carro antes de quitarla o cambiarle el nombre.");
+            }
+        }
+    }
+
     @Transactional
     public void eliminar(long empresaId, long id) {
         Fila f = fila(empresaId, id);
+        List<String> carros = repository.carrosQueLoLlevan(empresaId, id);
+        if (!carros.isEmpty()) {
+            throw new ResourceInUseException("«" + f.nombre() + "» va cargado en " + String.join(", ", carros)
+                    + ". Descárgalo del carro antes de eliminarlo.");
+        }
         repository.delete(empresaId, id); // coleccion_producto se borra en cascada
         storage.borrar(f.imagenUrl());
         storage.borrar(f.imagenThumbUrl());

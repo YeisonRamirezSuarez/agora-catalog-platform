@@ -3,6 +3,8 @@ package com.agora.catalog.estadistica.controller;
 import com.agora.catalog.auth.model.UsuarioPrincipal;
 import com.agora.catalog.estadistica.dto.EstadisticaDtos.EstadisticasResponse;
 import com.agora.catalog.estadistica.service.EstadisticaService;
+import com.agora.catalog.modulo.model.Modulo;
+import com.agora.catalog.modulo.web.RequiereModulo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin/estadisticas")
 @PreAuthorize("hasRole('ADMIN_EMPRESA')")
+@RequiereModulo(Modulo.ESTADISTICAS)
 public class AdminEstadisticaController {
 
     private final EstadisticaService service;

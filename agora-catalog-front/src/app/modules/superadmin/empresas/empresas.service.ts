@@ -30,6 +30,14 @@ export interface AdminCreado {
   correoError: string | null;
 }
 
+/** Un módulo de la plataforma y si la empresa lo tiene encendido. */
+export interface ModuloEmpresa {
+  modulo: string;
+  nombre: string;
+  descripcion: string;
+  activo: boolean;
+}
+
 @Injectable({providedIn: 'root'})
 export class EmpresasService {
 
@@ -58,6 +66,14 @@ export class EmpresasService {
   /** Contraseña temporal nueva para un administrador que olvidó la suya. */
   restablecerPassword(id: number, enviarCorreo: boolean): Observable<AdminCreado> {
     return this.http.post<AdminCreado>(`/superadmin/usuarios/${id}/password`, {enviarCorreo});
+  }
+
+  modulos(empresaId: number): Observable<ModuloEmpresa[]> {
+    return this.http.get<ModuloEmpresa[]>(`/superadmin/empresas/${empresaId}/modulos`);
+  }
+
+  setModulo(empresaId: number, modulo: string, activo: boolean): Observable<ModuloEmpresa[]> {
+    return this.http.patch<ModuloEmpresa[]>(`/superadmin/empresas/${empresaId}/modulos/${modulo}`, {activo});
   }
 
   setUsuarioActivo(id: number, activo: boolean): Observable<void> {

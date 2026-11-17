@@ -1,5 +1,6 @@
 package com.agora.catalog.catalogopublico;
 
+import com.agora.catalog.testing.Modulos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ class CatalogoPublicoIntegrationTest {
     void datos() {
         empresaId = jdbc.queryForObject("INSERT INTO main.empresa (nombre, slug, public_hash) VALUES (?, ?, ?) RETURNING id",
                 Long.class, "Quesera " + hash, "quesera-" + hash, hash);
+        Modulos.todos(jdbc, empresaId);
         quesos = categoria("Quesos", true);
         long oculta = categoria("Oculta", false);
         ofertaId = producto(quesos, "Q-1", 10_000, 7_500, "current_date - 1", "current_date + 5", true);

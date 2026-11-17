@@ -7,10 +7,13 @@ import {PanelLink} from '@app/shared/layouts/panel-shell/panel-shell.component';
 /** Menú del panel del negocio, el mismo en todas sus pantallas. */
 export const ADMIN_LINKS: PanelLink[] = [
   {label: 'Inicio', path: '/admin'},
+  {label: 'Nuevo pedido', path: '/admin/pedidos/nuevo', modulo: 'VENTA_RUTA'},
   {label: 'Productos', path: '/admin/productos'},
   {label: 'Categorías', path: '/admin/categorias'},
-  {label: 'Colecciones', path: '/admin/colecciones'},
-  {label: 'Importar', path: '/admin/importar'},
+  {label: 'Colecciones', path: '/admin/colecciones', modulo: 'COLECCIONES'},
+  {label: 'Carros', path: '/admin/carros', modulo: 'VENTA_RUTA'},
+  {label: 'Tiendas', path: '/admin/tiendas', modulo: 'VENTA_RUTA'},
+  {label: 'Importar', path: '/admin/importar', modulo: 'IMPORTAR_EXCEL'},
   {label: 'Configuración', path: '/admin/configuracion'},
 ];
 

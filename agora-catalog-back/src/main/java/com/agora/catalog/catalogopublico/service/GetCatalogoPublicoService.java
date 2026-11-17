@@ -61,7 +61,7 @@ public class GetCatalogoPublicoService {
                 clock.getZone().getId(),
                 repository.findCategoriasActivas(empresa.id()),
                 repository.findFranja(empresa.id()).orElse(null),
-                colecciones(repository.findColeccionesVisibles(empresa.id()), publicados),
+                empresa.colecciones() ? colecciones(repository.findColeccionesVisibles(empresa.id()), publicados) : List.of(),
                 productos);
     }
 
