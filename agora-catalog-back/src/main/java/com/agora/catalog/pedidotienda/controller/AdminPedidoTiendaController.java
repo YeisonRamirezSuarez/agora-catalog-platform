@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/pedidos-tienda")
@@ -45,6 +48,12 @@ public class AdminPedidoTiendaController {
     public PedidoResponse editar(@AuthenticationPrincipal UsuarioPrincipal u, @PathVariable long id,
                                  @Valid @RequestBody EditarPedidoRequest r) {
         return editar.editar(u.empresaId(), u.id(), id, r);
+    }
+
+    /** Nombres de tienda ya usados en pedidos que contienen {@code q}, para sugerirlos al escribir. */
+    @GetMapping("/tiendas")
+    public List<String> tiendas(@AuthenticationPrincipal UsuarioPrincipal u, @RequestParam(defaultValue = "") String q) {
+        return crear.nombresTiendas(u.empresaId(), q);
     }
 
     @GetMapping("/{id}")

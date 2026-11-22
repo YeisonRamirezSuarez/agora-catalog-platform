@@ -106,13 +106,12 @@ public class CarroRutaRepository {
         // Un pedido es de la ruta en la que se hizo (su primer movimiento): corregirlo después no lo cambia de ruta.
         Map<Long, List<PedidoRuta>> pedidos = new HashMap<>();
         named.query("""
-                SELECT x.ruta_id, p.id, p.numero, t.nombre AS tienda, p.total, p.estado, p.created_at
+                SELECT x.ruta_id, p.id, p.numero, p.tienda_nombre AS tienda, p.total, p.estado, p.created_at
                   FROM (SELECT DISTINCT ON (m.pedido_tienda_id) m.pedido_tienda_id, m.ruta_id
                           FROM main.carro_movimiento m
                          WHERE m.empresa_id = :empresa AND m.carro_id = :carro AND m.pedido_tienda_id IS NOT NULL
                          ORDER BY m.pedido_tienda_id, m.id) x
                   JOIN main.pedido_tienda p ON p.id = x.pedido_tienda_id AND p.empresa_id = :empresa
-                  JOIN main.tienda t ON t.id = p.tienda_id
                  WHERE x.ruta_id IN (:rutas)
                  ORDER BY p.created_at, p.id
                 """, new MapSqlParameterSource("empresa", empresaId).addValue("carro", carroId)

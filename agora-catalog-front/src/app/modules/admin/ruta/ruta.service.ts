@@ -1,38 +1,10 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 import {Pagina, UnidadVenta} from '../admin.service';
 
-/** Venta en ruta: tiendas que se visitan y carros con su stock (GET/POST /admin/tiendas y /admin/carros). */
-
-export interface Tienda {
-  id: number;
-  nombre: string;
-  encargado: string | null;
-  telefono: string | null;
-  direccion: string | null;
-  barrio: string | null;
-  notas: string | null;
-  activa: boolean;
-  pedidos: number;
-}
-
-export interface TiendaForm {
-  nombre: string;
-  encargado: string;
-  telefono: string;
-  direccion: string;
-  barrio: string;
-  notas: string;
-  activa: boolean;
-}
-
-export interface FiltroTiendas {
-  q: string;
-  activa: boolean | null;
-  page: number;
-}
+/** Venta en ruta: carros con su stock, pedidos a tiendas y el tablero de rutas. */
 
 export interface Carro {
   id: number;
@@ -114,11 +86,10 @@ export interface LineaPedido {
   precioUnitario: number | null;
 }
 
-/** La tienda va por id (elegida de la lista) o por nombre (escrita: se crea sola si no existe). */
+/** La tienda es solo un nombre: queda en el pedido y no se guarda en ningún otro lado. */
 export interface PedidoRequest {
   carroId: number;
-  tiendaId: number | null;
-  tiendaNombre: string | null;
+  tiendaNombre: string;
   items: LineaPedido[];
   notas: string | null;
 }
@@ -141,10 +112,7 @@ export interface Pedido {
   carroNombre: string;
   /** El carro se eliminó después: se nombra pero no se enlaza. */
   carroEliminado: boolean;
-  tiendaId: number;
   tiendaNombre: string;
-  tiendaTelefono: string | null;
-  tiendaDireccion: string | null;
   formaPago: 'CONTADO' | 'CREDITO';
   total: number;
   estado: 'CONFIRMADO' | 'ANULADO';
@@ -182,6 +150,84 @@ export function dia(iso: string): string {
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
+/** Una ruta en el tablero del día. */
+export interface RutaDia {
+  id: number;
+  carroId: number;
+  carroNombre: string;
+  carroEliminado: boolean;
+  numero: number;
+  iniciadaAt: string;
+  cerradaAt: string | null;
+  pedidos: number;
+  vendido: number;
+}
+
+export interface ProductoVendido {
+  nombre: string;
+  presentacion: string | null;
+  unidadVenta: UnidadVenta;
+  cantidad: number;
+  total: number;
+}
+
+export interface PedidoDia {
+  id: number;
+  numero: number;
+  tiendaNombre: string;
+  carroNombre: string;
+  total: number;
+  estado: 'CONFIRMADO' | 'ANULADO';
+  createdAt: string;
+}
+
+/** Cómo le fue a la venta en ruta un día (GET /admin/tablero-ruta). */
+export interface Tablero {
+  fecha: string;
+  vendido: number;
+  pedidos: number;
+  rutas: RutaDia[];
+  productos: ProductoVendido[];
+  pedidosDia: PedidoDia[];
+}
+
+/** El comprobante en texto, listo para WhatsApp. */
+export function textoComprobante(p: Pedido, negocio: string, cop: (n: number) => string): string {
+  const lineas = p.items.map(i => `• ${cantidad(i.cantidad)} ${abrevUnidad(i.unidadVenta, i.presentacion)} ${i.productoNombre}`
+    + (i.presentacion ? ` (${i.presentacion})` : '') + ` — ${cop(i.subtotal)}`);
+  return [
+    `*${negocio}*`,
+    `Comprobante de entrega ${numeroPedido(p.numero)}` + (p.editadoAt ? ' (corregido)' : ''),
+    `${p.tiendaNombre} · ${fechaHora(p.createdAt)}`,
+    '',
+    ...lineas,
+    '',
+    `*Total: ${cop(p.total)}*`,
+    ...(p.notas ? ['', `Notas: ${p.notas}`] : [])
+  ].join('\n');
+}
+
+/**
+ * Enlace de WhatsApp con el texto. Con número, abre el chat de ese número (a un celular colombiano de
+ * 10 dígitos se le antepone el 57); sin número, WhatsApp deja escoger el contacto.
+ */
+export function enlaceWhatsapp(texto: string, telefono: string): string {
+  const tel = telefono.replace(/\D/g, '');
+  const numero = tel.length === 10 && tel.startsWith('3') ? '57' + tel : tel;
+  return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+}
+
+/** Un número que sirve para WhatsApp: vacío (se escoge el contacto) o de 10 a 15 dígitos. */
+export function telefonoValido(telefono: string): boolean {
+  const tel = telefono.replace(/\D/g, '');
+  return !tel || (tel.length >= 10 && tel.length <= 15);
+}
+
+/** 2026-11-22 de una fecha, en la hora del teléfono. */
+export function fechaIso(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 /** Unidades que se pueden cargar en fracciones (solo en la presentación principal). */
 export const FRACCIONABLES: UnidadVenta[] = ['LIBRA', 'KILO'];
 
@@ -208,29 +254,6 @@ export function leerCantidad(texto: string): number | null {
 export class RutaService {
 
   private readonly http = inject(HttpClient);
-
-  tiendas(f: FiltroTiendas, size = 20): Observable<Pagina<Tienda>> {
-    let params = new HttpParams().set('page', f.page).set('size', size);
-    if (f.q.trim()) params = params.set('q', f.q.trim());
-    if (f.activa !== null) params = params.set('activa', f.activa);
-    return this.http.get<Pagina<Tienda>>('/admin/tiendas', {params});
-  }
-
-  crearTienda(t: TiendaForm): Observable<Tienda> {
-    return this.http.post<Tienda>('/admin/tiendas', t);
-  }
-
-  actualizarTienda(id: number, t: TiendaForm): Observable<Tienda> {
-    return this.http.put<Tienda>(`/admin/tiendas/${id}`, t);
-  }
-
-  setTiendaActiva(id: number, activo: boolean): Observable<Tienda> {
-    return this.http.patch<Tienda>(`/admin/tiendas/${id}/activa`, {activo});
-  }
-
-  eliminarTienda(id: number): Observable<void> {
-    return this.http.delete<void>(`/admin/tiendas/${id}`);
-  }
 
   carros(): Observable<Carro[]> {
     return this.http.get<Carro[]>('/admin/carros');
@@ -288,5 +311,15 @@ export class RutaService {
 
   pedido(id: number): Observable<Pedido> {
     return this.http.get<Pedido>(`/admin/pedidos-tienda/${id}`);
+  }
+
+  /** Nombres de tienda ya usados en pedidos, para sugerirlos al escribir. */
+  nombresTiendas(q: string): Observable<string[]> {
+    return this.http.get<string[]>('/admin/pedidos-tienda/tiendas', {params: {q}});
+  }
+
+  /** El tablero de un día (2026-11-22); sin fecha, el de hoy. */
+  tablero(fecha: string): Observable<Tablero> {
+    return this.http.get<Tablero>('/admin/tablero-ruta', {params: {fecha}});
   }
 }

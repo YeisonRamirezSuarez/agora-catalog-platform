@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -36,13 +37,9 @@ public final class PedidoTiendaDtos {
     ) {
     }
 
-    /**
-     * Corregir un pedido: las líneas nuevas reemplazan a las anteriores (el carro no cambia). La tienda,
-     * igual que al crearlo, por {@code tiendaId} o por {@code tiendaNombre}.
-     */
+    /** Corregir un pedido: las líneas nuevas reemplazan a las anteriores (el carro no cambia). */
     public record EditarPedidoRequest(
-            Long tiendaId,
-
+            @NotBlank(message = "Escribe el nombre de la tienda")
             @Size(max = 80, message = "El nombre de la tienda puede tener hasta 80 caracteres")
             String tiendaNombre,
 
@@ -54,13 +51,12 @@ public final class PedidoTiendaDtos {
     ) {
     }
 
-    /** La tienda va por {@code tiendaId} (elegida de la lista) o por {@code tiendaNombre} (escrita: se crea si no existe). */
+    /** La tienda es solo un nombre: queda en el pedido y no se guarda en ningún otro lado. */
     public record PedidoRequest(
             @NotNull(message = "Elige el carro")
             Long carroId,
 
-            Long tiendaId,
-
+            @NotBlank(message = "Escribe el nombre de la tienda")
             @Size(max = 80, message = "El nombre de la tienda puede tener hasta 80 caracteres")
             String tiendaNombre,
 
@@ -91,10 +87,7 @@ public final class PedidoTiendaDtos {
             String carroNombre,
             /* El carro se eliminó después: el comprobante lo nombra, pero ya no hay a dónde ir. */
             boolean carroEliminado,
-            long tiendaId,
             String tiendaNombre,
-            String tiendaTelefono,
-            String tiendaDireccion,
             String formaPago,
             long total,
             String estado,

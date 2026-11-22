@@ -93,6 +93,9 @@ public class CarroRepository {
 
     /** Un carro con historial no se borra: se marca y desaparece del panel; sus pedidos lo siguen nombrando. */
     public int marcarEliminado(long empresaId, long id) {
+        // La ruta que iba termina con el carro: no sigue «en curso» para siempre.
+        jdbc.update("UPDATE main.carro_ruta SET cerrada_at = now() WHERE empresa_id = ? AND carro_id = ? AND cerrada_at IS NULL",
+                empresaId, id);
         return jdbc.update("UPDATE main.carro SET eliminado_at = now(), activo = FALSE, updated_at = now() WHERE empresa_id = ? AND id = ?",
                 empresaId, id);
     }

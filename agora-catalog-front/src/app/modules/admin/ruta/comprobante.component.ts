@@ -1,11 +1,14 @@
 import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {NegocioService} from '@app/core/services/negocio.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
 import {ADMIN_LINKS, cop} from '../admin.service';
-import {abrevUnidad, cantidad, fechaHora, ItemPedido, numeroPedido, Pedido, RutaService} from './ruta.service';
+import {
+  abrevUnidad, cantidad, enlaceWhatsapp, fechaHora, ItemPedido, numeroPedido, Pedido, RutaService, telefonoValido, textoComprobante
+} from './ruta.service';
 
 /**
  * El comprobante de un pedido a una tienda: para mostrarlo en el celular, mandarlo por WhatsApp o
@@ -13,7 +16,7 @@ import {abrevUnidad, cantidad, fechaHora, ItemPedido, numeroPedido, Pedido, Ruta
  */
 @Component({
   selector: 'app-comprobante',
-  imports: [PanelShellComponent, RouterLink],
+  imports: [PanelShellComponent, RouterLink, FormsModule],
   template: `
     <app-panel-shell [subtitle]="empresa()" [links]="links">
       @if (pedido(); as p) {
@@ -28,9 +31,9 @@ import {abrevUnidad, cantidad, fechaHora, ItemPedido, numeroPedido, Pedido, Ruta
         }
 
         <div class="mb-6 grid grid-cols-2 gap-2 sm:flex print:hidden">
-          <a class="btn btn-dark col-span-2 bg-whatsapp hover:bg-whatsapp-press" [href]="whatsapp()" target="_blank" rel="noopener">
+          <button type="button" class="btn btn-dark col-span-2 bg-whatsapp hover:bg-whatsapp-press" (click)="whatsappAbierto.set(true)">
             Enviar por WhatsApp
-          </a>
+          </button>
           <button type="button" class="btn" (click)="imprimir()">Imprimir</button>
           @if (!p.carroEliminado && p.estado === 'CONFIRMADO') {
             <a class="btn" [routerLink]="['/admin/pedidos', p.id, 'editar']">Editar pedido</a>
@@ -53,8 +56,6 @@ import {abrevUnidad, cantidad, fechaHora, ItemPedido, numeroPedido, Pedido, Ruta
 
           <section class="grid gap-1 border-b border-line py-4 text-sm">
             <p><span class="text-muted">Tienda: </span><b>{{ p.tiendaNombre }}</b></p>
-            @if (p.tiendaDireccion) { <p><span class="text-muted">Dirección: </span>{{ p.tiendaDireccion }}</p> }
-            @if (p.tiendaTelefono) { <p><span class="text-muted">Teléfono: </span>{{ p.tiendaTelefono }}</p> }
             <p><span class="text-muted">Entregado desde: </span>{{ p.carroNombre }}@if (p.usuarioNombre) { · {{ p.usuarioNombre }} }</p>
           </section>
 
@@ -100,6 +101,30 @@ import {abrevUnidad, cantidad, fechaHora, ItemPedido, numeroPedido, Pedido, Ruta
         @if (error()) { <p class="alert-error" role="alert">{{ error() }}</p> }
         @else { <p class="text-muted">Cargando…</p> }
       }
+
+      @if (whatsappAbierto() && pedido()) {
+        <div class="fixed inset-0 z-50 grid place-items-end bg-black/50 sm:place-items-center sm:p-4 print:hidden" (click)="$event.target === $event.currentTarget ? whatsappAbierto.set(false) : null">
+          <div class="card grid w-full max-w-md gap-4 rounded-b-none p-5 sm:rounded-b-2xl sm:p-6" role="dialog" aria-modal="true" aria-label="Enviar por WhatsApp">
+            <h2 class="text-xl font-semibold">Enviar por WhatsApp</h2>
+            <div class="field">
+              <label for="w-tel">Número (opcional)</label>
+              <input class="input" id="w-tel" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="300 123 4567"
+                     [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" [class.border-danger]="!telefonoOk()">
+              <p class="hint">{{ telefonoOk() ? 'Si lo dejas vacío, WhatsApp te deja escoger a quién mandarlo.' : 'Revisa el número: deben ser 10 dígitos.' }}</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              @if (telefonoOk()) {
+                <a class="btn btn-dark bg-whatsapp hover:bg-whatsapp-press" [href]="whatsapp()" target="_blank" rel="noopener" (click)="whatsappAbierto.set(false)">
+                  {{ telefono().trim() ? 'Abrir WhatsApp' : 'Escoger contacto en WhatsApp' }}
+                </a>
+              } @else {
+                <button type="button" class="btn btn-dark" disabled>Abrir WhatsApp</button>
+              }
+              <button type="button" class="btn-link" (click)="whatsappAbierto.set(false)">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      }
     </app-panel-shell>
   `
 })
@@ -121,31 +146,25 @@ export class ComprobanteComponent implements OnInit {
   readonly nuevo = signal(false);
   readonly editado = signal(false);
 
-  /** El mismo comprobante en texto, listo para WhatsApp (al número de la tienda si lo tiene). */
+  /** La ventana para escoger a qué número se manda el comprobante (no se guarda en ningún lado). */
+  readonly whatsappAbierto = signal(false);
+  readonly telefono = signal('');
+  readonly telefonoOk = computed(() => telefonoValido(this.telefono()));
+
+  /** El comprobante en texto, al número escrito o, sin número, al contacto que se escoja en WhatsApp. */
   readonly whatsapp = computed(() => {
     const p = this.pedido();
-    if (!p) return '';
-    const lineas = p.items.map(i => `• ${cantidad(i.cantidad)} ${this.abrev(i)} ${i.productoNombre}`
-      + (i.presentacion ? ` (${i.presentacion})` : '') + ` — ${cop(i.subtotal)}`);
-    const texto = [
-      `*${this.negocio.negocio()?.nombre ?? this.empresa()}*`,
-      `Comprobante de entrega ${numeroPedido(p.numero)}` + (p.editadoAt ? ' (corregido)' : ''),
-      `${p.tiendaNombre} · ${fechaHora(p.createdAt)}`,
-      '',
-      ...lineas,
-      '',
-      `*Total: ${cop(p.total)}*`,
-      ...(p.notas ? ['', `Notas: ${p.notas}`] : [])
-    ].join('\n');
-    const tel = (p.tiendaTelefono ?? '').replace(/\D/g, '');
-    // Celular colombiano de 10 dígitos: se le antepone el 57.
-    const numero = tel.length === 10 && tel.startsWith('3') ? '57' + tel : tel;
-    return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+    return p ? enlaceWhatsapp(textoComprobante(p, this.negocio.negocio()?.nombre ?? this.empresa(), cop), this.telefono()) : '';
   });
 
   ngOnInit(): void {
     this.nuevo.set(!!this.route.snapshot.queryParamMap.get('nuevo'));
     this.editado.set(!!this.route.snapshot.queryParamMap.get('editado'));
+    // Desde «Nuevo pedido» con WhatsApp marcado, cuando el navegador no dejó abrir la pestaña sola.
+    if (this.route.snapshot.queryParamMap.get('whatsapp')) {
+      this.telefono.set(this.route.snapshot.queryParamMap.get('tel') ?? '');
+      this.whatsappAbierto.set(true);
+    }
     this.api.pedido(Number(this.route.snapshot.paramMap.get('id'))).subscribe({
       next: p => this.pedido.set(p),
       error: err => this.error.set(apiMessage(err, 'No encontramos este pedido.'))

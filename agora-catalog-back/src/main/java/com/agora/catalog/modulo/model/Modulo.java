@@ -10,7 +10,7 @@ public enum Modulo {
     IMPORTAR_EXCEL("Importar desde Excel", "Plantilla, importar y exportar productos, y fotos en un ZIP."),
     COLECCIONES("Colecciones", "Secciones de productos destacados en el catálogo."),
     ESTADISTICAS("Estadísticas", "Visitas, pedidos y productos más vistos en el inicio del panel."),
-    VENTA_RUTA("Venta en ruta", "Carros con stock, tiendas y pedidos a tiendas con comprobante.");
+    VENTA_RUTA("Venta en ruta", "Carros con stock, rutas y pedidos a tiendas con comprobante.");
 
     private final String nombre;
     private final String descripcion;

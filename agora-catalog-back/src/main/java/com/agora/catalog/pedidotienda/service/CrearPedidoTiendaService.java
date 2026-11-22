@@ -11,8 +11,6 @@ import com.agora.catalog.pedidotienda.dto.PedidoTiendaDtos.LineaPedido;
 import com.agora.catalog.pedidotienda.dto.PedidoTiendaDtos.PedidoRequest;
 import com.agora.catalog.pedidotienda.dto.PedidoTiendaDtos.PedidoResponse;
 import com.agora.catalog.pedidotienda.repository.PedidoTiendaRepository;
-import com.agora.catalog.tienda.dto.TiendaDtos.TiendaResponse;
-import com.agora.catalog.tienda.service.TiendaService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,15 +31,13 @@ public class CrearPedidoTiendaService {
     private final CarroRepository carros;
     private final CarroStockRepository stock;
     private final ReglasStock reglas;
-    private final TiendaService tiendas;
     private final PedidoTiendaRepository pedidos;
 
     public CrearPedidoTiendaService(CarroRepository carros, CarroStockRepository stock, ReglasStock reglas,
-                                    TiendaService tiendas, PedidoTiendaRepository pedidos) {
+                                    PedidoTiendaRepository pedidos) {
         this.carros = carros;
         this.stock = stock;
         this.reglas = reglas;
-        this.tiendas = tiendas;
         this.pedidos = pedidos;
     }
 
@@ -83,24 +79,35 @@ public class CrearPedidoTiendaService {
             throw new IllegalStateException("No alcanza en el carro: " + String.join(", ", faltan) + ".");
         }
 
-        // 4. La tienda: la elegida o la escrita (se crea sola si no existe).
-        TiendaResponse tienda = tiendas.resolver(empresaId, r.tiendaId(), r.tiendaNombre());
-        if (r.tiendaId() != null && !tienda.activa()) {
-            throw new IllegalStateException("«" + tienda.nombre() + "» está inactiva. Actívala en Tiendas para venderle.");
-        }
+        // 4. La tienda es solo un nombre; si ya se usó, con la misma escritura de la última vez.
+        String tienda = nombreTienda(empresaId, r.tiendaNombre());
 
         // 5. Pedido, líneas y descuento del stock.
         String notas = r.notas() == null || r.notas().isBlank() ? null : r.notas().trim();
-        long pedidoId = pedidos.insert(empresaId, pedidos.siguienteNumero(empresaId), r.carroId(), tienda.id(), total, notas, usuarioId);
+        long pedidoId = pedidos.insert(empresaId, pedidos.siguienteNumero(empresaId), r.carroId(), tienda, total, notas, usuarioId);
         for (Venta v : ventas) {
             Linea l = v.linea();
             pedidos.insertItem(empresaId, pedidoId, l.producto().id(), l.producto().nombre(), l.presentacion(),
                     l.producto().unidadVenta(), l.cantidad(), l.precio(), v.precio(), v.subtotal());
             stock.setCantidad(empresaId, r.carroId(), l.producto().id(), l.presentacion(), v.saldo());
             stock.movimiento(empresaId, r.carroId(), usuarioId, l.producto().id(), l.producto().nombre(), l.presentacion(),
-                    StockCarroService.VENTA, l.cantidad().negate(), v.saldo(), tienda.nombre(), pedidoId);
+                    StockCarroService.VENTA, l.cantidad().negate(), v.saldo(), tienda, pedidoId);
         }
         return get(empresaId, pedidoId);
+    }
+
+    /**
+     * El nombre limpio (sin espacios de más). Si ya se usó en otro pedido, aunque sea con otras
+     * mayúsculas o tildes, se toma como se escribió la última vez: «don pedro» y «Don Pedro» son la misma tienda.
+     */
+    public String nombreTienda(long empresaId, String escrito) {
+        String limpio = escrito == null ? "" : escrito.trim().replaceAll("\\s+", " ");
+        if (limpio.isEmpty()) throw new IllegalArgumentException("Escribe el nombre de la tienda");
+        return pedidos.nombreUsado(empresaId, limpio).orElse(limpio);
+    }
+
+    public List<String> nombresTiendas(long empresaId, String q) {
+        return pedidos.nombresTiendas(empresaId, q == null ? "" : q.trim(), 8);
     }
 
     public PedidoResponse get(long empresaId, long id) {

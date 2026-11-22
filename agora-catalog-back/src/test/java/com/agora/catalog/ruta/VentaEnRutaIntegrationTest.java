@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Venta en ruta, fase 1: tiendas, carros, su stock y el aislamiento entre empresas. */
+/** Venta en ruta: carros, su stock, pedidos a tiendas, rutas, el tablero y el aislamiento entre empresas. */
 @SpringBootTest(properties = {"settings.security.rate-limit-enabled=false",
         "settings.storage-path=${java.io.tmpdir}/agora-catalog-pruebas"})
 @AutoConfigureMockMvc
@@ -60,16 +60,9 @@ class VentaEnRutaIntegrationTest {
     }
 
     @Test
-    void otraEmpresaNoVeNiTocaTiendasNiCarrosAjenos() throws Exception {
-        long tienda = id(json(post("/admin/tiendas"), tokenA, tienda("Doña Rosa")));
+    void otraEmpresaNoVeNiTocaCarrosAjenos() throws Exception {
         long carro = id(json(post("/admin/carros"), tokenA, carro("Carro 1")));
         json(post("/admin/carros/" + carro + "/cargas"), tokenA, carga(queso, null, "2")).andExpect(status().isOk());
-
-        mvc.perform(get("/admin/tiendas/" + tienda).header("Authorization", tokenB)).andExpect(status().isNotFound());
-        json(put("/admin/tiendas/" + tienda), tokenB, tienda("Otra")).andExpect(status().isNotFound());
-        json(patch("/admin/tiendas/" + tienda + "/activa"), tokenB, "{\"activo\":false}").andExpect(status().isNotFound());
-        mvc.perform(delete("/admin/tiendas/" + tienda).header("Authorization", tokenB)).andExpect(status().isNotFound());
-        mvc.perform(get("/admin/tiendas").header("Authorization", tokenB)).andExpect(jsonPath("$.totalElements").value(0));
 
         mvc.perform(get("/admin/carros/" + carro).header("Authorization", tokenB)).andExpect(status().isNotFound());
         json(put("/admin/carros/" + carro), tokenB, carro("Otro")).andExpect(status().isNotFound());
@@ -186,18 +179,13 @@ class VentaEnRutaIntegrationTest {
                 .andExpect(status().isConflict()).andExpect(jsonPath("$.message").value(containsString("Carro 1")));
 
         json(post("/admin/carros"), tokenA, carro("carro 1")).andExpect(status().isConflict());
-        json(post("/admin/tiendas"), tokenA, tienda("Doña Rosa")).andExpect(status().isCreated())
-                .andExpect(jsonPath("$.telefono").value("3001234567"));
-        json(post("/admin/tiendas"), tokenA, tienda("doña rosa")).andExpect(status().isConflict());
-        mvc.perform(get("/admin/tiendas").param("q", "dona").header("Authorization", tokenA))
-                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test
-    void elPedidoDescuentaDelCarroYCreaLaTiendaSola() throws Exception {
+    void elPedidoDescuentaDelCarroYLaTiendaEsSoloUnNombre() throws Exception {
         long carro = cargado();
 
-        // Tienda escrita a mano: se crea. Precio editado en el jamón, sugerido en el queso.
+        // La tienda queda solo como nombre en el pedido. Precio editado en el jamón, sugerido en el queso.
         String r1 = json(post("/admin/pedidos-tienda"), tokenA, """
                 {"carroId":%d,"tiendaNombre":"  Tienda   Don Pedro ","notas":"Paga el viernes",
                  "items":[{"productoId":%d,"cantidad":1.5},{"productoId":%d,"cantidad":4,"precioUnitario":4500},
@@ -213,7 +201,6 @@ class VentaEnRutaIntegrationTest {
                 .andExpect(jsonPath("$.total").value(63000))
                 .andReturn().getResponse().getContentAsString();
         int numero = JsonPath.read(r1, "$.numero");
-        long tienda = ((Number) JsonPath.read(r1, "$.tiendaId")).longValue();
 
         mvc.perform(get("/admin/carros/" + carro).header("Authorization", tokenA))
                 .andExpect(jsonPath("$.stock[?(@.productoId == " + queso + " && @.presentacion == null)].cantidad").value(1.5))
@@ -223,16 +210,20 @@ class VentaEnRutaIntegrationTest {
                 .andExpect(jsonPath("$.content[0].motivo").value("Tienda Don Pedro"))
                 .andExpect(jsonPath("$.content[0].pedidoTiendaId").value(((Number) JsonPath.read(r1, "$.id")).longValue()));
 
-        // Con otro nombre que es el mismo (mayúsculas): no se crea otra tienda. El número sigue.
+        // El mismo nombre con otras mayúsculas queda escrito como la primera vez. El número sigue.
         json(post("/admin/pedidos-tienda"), tokenA, pedido(carro, "\"tiendaNombre\":\"tienda don pedro\"", jamon, "1"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.tiendaId").value(tienda))
+                .andExpect(jsonPath("$.tiendaNombre").value("Tienda Don Pedro"))
                 .andExpect(jsonPath("$.numero").value(numero + 1));
-        mvc.perform(get("/admin/tiendas").header("Authorization", tokenA))
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].pedidos").value(2));
-        // Una tienda con pedidos no se elimina.
-        mvc.perform(delete("/admin/tiendas/" + tienda).header("Authorization", tokenA)).andExpect(status().isConflict());
+        json(post("/admin/pedidos-tienda"), tokenA, pedido(carro, "\"tiendaNombre\":\"Doña Rosa\"", jamon, "1"))
+                .andExpect(status().isCreated());
+
+        // Los nombres usados se sugieren, sin repetir y sin importar tildes; otra empresa no los ve.
+        mvc.perform(get("/admin/pedidos-tienda/tiendas").header("Authorization", tokenA))
+                .andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0]").value("Doña Rosa"));
+        mvc.perform(get("/admin/pedidos-tienda/tiendas").param("q", "dona").header("Authorization", tokenA))
+                .andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0]").value("Doña Rosa"));
+        mvc.perform(get("/admin/pedidos-tienda/tiendas").header("Authorization", tokenB)).andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
@@ -247,7 +238,7 @@ class VentaEnRutaIntegrationTest {
                 .andExpect(jsonPath("$.message").value(containsString("Media libra")));
         mvc.perform(get("/admin/carros/" + carro).header("Authorization", tokenA))
                 .andExpect(jsonPath("$.stock[?(@.productoId == " + jamon + ")].cantidad").value(10));
-        mvc.perform(get("/admin/tiendas").header("Authorization", tokenA)).andExpect(jsonPath("$.totalElements").value(0));
+        mvc.perform(get("/admin/pedidos-tienda/tiendas").header("Authorization", tokenA)).andExpect(jsonPath("$", hasSize(0)));
 
         // Sin tienda tampoco.
         json(post("/admin/pedidos-tienda"), tokenA, pedido(carro, "\"tiendaNombre\":\" \"", jamon, "1"))
@@ -260,12 +251,9 @@ class VentaEnRutaIntegrationTest {
         String r = json(post("/admin/pedidos-tienda"), tokenA, pedido(carro, "\"tiendaNombre\":\"Doña Rosa\"", jamon, "1"))
                 .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         long pedidoA = ((Number) JsonPath.read(r, "$.id")).longValue();
-        long tiendaA = ((Number) JsonPath.read(r, "$.tiendaId")).longValue();
 
         mvc.perform(get("/admin/pedidos-tienda/" + pedidoA).header("Authorization", tokenB)).andExpect(status().isNotFound());
         json(post("/admin/pedidos-tienda"), tokenB, pedido(carro, "\"tiendaNombre\":\"X\"", jamon, "1")).andExpect(status().isNotFound());
-        long carroB = id(json(post("/admin/carros"), tokenB, carro("Carro B")));
-        json(post("/admin/pedidos-tienda"), tokenB, pedido(carroB, "\"tiendaId\":" + tiendaA, jamon, "1")).andExpect(status().isNotFound());
 
         mvc.perform(get("/admin/pedidos-tienda/" + pedidoA).header("Authorization", tokenA))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.tiendaNombre").value("Doña Rosa"));
@@ -345,7 +333,7 @@ class VentaEnRutaIntegrationTest {
         jdbc.update("INSERT INTO main.usuario (empresa_id, nombre, email, password_hash, rol) VALUES (NULL, 'S', ?, ?, 'SUPER_ADMIN')",
                 "s-" + sufijo + "@prueba.local", passwordEncoder.encode(CLAVE));
         String superAdmin = login("s-" + sufijo + "@prueba.local");
-        mvc.perform(get("/admin/tiendas").header("Authorization", superAdmin)).andExpect(status().isForbidden());
+        mvc.perform(get("/admin/tablero-ruta").header("Authorization", superAdmin)).andExpect(status().isForbidden());
         mvc.perform(get("/admin/carros").header("Authorization", superAdmin)).andExpect(status().isForbidden());
         mvc.perform(get("/admin/pedidos-tienda/1").header("Authorization", superAdmin)).andExpect(status().isForbidden());
         mvc.perform(get("/superadmin/empresas").header("Authorization", tokenA)).andExpect(status().isForbidden());
@@ -400,6 +388,37 @@ class VentaEnRutaIntegrationTest {
         json(post("/admin/carros/" + carro + "/rutas"), tokenB, "{\"llevarSobrante\":true}").andExpect(status().isNotFound());
     }
 
+    @Test
+    void elTableroMuestraLoVendidoLasRutasYLosPedidosDelDia() throws Exception {
+        long carro = cargado();
+        json(post("/admin/pedidos-tienda"), tokenA, pedido(carro, "\"tiendaNombre\":\"Doña Rosa\"", jamon, "2"))
+                .andExpect(status().isCreated());
+        json(post("/admin/carros/" + carro + "/rutas"), tokenA, "{\"llevarSobrante\":true}").andExpect(status().isOk());
+        json(post("/admin/pedidos-tienda"), tokenA, pedido(carro, "\"tiendaNombre\":\"Tienda La 14\"", jamon, "3"))
+                .andExpect(status().isCreated());
+
+        // 5 jamones × 5.000 en dos rutas del mismo carro.
+        mvc.perform(get("/admin/tablero-ruta").header("Authorization", tokenA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.vendido").value(25000))
+                .andExpect(jsonPath("$.pedidos").value(2))
+                .andExpect(jsonPath("$.rutas", hasSize(2)))
+                .andExpect(jsonPath("$.rutas[0].numero").value(1))
+                .andExpect(jsonPath("$.rutas[0].vendido").value(10000))
+                .andExpect(jsonPath("$.rutas[1].numero").value(2))
+                .andExpect(jsonPath("$.rutas[1].pedidos").value(1))
+                .andExpect(jsonPath("$.productos[0].cantidad").value(5))
+                .andExpect(jsonPath("$.productos[0].total").value(25000))
+                .andExpect(jsonPath("$.pedidosDia", hasSize(2)))
+                .andExpect(jsonPath("$.pedidosDia[0].tiendaNombre").value("Tienda La 14"));
+
+        // Otro día no tiene nada; otra empresa no ve lo de A.
+        mvc.perform(get("/admin/tablero-ruta").param("fecha", "2020-01-01").header("Authorization", tokenA))
+                .andExpect(jsonPath("$.vendido").value(0)).andExpect(jsonPath("$.rutas", hasSize(0)));
+        mvc.perform(get("/admin/tablero-ruta").header("Authorization", tokenB))
+                .andExpect(jsonPath("$.vendido").value(0)).andExpect(jsonPath("$.pedidosDia", hasSize(0)));
+    }
+
     private ResultActions json(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request,
                                String token, String body) throws Exception {
         return mvc.perform(request.header("Authorization", token).contentType(MediaType.APPLICATION_JSON).content(body));
@@ -428,13 +447,6 @@ class VentaEnRutaIntegrationTest {
                  "unidadVenta":"%s","precio":%d,"precioOferta":null,"ofertaDesde":null,"ofertaHasta":null,
                  "disponible":true,"destacado":false%s}
                 """.formatted(codigo, categoria, codigo, unidad, precio, extra);
-    }
-
-    private static String tienda(String nombre) {
-        return """
-                {"nombre":"%s","encargado":"Rosa","telefono":"300 123 4567","direccion":"Cra 1 # 2-3","barrio":"Centro",
-                 "notas":null,"activa":true}
-                """.formatted(nombre);
     }
 
     private static String carro(String nombre) {

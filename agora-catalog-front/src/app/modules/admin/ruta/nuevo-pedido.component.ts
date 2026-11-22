@@ -1,13 +1,15 @@
 import {Component, computed, DestroyRef, inject, OnInit, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {debounceTime, of, Subject, switchMap} from 'rxjs';
+import {debounceTime, Subject, switchMap} from 'rxjs';
 
 import {apiMessage, AuthService} from '@app/core/services/auth.service';
 import {PanelShellComponent} from '@app/shared/layouts/panel-shell/panel-shell.component';
+import {NegocioService} from '@app/core/services/negocio.service';
 import {ADMIN_LINKS, cop} from '../admin.service';
 import {
-  abrevUnidad, cantidad, Carro, CarroDetalle, FRACCIONABLES, leerCantidad, numeroPedido, RutaService, StockItem, Tienda
+  abrevUnidad, cantidad, Carro, CarroDetalle, enlaceWhatsapp, FRACCIONABLES, leerCantidad, numeroPedido, RutaService, StockItem,
+  telefonoValido, textoComprobante
 } from './ruta.service';
 
 /** Una línea del pedido que se está armando. */
@@ -22,10 +24,12 @@ interface Linea {
 }
 
 const ULTIMO_CARRO = 'agora.pedido.carro';
+const ENVIAR_WHATSAPP = 'agora.pedido.whatsapp';
 
 /**
- * Venderle a una tienda desde un carro: se elige el carro, se escribe la tienda (si no existe se
- * crea sola al confirmar), se marcan las cantidades de lo que hay en el carro y se confirma.
+ * Venderle a una tienda desde un carro: se elige el carro, se escribe el nombre de la tienda (solo
+ * queda en el pedido), se marcan las cantidades de lo que hay en el carro y se confirma; si se marca,
+ * el comprobante sale por WhatsApp al número que se escriba (o al contacto que se escoja en WhatsApp).
  */
 @Component({
   selector: 'app-nuevo-pedido',
@@ -67,22 +71,14 @@ const ULTIMO_CARRO = 'agora.pedido.carro';
             <input class="input" id="p-tienda" autocomplete="off" maxlength="80" placeholder="Nombre de la tienda"
                    [value]="tiendaTexto()" (input)="escribirTienda($any($event.target).value)"
                    (focus)="mostrarSugerencias.set(true)" (blur)="ocultarSugerencias()">
-            @if (mostrarSugerencias() && sugerencias().length && !tienda()) {
-              <ul class="card absolute inset-x-0 top-full z-20 mt-1 grid gap-0.5 p-1 shadow-lg" aria-label="Tiendas guardadas">
-                @for (t of sugerencias(); track t.id) {
+            @if (mostrarSugerencias() && sugerencias().length) {
+              <ul class="card absolute inset-x-0 top-full z-20 mt-1 grid gap-0.5 p-1 shadow-lg" aria-label="Tiendas de pedidos anteriores">
+                @for (t of sugerencias(); track t) {
                   <li>
-                    <button type="button" class="w-full rounded-lg px-3 py-2 text-left hover:bg-wash" (mousedown)="elegirTienda(t)">
-                      <span class="block font-semibold">{{ t.nombre }}</span>
-                      @if (t.barrio || t.direccion) { <span class="block text-xs text-muted">{{ t.direccion }} {{ t.barrio }}</span> }
-                    </button>
+                    <button type="button" class="w-full rounded-lg px-3 py-2 text-left font-semibold hover:bg-wash" (mousedown)="elegirTienda(t)">{{ t }}</button>
                   </li>
                 }
               </ul>
-            }
-            @if (tienda(); as t) {
-              <p class="hint">✓ Tienda guardada · <button type="button" class="btn-link text-xs" (click)="escribirTienda('')">cambiar</button></p>
-            } @else if (tiendaTexto().trim()) {
-              <p class="hint">«{{ tiendaTexto().trim() }}» se agrega a tus tiendas al confirmar.</p>
             }
           </div>
         </div>
@@ -147,7 +143,7 @@ const ULTIMO_CARRO = 'agora.pedido.carro';
           <form class="card flex max-h-[92dvh] w-full max-w-xl flex-col gap-4 overflow-y-auto [&>*]:shrink-0 rounded-b-none p-5 sm:max-h-[88dvh] sm:rounded-b-2xl sm:p-6"
                 role="dialog" aria-modal="true" aria-label="Revisar pedido" (ngSubmit)="confirmar()">
             <div>
-              <h2 class="text-xl font-semibold">Pedido para {{ tienda()?.nombre ?? tiendaTexto().trim() }}</h2>
+              <h2 class="text-xl font-semibold">Pedido para {{ tiendaTexto().trim() }}</h2>
               <p class="text-sm text-muted">Desde {{ carro()?.nombre }}. Puedes cambiar el precio de una línea si a esta tienda le cobras distinto.</p>
             </div>
             @if (errorConfirmar()) { <p class="alert-error" role="alert">{{ errorConfirmar() }}</p> }
@@ -181,6 +177,21 @@ const ULTIMO_CARRO = 'agora.pedido.carro';
             <div class="field"><label for="p-not">Notas (opcional)</label>
               <input class="input" id="p-not" name="notas" maxlength="300" [(ngModel)]="notas" placeholder="Paga el viernes, dejar con el vecino…"></div>
 
+            <div class="grid gap-3 rounded-xl border border-line p-3">
+              <label class="inline-flex items-center gap-2 font-semibold">
+                <input type="checkbox" class="switch" role="switch" name="whatsapp" [ngModel]="enviarWhatsapp()" (ngModelChange)="marcarWhatsapp($event)">
+                Enviar el comprobante por WhatsApp
+              </label>
+              @if (enviarWhatsapp()) {
+                <div class="field">
+                  <label for="p-tel">Número de WhatsApp (opcional)</label>
+                  <input class="input" id="p-tel" name="telefono" type="tel" inputmode="tel" maxlength="20" autocomplete="off"
+                         placeholder="300 123 4567" [(ngModel)]="telefono" [class.border-danger]="!telefonoOk()">
+                  <p class="hint">{{ telefonoOk() ? 'Si lo dejas vacío, WhatsApp te deja escoger a quién mandarlo.' : 'Revisa el número: deben ser 10 dígitos.' }}</p>
+                </div>
+              }
+            </div>
+
             <div class="flex flex-wrap gap-2">
               <button class="btn btn-dark" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : editandoId() ? 'Guardar cambios' : 'Confirmar pedido' }}</button>
               <button type="button" class="btn-link" (click)="revisando.set(false)">Seguir agregando</button>
@@ -201,6 +212,7 @@ export class NuevoPedidoComponent implements OnInit {
   readonly cop = cop;
   readonly cant = cantidad;
 
+  private readonly negocio = inject(NegocioService);
   readonly empresa = computed(() => this.auth.usuario()?.empresaNombre ?? 'Panel del negocio');
   readonly carros = signal<Carro[]>([]);
   readonly cargandoCarros = signal(true);
@@ -210,8 +222,7 @@ export class NuevoPedidoComponent implements OnInit {
   readonly error = signal('');
 
   readonly tiendaTexto = signal('');
-  readonly tienda = signal<Tienda | null>(null);
-  readonly sugerencias = signal<Tienda[]>([]);
+  readonly sugerencias = signal<string[]>([]);
   readonly mostrarSugerencias = signal(false);
   private readonly buscarTienda$ = new Subject<string>();
 
@@ -223,6 +234,10 @@ export class NuevoPedidoComponent implements OnInit {
   readonly guardando = signal(false);
   readonly errorConfirmar = signal('');
   notas = '';
+
+  /** Mandar el comprobante por WhatsApp al confirmar (se recuerda la última elección) y a qué número. */
+  readonly enviarWhatsapp = signal(this.leerWhatsapp());
+  telefono = '';
 
   /** Editando un pedido ya hecho: su id, su número y lo que tenía cada producto (clave -> cantidad). */
   readonly editandoId = signal<number | null>(null);
@@ -262,8 +277,12 @@ export class NuevoPedidoComponent implements OnInit {
   constructor() {
     const sub = this.buscarTienda$.pipe(
       debounceTime(250),
-      switchMap(q => q ? this.api.tiendas({q, activa: true, page: 0}, 6) : of(null))
-    ).subscribe({next: pg => this.sugerencias.set(pg?.content ?? []), error: () => this.sugerencias.set([])});
+      switchMap(q => this.api.nombresTiendas(q))
+    ).subscribe({
+      // Si lo escrito ya es exactamente una sugerencia, no hace falta mostrarla.
+      next: ns => this.sugerencias.set(ns.filter(n => n !== this.tiendaTexto().trim())),
+      error: () => this.sugerencias.set([])
+    });
     inject(DestroyRef).onDestroy(() => sub.unsubscribe());
   }
 
@@ -315,8 +334,6 @@ export class NuevoPedidoComponent implements OnInit {
           return;
         }
         this.numeroOriginal.set(numeroPedido(p.numero));
-        this.tienda.set({id: p.tiendaId, nombre: p.tiendaNombre, telefono: p.tiendaTelefono, direccion: p.tiendaDireccion,
-          encargado: null, barrio: null, notas: null, activa: true, pedidos: 0});
         this.tiendaTexto.set(p.tiendaNombre);
         this.notas = p.notas ?? '';
         this.carroId.set(p.carroId);
@@ -367,14 +384,13 @@ export class NuevoPedidoComponent implements OnInit {
 
   escribirTienda(texto: string): void {
     this.tiendaTexto.set(texto);
-    this.tienda.set(null);
     this.mostrarSugerencias.set(true);
-    this.buscarTienda$.next(texto.trim());
+    if (texto.trim()) this.buscarTienda$.next(texto.trim()); else this.sugerencias.set([]);
   }
 
-  elegirTienda(t: Tienda): void {
-    this.tienda.set(t);
-    this.tiendaTexto.set(t.nombre);
+  elegirTienda(nombre: string): void {
+    this.tiendaTexto.set(nombre);
+    this.sugerencias.set([]);
     this.mostrarSugerencias.set(false);
   }
 
@@ -420,8 +436,8 @@ export class NuevoPedidoComponent implements OnInit {
   // ---- Revisar y confirmar ----
 
   revisar(): void {
-    if (!this.tienda() && !this.tiendaTexto().trim()) {
-      this.error.set('Escribe o elige la tienda antes de revisar el pedido.');
+    if (!this.tiendaTexto().trim()) {
+      this.error.set('Escribe el nombre de la tienda antes de revisar el pedido.');
       document.getElementById('p-tienda')?.focus();
       return;
     }
@@ -447,16 +463,36 @@ export class NuevoPedidoComponent implements OnInit {
     this.precios.set(m);
   }
 
+  // ---- WhatsApp ----
+
+  telefonoOk(): boolean {
+    return telefonoValido(this.telefono);
+  }
+
+  marcarWhatsapp(si: boolean): void {
+    this.enviarWhatsapp.set(si);
+    try { localStorage.setItem(ENVIAR_WHATSAPP, si ? '1' : '0'); } catch { /* sin almacenamiento: no se recuerda */ }
+  }
+
+  private leerWhatsapp(): boolean {
+    try { return localStorage.getItem(ENVIAR_WHATSAPP) === '1'; } catch { return false; }
+  }
+
   confirmar(): void {
     const carroId = this.carroId();
     if (!carroId) return;
-    const t = this.tienda();
+    const whatsapp = this.enviarWhatsapp();
+    if (whatsapp && !this.telefonoOk()) {
+      this.errorConfirmar.set('Revisa el número de WhatsApp: deben ser 10 dígitos, o déjalo vacío para escoger el contacto.');
+      return;
+    }
+    // La pestaña de WhatsApp se abre ya, con el toque: abierta después de guardar, el navegador la bloquearía.
+    const ventana = whatsapp ? window.open('', '_blank') : null;
     this.guardando.set(true);
     this.errorConfirmar.set('');
     const editando = this.editandoId();
     const datos = {
-      tiendaId: t?.id ?? null,
-      tiendaNombre: t ? null : this.tiendaTexto().trim(),
+      tiendaNombre: this.tiendaTexto().trim(),
       notas: this.notas.trim() || null,
       items: this.lineas().map(l => ({
         productoId: l.item.productoId, presentacion: l.item.presentacion, cantidad: l.cantidad!,
@@ -465,8 +501,17 @@ export class NuevoPedidoComponent implements OnInit {
       }))
     };
     (editando ? this.api.editarPedido(editando, datos) : this.api.crearPedido({carroId, ...datos})).subscribe({
-      next: p => void this.router.navigate(['/admin/pedidos', p.id], {queryParams: editando ? {editado: 1} : {nuevo: 1}}),
+      next: p => {
+        const queryParams: Record<string, string | number> = editando ? {editado: 1} : {nuevo: 1};
+        if (whatsapp) {
+          const enlace = enlaceWhatsapp(textoComprobante(p, this.negocio.negocio()?.nombre ?? this.empresa(), cop), this.telefono);
+          // Si el navegador no dejó abrir la pestaña, el comprobante abre la ventana de WhatsApp con el número.
+          if (ventana) ventana.location.href = enlace; else Object.assign(queryParams, {whatsapp: 1, tel: this.telefono});
+        }
+        void this.router.navigate(['/admin/pedidos', p.id], {queryParams});
+      },
       error: err => {
+        ventana?.close();
         this.guardando.set(false);
         this.errorConfirmar.set(apiMessage(err));
         // Otro pedido pudo descontar del carro mientras tanto: se trae el stock al día.

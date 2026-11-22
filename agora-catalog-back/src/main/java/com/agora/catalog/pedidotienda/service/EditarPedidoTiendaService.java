@@ -12,8 +12,6 @@ import com.agora.catalog.pedidotienda.dto.PedidoTiendaDtos.PedidoResponse;
 import com.agora.catalog.pedidotienda.repository.PedidoTiendaRepository;
 import com.agora.catalog.pedidotienda.repository.PedidoTiendaRepository.Cabecera;
 import com.agora.catalog.pedidotienda.repository.PedidoTiendaRepository.LineaGuardada;
-import com.agora.catalog.tienda.dto.TiendaDtos.TiendaResponse;
-import com.agora.catalog.tienda.service.TiendaService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,16 +37,14 @@ public class EditarPedidoTiendaService {
     private final CarroRepository carros;
     private final CarroStockRepository stock;
     private final ReglasStock reglas;
-    private final TiendaService tiendas;
     private final CrearPedidoTiendaService crear;
 
     public EditarPedidoTiendaService(PedidoTiendaRepository pedidos, CarroRepository carros, CarroStockRepository stock,
-                                     ReglasStock reglas, TiendaService tiendas, CrearPedidoTiendaService crear) {
+                                     ReglasStock reglas, CrearPedidoTiendaService crear) {
         this.pedidos = pedidos;
         this.carros = carros;
         this.stock = stock;
         this.reglas = reglas;
-        this.tiendas = tiendas;
         this.crear = crear;
     }
 
@@ -100,8 +96,8 @@ public class EditarPedidoTiendaService {
         if (!faltan.isEmpty()) throw new IllegalStateException("No alcanza en el carro: " + String.join(", ", faltan) + ".");
 
         // 5. La tienda (puede cambiar) y las líneas nuevas.
-        TiendaResponse tienda = tiendas.resolver(empresaId, r.tiendaId(), r.tiendaNombre());
-        String motivo = tienda.nombre() + " · corrección del pedido";
+        String tienda = crear.nombreTienda(empresaId, r.tiendaNombre());
+        String motivo = tienda + " · corrección del pedido";
         pedidos.borrarLineasConProducto(empresaId, pedidoId);
         long total = totalConservado;
         for (Linea l : nuevas.values()) {
@@ -130,7 +126,7 @@ public class EditarPedidoTiendaService {
         }
 
         String notas = r.notas() == null || r.notas().isBlank() ? null : r.notas().trim();
-        pedidos.actualizar(empresaId, pedidoId, tienda.id(), total, notas);
+        pedidos.actualizar(empresaId, pedidoId, tienda, total, notas);
         return crear.get(empresaId, pedidoId);
     }
 

@@ -78,8 +78,8 @@ export const routes: Routes = [
         loadComponent: () => import('@app/modules/admin/ruta/carro-detalle.component').then(c => c.CarroDetalleComponent)
       },
       {
-        path: 'tiendas', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Tiendas · Agorá Catalog',
-        loadComponent: () => import('@app/modules/admin/ruta/tiendas.component').then(c => c.TiendasComponent)
+        path: 'rutas', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Rutas · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/ruta/tablero-rutas.component').then(c => c.TableroRutasComponent)
       },
       {
         path: 'importar', canActivate: [moduloGuard('IMPORTAR_EXCEL')], title: 'Importar · Agorá Catalog',

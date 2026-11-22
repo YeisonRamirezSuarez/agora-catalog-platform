@@ -385,41 +385,40 @@ Al terminar cada fase: compilar, correr tests y resumir qué quedó hecho antes 
 
 Además del catálogo por WhatsApp y la venta en el local, el negocio sale con uno o varios **carros** cargados de producto, recorre **tiendas**, deja en cada una un **pedido** con su comprobante y el stock del carro se descuenta. Usa los mismos productos y presentaciones del catálogo y el mismo usuario `ADMIN_EMPRESA`.
 
-**Decisiones del cliente**: un solo usuario por ahora (el modelo guarda `usuario_id` en cada movimiento y pedido para sumar un rol de vendedor después); algunas tiendas tienen precios propios (**listas de precios**); la cartera (fiado) se construye aunque todavía no sepa si la usará. Supuestos mientras no diga otra cosa: el comprobante es una remisión, **no** factura electrónica DIAN; lo que sobra se queda en el carro hasta descargarlo (no hay stock de bodega); se necesita conexión para confirmar; las devoluciones de tiendas quedan para después.
+**Decisiones del cliente**: un solo usuario por ahora (el modelo guarda `usuario_id` en cada movimiento y pedido para sumar un rol de vendedor después). El 2026-11-22 decidió **no llevar un listado de tiendas**: la tienda es solo el nombre que se escribe en el pedido, y la pantalla Tiendas se reemplazó por el tablero de **Rutas**. Con eso salen del plan las listas de precios por tienda (el precio se sigue cambiando a mano en cada línea del pedido) y la cartera por tienda. Supuestos mientras no diga otra cosa: el comprobante es una remisión, **no** factura electrónica DIAN; lo que sobra se queda en el carro hasta descargarlo (no hay stock de bodega); se necesita conexión para confirmar; las devoluciones de tiendas quedan para después.
 
 **Modelo** (migración `V7__venta_en_ruta.sql`; todas las tablas con `empresa_id`):
 - `carro` (nombre único por empresa, placa, activo) y `carro_stock` (carro, producto, presentación por **nombre** —NULL es la principal—, cantidad `numeric(12,3)` > 0; una fila que llega a cero se borra). Las presentaciones se referencian por nombre porque el producto las reemplaza al guardarse.
 - `carro_movimiento`: cada entrada y salida (`CARGA`, `VENTA`, `AJUSTE`, `DESCARGUE`, `ANULACION`, `INICIAL`) con su signo, el saldo que dejó, motivo, usuario, la ruta en la que pasó y, si viene de una venta, el pedido. Copia el nombre del producto.
 - `carro_ruta` (migración `V11`): cada salida del carro. Hay a lo sumo una en curso (`cerrada_at` nulo); todo movimiento cae en ella y, si no hay, se abre sola.
-- `tienda` (nombre único por empresa, encargado, teléfono en dígitos, dirección, barrio, notas, lista de precios, cupo de crédito, activa).
-- `pedido_tienda` (consecutivo por empresa, carro, tienda, forma de pago `CONTADO`/`CREDITO`, total, saldo pendiente, estado `CONFIRMADO`/`ANULADO`) y `pedido_tienda_item`, que copia nombre, presentación, unidad, precio sugerido y precio cobrado.
-- `lista_precio` + `lista_precio_item` (precio por producto y presentación) y `abono_tienda`.
+- `pedido_tienda` (consecutivo por empresa, carro, `tienda_nombre` —migración `V12`; la tienda es solo un nombre—, forma de pago `CONTADO`/`CREDITO`, total, saldo pendiente, estado `CONFIRMADO`/`ANULADO`) y `pedido_tienda_item`, que copia nombre, presentación, unidad, precio sugerido y precio cobrado.
+- `tienda`, `lista_precio`, `lista_precio_item` y `abono_tienda` (de `V7`) quedan en la base sin uso: los pedidos de antes de `V12` siguen ligados a su tienda, pero ya no se crean tiendas.
 
 **Reglas**
 - Toda operación de stock bloquea el carro (`SELECT … FOR UPDATE`) durante la transacción: dos operaciones sobre el mismo carro van una detrás de otra y el stock nunca queda negativo.
 - Cantidades: hasta tres decimales en la presentación principal de productos por `LIBRA` o `KILO`; enteras en todo lo demás.
 - Ajuste: se escribe lo **contado** y se registra la diferencia, con motivo obligatorio. Descargue: vacía el carro.
-- Un carro se elimina si está vacío (con mercancía, primero se descarga). Sin historial se borra; con movimientos o pedidos se marca `eliminado_at` (migración `V9`): desaparece del panel, su nombre queda libre y sus comprobantes lo siguen nombrando. Una tienda con pedidos no se borra: se desactiva. Un carro inactivo no se carga ni vende. Un producto cargado en un carro no se puede eliminar, y una presentación cargada no se puede quitar ni renombrar.
-- Pedido: todo o nada. Si algún producto no alcanza, responde con todos los faltantes y no guarda nada (ni la tienda nueva). El número es consecutivo por empresa (candado `pg_advisory_xact_lock`). Cada línea deja un movimiento `VENTA` con el pedido y el nombre de la tienda.
-- Precio sugerido de un pedido: el de la lista de la tienda si lo tiene, si no el del catálogo; se puede cambiar en la línea.
+- Un carro se elimina si está vacío (con mercancía, primero se descarga). Sin historial se borra; con movimientos o pedidos se marca `eliminado_at` (migración `V9`): desaparece del panel, su nombre queda libre y sus comprobantes lo siguen nombrando; su ruta en curso se cierra. Un carro inactivo no se carga ni vende. Un producto cargado en un carro no se puede eliminar, y una presentación cargada no se puede quitar ni renombrar.
+- Pedido: todo o nada. Si algún producto no alcanza, responde con todos los faltantes y no guarda nada. El número es consecutivo por empresa (candado `pg_advisory_xact_lock`). Cada línea deja un movimiento `VENTA` con el pedido y el nombre de la tienda.
+- Precio sugerido de un pedido: el del catálogo; se puede cambiar en la línea.
+- Tienda: solo el nombre, sin espacios de más. Si ese nombre ya se usó en otro pedido (sin importar mayúsculas ni tildes), queda escrito como la última vez, para que «don pedro» y «Don Pedro» sean la misma tienda en el tablero. Al escribir se sugieren los nombres ya usados.
 
 **API (`ADMIN_EMPRESA`)**
-- `/admin/tiendas`: listado paginado (`q`, `activa`), detalle, crear, editar, `PATCH /{id}/activa`, eliminar (solo sin pedidos).
 - `/admin/carros`: listado con productos y valor a precio de catálogo, detalle con su stock, crear, editar, `PATCH /{id}/activo`, eliminar (solo sin historial); `POST /{id}/cargas`, `POST /{id}/ajustes`, `POST /{id}/descargue`, `GET /{id}/movimientos` (paginado), `POST /{id}/rutas` (`{llevarSobrante}`) y `GET /{id}/rutas` (paginado, con el resumen por producto).
-- `/admin/pedidos-tienda`: `POST` crea el pedido (carro, `tiendaId` **o** `tiendaNombre`, líneas con precio opcional, notas); `GET /{id}` para el comprobante.
+- `/admin/pedidos-tienda`: `POST` crea el pedido (carro, `tiendaNombre`, líneas con precio opcional, notas); `GET /{id}` para el comprobante; `GET /tiendas?q=` sugiere hasta 8 nombres de tienda ya usados, los más recientes primero.
+- `GET /admin/tablero-ruta?fecha=AAAA-MM-DD` (sin fecha, hoy): lo vendido y los pedidos del día (sin anulados), las rutas de cada carro (las que salieron ese día y las que venían de antes y vendieron ese día, con sus pedidos y plata **de ese día**), lo más vendido (10) y los pedidos del día.
 - **Rutas**: un carro sale varias veces (7 a. m., 11 a. m., otro día). «Empezar ruta nueva» cierra la que va; si al carro le quedó mercancía, se pregunta si sigue en el carro (la ruta nueva la registra como `INICIAL`, «venían de la ruta anterior», sin mover el stock) o se baja (`DESCARGUE` en la ruta que termina). Una ruta sin actividad no se guarda (tocar dos veces el botón no deja rutas vacías). El detalle del carro muestra las rutas por fecha, numeradas dentro del día, con lo que cada producto cargó, vendió y le quedó, y, con el botón «Ver pedidos», los pedidos que se hicieron en ella (tienda, número, hora y total, con enlace al comprobante) y lo vendido en plata; un pedido corregido después sigue en la ruta en que se hizo; los movimientos sueltos ya no se muestran en pantalla (el endpoint sigue para auditoría y pruebas).
 - `PUT /admin/pedidos-tienda/{id}` corrige un pedido (tienda, líneas, precios, notas; el carro no cambia). Por producto se compara antes y después: lo que baja vuelve al carro (movimiento `ANULACION`, «Devuelto»), lo que sube se descuenta (`VENTA`) y tiene que alcanzar; si no, no cambia nada. Conserva el número y marca `editado_at` (migración `V10`); el comprobante dice «Editado el…» y el mensaje de WhatsApp «(corregido)». Un pedido cuyo carro se eliminó no se edita.
 
-**Pantallas del panel**: Nuevo pedido (carro, tienda con sugerencias, cantidades de lo que hay en el carro, revisar con precio editable, confirmar), Comprobante (enviar por WhatsApp, imprimir), Carros (lista y detalle con vender, agregar productos, tocar un producto para sumar/restar/quitar, empezar ruta nueva, vaciar y las rutas por fecha) y Tiendas (lista con búsqueda, formulario en hoja).
+**Pantallas del panel**: Nuevo pedido (carro, nombre de la tienda con sugerencias, cantidades de lo que hay en el carro, revisar con precio editable, «Enviar el comprobante por WhatsApp» con número opcional, confirmar), Comprobante (enviar por WhatsApp, imprimir), Carros (lista y detalle con vender, agregar productos, tocar un producto para sumar/restar/quitar, empezar ruta nueva, vaciar y las rutas por fecha) y **Rutas** (tablero del día: vendido, pedidos, rutas por carro, lo más vendido y «Ver pedidos»; se cambia de día con ‹ › o el calendario).
 
-**La tienda se crea sola**: en el pedido se escribe el nombre; si ya hay una con ese nombre (sin importar mayúsculas ni espacios) se usa esa, si no se crea con solo el nombre. Registrarla antes en Tiendas no es necesario; esa pantalla queda para completar o corregir datos.
+**WhatsApp a cualquier número**: el número no se guarda. Con número (10 dígitos; a un celular colombiano se le antepone el 57) abre el chat de ese número; vacío, WhatsApp deja escoger el contacto. Al confirmar un pedido con la casilla marcada (se recuerda en el teléfono), la pestaña de WhatsApp se abre en el mismo toque para que el navegador no la bloquee; si la bloquea, el comprobante abre la ventana de WhatsApp con el número escrito.
 
 **Fases**
-1. ✅ Especificación, migración V7, tiendas y carros con carga, ajuste y descargue.
-2. ✅ Nuevo pedido a tienda con descuento atómico del stock, tienda que se crea sola y comprobante (imprimir y compartir por WhatsApp).
-3. Historial de pedidos con filtros, anulación con devolución al carro y resumen del día por carro.
-4. Listas de precios y su asignación a tiendas.
-5. Cartera: contado o crédito, abonos, saldo por tienda, cupo y pantalla de cartera.
+1. ✅ Especificación, migración V7, carros con carga, ajuste y descargue.
+2. ✅ Nuevo pedido a tienda con descuento atómico del stock y comprobante (imprimir y compartir por WhatsApp).
+3. ✅ Rutas del carro (V11), edición de pedidos (V10), tienda solo como nombre (V12) y tablero del día. Pendiente: anular un pedido con devolución al carro.
+4. ~~Listas de precios por tienda~~ y 5. ~~Cartera por tienda~~: fuera del plan desde que no se guardan tiendas (2026-11-22).
 
 ## 16. Módulos por empresa (2026-11-16)
 
@@ -432,7 +431,7 @@ La plataforma se vende por módulos: cada negocio tiene lo que contrató. El **s
 | `IMPORTAR_EXCEL` | `/admin/importacion/**` y la pantalla Importar |
 | `COLECCIONES` | `/admin/colecciones/**` y las colecciones del catálogo público |
 | `ESTADISTICAS` | `GET /admin/estadisticas` y su bloque en el inicio (los eventos del catálogo se siguen contando) |
-| `VENTA_RUTA` | `/admin/carros/**`, `/admin/tiendas/**`, `/admin/pedidos-tienda/**` y sus pantallas |
+| `VENTA_RUTA` | `/admin/carros/**`, `/admin/pedidos-tienda/**`, `/admin/tablero-ruta` y sus pantallas (Nuevo pedido, Rutas, Carros) |
 
 - Tabla `empresa_modulo` (migración `V8`). Sin fila, el módulo está apagado: una empresa nueva arranca solo con la base. Las empresas que ya existían conservaron lo que usaban; la venta en ruta, solo las que ya tenían carros.
 - **Lo bloquea el backend**: cada controlador de un módulo lleva `@RequiereModulo`; `ModuloInterceptor` lo revisa en cada petición y responde 403 «Tu plan no incluye…». Apagar corta el acceso al instante.

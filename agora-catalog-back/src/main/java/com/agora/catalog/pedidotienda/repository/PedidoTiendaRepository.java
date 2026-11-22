@@ -34,12 +34,34 @@ public class PedidoTiendaRepository {
                 Integer.class, empresaId);
     }
 
-    public long insert(long empresaId, int numero, long carroId, long tiendaId, long total, String notas, long usuarioId) {
+    public long insert(long empresaId, int numero, long carroId, String tiendaNombre, long total, String notas, long usuarioId) {
         return jdbc.queryForObject("""
-                INSERT INTO main.pedido_tienda (empresa_id, numero, carro_id, tienda_id, forma_pago, total, saldo_pendiente,
+                INSERT INTO main.pedido_tienda (empresa_id, numero, carro_id, tienda_nombre, forma_pago, total, saldo_pendiente,
                                                 estado, notas, usuario_id)
                 VALUES (?, ?, ?, ?, 'CONTADO', ?, 0, 'CONFIRMADO', ?, ?) RETURNING id
-                """, Long.class, empresaId, numero, carroId, tiendaId, total, notas, usuarioId);
+                """, Long.class, empresaId, numero, carroId, tiendaNombre, total, notas, usuarioId);
+    }
+
+    /** Cómo se escribió ese nombre de tienda la última vez (sin importar mayúsculas ni tildes), si ya se usó. */
+    public Optional<String> nombreUsado(long empresaId, String nombre) {
+        return jdbc.queryForList("""
+                SELECT tienda_nombre FROM main.pedido_tienda
+                 WHERE empresa_id = ? AND translate(lower(tienda_nombre), 'áéíóúüñ', 'aeiouun') = translate(lower(?), 'áéíóúüñ', 'aeiouun')
+                 ORDER BY created_at DESC LIMIT 1
+                """, String.class, empresaId, nombre).stream().findFirst();
+    }
+
+    /** Nombres de tienda ya usados en pedidos, los más recientes primero, para sugerirlos al escribir. */
+    public List<String> nombresTiendas(long empresaId, String q, int limite) {
+        return jdbc.queryForList("""
+                SELECT tienda_nombre FROM (
+                    SELECT DISTINCT ON (lower(tienda_nombre)) tienda_nombre, created_at
+                      FROM main.pedido_tienda
+                     WHERE empresa_id = ?
+                       AND translate(lower(tienda_nombre), 'áéíóúüñ', 'aeiouun') LIKE translate(lower(?), 'áéíóúüñ', 'aeiouun')
+                     ORDER BY lower(tienda_nombre), created_at DESC) x
+                 ORDER BY created_at DESC LIMIT ?
+                """, String.class, empresaId, "%" + q.replace("\\", "").replace("%", "").replace("_", "") + "%", limite);
     }
 
     public void insertItem(long empresaId, long pedidoId, long productoId, String nombre, String presentacion,
@@ -58,16 +80,13 @@ public class PedidoTiendaRepository {
                 rs.getString("presentacion"), rs.getString("unidad_venta"), Cantidades.limpia(rs.getBigDecimal("cantidad")),
                 rs.getLong("precio_sugerido"), rs.getLong("precio_unitario"), rs.getLong("subtotal")), empresaId, id);
         return jdbc.query("""
-                SELECT p.*, c.nombre AS carro_nombre, c.eliminado_at IS NOT NULL AS carro_eliminado, t.nombre AS tienda_nombre, t.telefono AS tienda_telefono,
-                       t.direccion AS tienda_direccion, u.nombre AS usuario_nombre
+                SELECT p.*, c.nombre AS carro_nombre, c.eliminado_at IS NOT NULL AS carro_eliminado, u.nombre AS usuario_nombre
                   FROM main.pedido_tienda p
                   JOIN main.carro c ON c.id = p.carro_id
-                  JOIN main.tienda t ON t.id = p.tienda_id
                   LEFT JOIN main.usuario u ON u.id = p.usuario_id
                  WHERE p.empresa_id = ? AND p.id = ?
                 """, (rs, i) -> new PedidoResponse(rs.getLong("id"), rs.getInt("numero"), rs.getLong("carro_id"),
-                rs.getString("carro_nombre"), rs.getBoolean("carro_eliminado"), rs.getLong("tienda_id"), rs.getString("tienda_nombre"),
-                rs.getString("tienda_telefono"), rs.getString("tienda_direccion"), rs.getString("forma_pago"),
+                rs.getString("carro_nombre"), rs.getBoolean("carro_eliminado"), rs.getString("tienda_nombre"), rs.getString("forma_pago"),
                 rs.getLong("total"), rs.getString("estado"), rs.getString("notas"), rs.getString("usuario_nombre"),
                 rs.getObject("created_at", OffsetDateTime.class), rs.getObject("editado_at", OffsetDateTime.class), items),
                 empresaId, id).stream().findFirst();
@@ -106,10 +125,10 @@ public class PedidoTiendaRepository {
                 empresaId, pedidoId);
     }
 
-    public void actualizar(long empresaId, long pedidoId, long tiendaId, long total, String notas) {
+    public void actualizar(long empresaId, long pedidoId, String tiendaNombre, long total, String notas) {
         jdbc.update("""
-                UPDATE main.pedido_tienda SET tienda_id = ?, total = ?, notas = ?, editado_at = now()
+                UPDATE main.pedido_tienda SET tienda_nombre = ?, total = ?, notas = ?, editado_at = now()
                  WHERE empresa_id = ? AND id = ?
-                """, tiendaId, total, notas, empresaId, pedidoId);
+                """, tiendaNombre, total, notas, empresaId, pedidoId);
     }
 }

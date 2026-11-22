@@ -69,7 +69,7 @@ class ModulosIntegrationTest {
         mvc.perform(get("/admin/modulos").header("Authorization", admin)).andExpect(jsonPath("$", hasSize(0)));
 
         // Cada módulo cerrado responde 403 con un mensaje para el negocio.
-        for (String ruta : new String[]{"/admin/carros", "/admin/tiendas", "/admin/pedidos-tienda/1", "/admin/colecciones",
+        for (String ruta : new String[]{"/admin/carros", "/admin/tablero-ruta", "/admin/pedidos-tienda/1", "/admin/colecciones",
                 "/admin/importacion/plantilla", "/admin/estadisticas"}) {
             mvc.perform(get(ruta).header("Authorization", admin))
                     .andExpect(status().isForbidden())

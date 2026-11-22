@@ -12,7 +12,7 @@ export const ADMIN_LINKS: PanelLink[] = [
   {label: 'Categorías', path: '/admin/categorias'},
   {label: 'Colecciones', path: '/admin/colecciones', modulo: 'COLECCIONES'},
   {label: 'Carros', path: '/admin/carros', modulo: 'VENTA_RUTA'},
-  {label: 'Tiendas', path: '/admin/tiendas', modulo: 'VENTA_RUTA'},
+  {label: 'Rutas', path: '/admin/rutas', modulo: 'VENTA_RUTA'},
   {label: 'Importar', path: '/admin/importar', modulo: 'IMPORTAR_EXCEL'},
   {label: 'Configuración', path: '/admin/configuracion'},
 ];
