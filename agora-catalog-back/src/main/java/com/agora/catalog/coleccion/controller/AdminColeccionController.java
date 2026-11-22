@@ -9,6 +9,8 @@ import com.agora.catalog.coleccion.dto.ColeccionDtos.SeccionRequest;
 import com.agora.catalog.empresa.dto.ConfiguracionDtos.ConfiguracionResponse;
 import com.agora.catalog.empresa.service.ConfiguracionService;
 import jakarta.validation.Valid;
+import com.agora.catalog.modulo.model.Modulo;
+import com.agora.catalog.modulo.web.RequiereModulo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/colecciones")
 @PreAuthorize("hasRole('ADMIN_EMPRESA')")
+@RequiereModulo(Modulo.COLECCIONES)
 public class AdminColeccionController {
 
     private final ColeccionService service;

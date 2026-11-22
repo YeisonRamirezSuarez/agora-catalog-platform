@@ -1,6 +1,6 @@
 import {Routes} from '@angular/router';
 
-import {invitadoGuard, rolGuard, sesionGuard} from '@app/core/guards/auth.guard';
+import {invitadoGuard, moduloGuard, rolGuard, sesionGuard} from '@app/core/guards/auth.guard';
 
 export const routes: Routes = [
   {path: '', pathMatch: 'full', redirectTo: 'login'},
@@ -54,11 +54,35 @@ export const routes: Routes = [
         loadComponent: () => import('@app/modules/admin/categorias/categorias.component').then(c => c.CategoriasComponent)
       },
       {
-        path: 'colecciones', title: 'Colecciones · Agorá Catalog',
+        path: 'colecciones', canActivate: [moduloGuard('COLECCIONES')], title: 'Colecciones · Agorá Catalog',
         loadComponent: () => import('@app/modules/admin/colecciones/colecciones.component').then(c => c.ColeccionesComponent)
       },
       {
-        path: 'importar', title: 'Importar · Agorá Catalog',
+        path: 'pedidos/nuevo', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Nuevo pedido · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/ruta/nuevo-pedido.component').then(c => c.NuevoPedidoComponent)
+      },
+      {
+        path: 'pedidos/:id/editar', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Editar pedido · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/ruta/nuevo-pedido.component').then(c => c.NuevoPedidoComponent)
+      },
+      {
+        path: 'pedidos/:id', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Pedido · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/ruta/comprobante.component').then(c => c.ComprobanteComponent)
+      },
+      {
+        path: 'carros', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Carros · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/ruta/carros.component').then(c => c.CarrosComponent)
+      },
+      {
+        path: 'carros/:id', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Carro · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/ruta/carro-detalle.component').then(c => c.CarroDetalleComponent)
+      },
+      {
+        path: 'rutas', canActivate: [moduloGuard('VENTA_RUTA')], title: 'Rutas · Agorá Catalog',
+        loadComponent: () => import('@app/modules/admin/ruta/tablero-rutas.component').then(c => c.TableroRutasComponent)
+      },
+      {
+        path: 'importar', canActivate: [moduloGuard('IMPORTAR_EXCEL')], title: 'Importar · Agorá Catalog',
         loadComponent: () => import('@app/modules/admin/importar/importar.component').then(c => c.ImportarComponent)
       },
       {
